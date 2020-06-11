@@ -41,10 +41,11 @@ export class ZoomSDK {
     await module.preload()
   }
 
+  // eslint-disable-line require-await
   async initialize(licenseKey, preload, serverUrl, zoomServerUrl) {
     const { module } = this
 
-    await module.initialize(licenseKey, preload, serverUrl, zoomServerUrl)
+    return module.initialize(licenseKey, preload, serverUrl, zoomServerUrl)
   }
 
   async enroll(enrollmentIdentifier, jsonWebToken) {

@@ -127,7 +127,7 @@ open class ZoomModule: RCTEventEmitter {
             preloadZoomSDK: preloadSDK,
             completion: { initializationSuccessful in
                 if initializationSuccessful {
-                    resolve(nil)
+                    resolve(initializationSuccessful)
                     return
                 }
 
