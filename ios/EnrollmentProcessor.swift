@@ -33,7 +33,7 @@ class EnrollmentProcessor: NSObject, URLSessionDelegate, ZoomFaceMapProcessorDel
                 let sessionVC = Zoom.sdk.createSessionVC(delegate: self, faceMapProcessorDelegate: self, serverSessionToken: serverSessionToken)
                 
                 self.presentSessionVCFrom.present(sessionVC, animated: true, completion: {
-                    EventEmitter.shared.dispatch(UXEvent.UI_READY)
+                    EventEmitter.shared.dispatch(.UI_READY)
                 })
             }
         }
@@ -80,6 +80,9 @@ class EnrollmentProcessor: NSObject, URLSessionDelegate, ZoomFaceMapProcessorDel
             zoomFaceMapResultCallback.onFaceMapResultCancel();
             return
         }
+        
+        // notidying that capturing is done
+        EventEmitter.shared.dispatch(.CAPTURE_DONE)
         
         // setting initial progress to 0 for freeze progress bar
         zoomFaceMapResultCallback.onFaceMapUploadProgress(uploadedPercent: 0)

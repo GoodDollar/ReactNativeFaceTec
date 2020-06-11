@@ -6,6 +6,7 @@ import ZoomAuthentication
 
 enum UXEvent: String, CaseIterable {
     case UI_READY = "onUIReady"
+    case CAPTURE_DONE = "onCaptureDone"
 }
 
 // Possible directives after parsing the result from ZoOm Server
