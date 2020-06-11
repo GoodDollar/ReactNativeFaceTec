@@ -81,7 +81,7 @@ class EnrollmentProcessor: NSObject, URLSessionDelegate, ZoomFaceMapProcessorDel
             return
         }
         
-        // notidying that capturing is done
+        // notifying that capturing is done
         EventEmitter.shared.dispatch(.CAPTURE_DONE)
         
         // setting initial progress to 0 for freeze progress bar
@@ -111,6 +111,7 @@ class EnrollmentProcessor: NSObject, URLSessionDelegate, ZoomFaceMapProcessorDel
                 zoomFaceMapResultCallback.onFaceMapResultSucceed()
                 self.isSuccess = true
             case .Retry:
+                EventEmitter.shared.dispatch(.FV_RETRY)
                 zoomFaceMapResultCallback.onFaceMapResultRetry()
             case .Cancel:
                 zoomFaceMapResultCallback.onFaceMapResultCancel()
