@@ -111,7 +111,7 @@ class EnrollmentProcessor: NSObject, URLSessionDelegate, ZoomFaceMapProcessorDel
                 zoomFaceMapResultCallback.onFaceMapResultSucceed()
                 self.isSuccess = true
             case .Retry:
-                EventEmitter.shared.dispatch(.FV_RETRY)
+                EventEmitter.shared.dispatch(.FV_RETRY, lastMessage)
                 zoomFaceMapResultCallback.onFaceMapResultRetry()
             case .Cancel:
                 zoomFaceMapResultCallback.onFaceMapResultCancel()
