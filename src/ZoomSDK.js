@@ -53,9 +53,8 @@ export class ZoomSDK {
     // unfortunately we couldn't pass callback which could return some data back to the native code
     // so it's only way to integrate Zoom on native - to reimplement all logic about calling server
     const { module } = this
-    const enrollmentResult = await module.faceVerification(enrollmentIdentifier, jsonWebToken)
 
-    return enrollmentResult
+    return module.faceVerification(enrollmentIdentifier, jsonWebToken)
   }
 
   async unload() {
