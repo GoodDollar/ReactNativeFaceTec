@@ -111,7 +111,7 @@ class NetworkingHelpers {
         zoomSessionResult: ZoomSessionResult,
         jwtAccessToken: String,
         urlSessionDelegate: URLSessionDelegate,
-        resultCallback: @escaping (UXNextStep, String?) -> ()
+        resultCallback: @escaping (UXNextStep, String?, [String: Any]?) -> ()
         )
     {
         let parameters = getEnrollmentParameters(zoomSessionResult: zoomSessionResult)
@@ -126,14 +126,19 @@ class NetworkingHelpers {
         ) { responseJSONObj in
             let nextStep = ServerResultHelpers.getEnrollmentNextStep(responseJSONObj: responseJSONObj)
             let lastMessage = ServerResultHelpers.getEnrollmentResultMessage(responseJSONObj: responseJSONObj)
+            let lastResult = ServerResultHelpers.getEnrollmentResult(responseJSONObj: responseJSONObj)
             
-            resultCallback(nextStep, lastMessage)
+            resultCallback(nextStep, lastMessage, lastResult)
         }
     }
 }
 
 // Helpers for parsing API response to determine if result was a success vs. user needs retry vs. unexpected (cancel out)
 class ServerResultHelpers {
+    public class func getEnrollmentResult(_ responseJSONObj: [String: AnyObject]) -> [String: Any]? {
+        return responseJSONObj["enrollmentResult"] as? [String : Any]
+    }
+    
     // If isEnrolled and Liveness was Determined, succeed.  Otherwise retry.  Unexpected responses cancel.
     public class func getEnrollmentNextStep(responseJSONObj: [String: AnyObject]) -> UXNextStep {
         let isSuccess = responseJSONObj["success"] as? Bool
@@ -142,7 +147,7 @@ class ServerResultHelpers {
             return .Succeed
         }
         
-        let enrollmentResult = responseJSONObj["enrollmentResult"] as? [String : Any]
+        let enrollmentResult = ServerResultHelpers.getEnrollmentResult(responseJSONObj)
         let isEnrolled = enrollmentResult?["isEnrolled"] as? Bool
         let isLive = enrollmentResult?["isLive"] as? Bool
         let code = enrollmentResult?["code"] as? Int

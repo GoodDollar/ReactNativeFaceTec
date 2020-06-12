@@ -93,7 +93,7 @@ class EnrollmentProcessor: NSObject, URLSessionDelegate, ZoomFaceMapProcessorDel
             zoomSessionResult: zoomSessionResult,
             jwtAccessToken: latestJWTAccessToken,
             urlSessionDelegate: self
-        ) { (nextStep, lastMessage) in
+        ) { (nextStep, lastMessage, lastResult) in
             // last 20% progress bar will stuck in 'almost completed' state
             // white GoodServer will process uploaded FaceMap
             zoomFaceMapResultCallback.onFaceMapUploadProgress(uploadedPercent: 1)
@@ -111,7 +111,12 @@ class EnrollmentProcessor: NSObject, URLSessionDelegate, ZoomFaceMapProcessorDel
                 zoomFaceMapResultCallback.onFaceMapResultSucceed()
                 self.isSuccess = true
             case .Retry:
-                EventEmitter.shared.dispatch(.FV_RETRY, lastMessage)
+                EventEmitter.shared.dispatch(.FV_RETRY, [
+                    "reason": lastMessage,
+                    "liveness": lastResult?["isLive"],
+                    "enroller": lastResult?["isEnrolled"],
+                ] as NSDictionary)
+                
                 zoomFaceMapResultCallback.onFaceMapResultRetry()
             case .Cancel:
                 zoomFaceMapResultCallback.onFaceMapResultCancel()
