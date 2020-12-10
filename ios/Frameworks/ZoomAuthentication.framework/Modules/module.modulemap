@@ -1,6 +1,0 @@
-framework module ZoomAuthentication {
-  umbrella header "ZoomAuthentication.h"
-
-  export *
-  module * { export * }
-}
