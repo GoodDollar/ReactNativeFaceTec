@@ -1,16 +1,15 @@
 {
-  "name": "react-native-zoom",
-  "title": "React Native module that integrates FaceTec ZoOm face verification API",
+  "name": "react-native-facetec",
+  "title": "React Native module that integrates FaceTec face verification API",
   "version": "1.0.0",
-  "description": "React Native module that integrates FaceTec ZoOm face verification API",
+  "description": "React Native module that integrates FaceTec face verification API",
   "main": "index.js",
   "files": [
     "src",
     "index.js",
     "android",
     "ios",
-    "ZoomAuthentication.framework",
-    "react-native-zoom.podspec",
+    "react-native-facetec.podspec",
     "README.md",
     "LICENSE"
   ],
@@ -19,8 +18,8 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/GoodDollar/react-native-zoom.git",
-    "baseUrl": "https://github.com/GoodDollar/react-native-zoom"
+    "url": "git+https://github.com/GoodDollar/ReactNativeFaceTec.git",
+    "baseUrl": "https://github.com/GoodDollar/ReactNativeFaceTec"
   },
   "keywords": [
     "react-native"
