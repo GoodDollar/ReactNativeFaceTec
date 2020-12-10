@@ -1,21 +1,16 @@
 import UIKit
 import Foundation
-import ZoomAuthentication
+import FaceTecAuthentication
 
-class ZoomGlobalState {
-    // Zoom (Face Recognition / Liveness Test API) License key
+class FaceTecGlobalState {
+    // FaceTec (Face Recognition / Liveness Test API) License key
     // Passes from the React Native application's env
     static var DeviceLicenseKeyIdentifier: String? = nil
-    
+
     // GoodServer instance's URL.
     // Passes from the React Native application's env
-    static var GoodServerURL: String? = nil
-    
-    // "https://api.zoomauth.com/api/v2/biometrics" for FaceTec Managed Testing API.
-    // "http://localhost:8080" if running ZoOm Server SDK (Dockerized) locally.
-    // Otherwise, your webservice URL.
-    static var ZoomServerBaseURL: String? = nil
-    
+    static var ServerURL: String? = nil
+
     // The customer-controlled public key used during encryption of FaceMap data.
     // Please see https://dev.zoomlogin.com/zoomsdk/#/licensing-and-encryption-keys for more information.
     static let PublicFaceMapEncryptionKey =

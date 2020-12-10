@@ -1,15 +1,15 @@
 import { NativeModules } from 'react-native'
-import { ZoomSDK } from './src/ZoomSDK'
+import { FaceTecSDK } from './src/FaceTecSDK'
 
-const { ZoomModule } = NativeModules
-export const sdk = new ZoomSDK(ZoomModule)
+const { FaceTecModule } = NativeModules
+export const sdk = new FaceTecSDK(FaceTecModule)
 
-const Zoom = { sdk }
+const FaceTec = { sdk }
 
 export const {
-  ZoomUxEvent,
-  ZoomSDKStatus,
-  ZoomSessionStatus
-} = ZoomModule
+  FaceTecUxEvent,
+  FaceTecSDKStatus,
+  FaceTecSessionStatus
+} = FaceTecModule
 
-export default Zoom;
+export default FaceTec;

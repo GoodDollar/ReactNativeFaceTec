@@ -1,60 +1,62 @@
 //
 //  RCTUtils.swift
-//  ZoomVerificationNative
+//  FaceTecVerificationNative
 //
 //  Created by Alex Serdukov on 5/13/20.
 //  Copyright © 2020 Facebook. All rights reserved.
 //
 
 import Foundation
-import ZoomAuthentication
+// import FaceTecAuthentication
 
-class ZoomRCTPromiseProcessingDelegate: NSObject, ProcessingDelegate {
-    
+class FaceTecRCTPromiseProcessingDelegate: NSObject, ProcessingDelegate {
+
     private var resolver: RCTPromiseResolveBlock
     private var rejecter: RCTPromiseRejectBlock
-    
+
     init(resolver: @escaping RCTPromiseResolveBlock, rejecter: @escaping RCTPromiseRejectBlock) {
         self.resolver = resolver
         self.rejecter = rejecter
     }
-    
-    func onProcessingComplete(isSuccess: Bool, zoomSessionResult: ZoomSessionResult?, zoomSessionMessage: String?) {
-        if isSuccess {
-            resolver(zoomSessionMessage)
+
+    func onProcessingComplete(isSuccess: Bool/*, faceTecSessionResult: FaceTecSessionResult?, faceTecSessionMessage: String?*/) {
+        resolver(faceTecSessionMessage)
+        /*if isSuccess {
+            resolver(faceTecSessionMessage)
             return
         }
-        
-        let status = zoomSessionResult?.status
-        
+
+        let status = faceTecSessionResult?.status
+
         if status == nil {
             onSessionTokenError()
             return
         }
-        
-        let message = zoomSessionMessage ?? Zoom.sdk.description(for: status!)
-        
-        ZoomRCTUtils.rejectWith(message, status!.rawValue, rejecter: rejecter)
+
+        let message = faceTecSessionMessage ?? FaceTec.sdk.description(for: status!)
+
+        FaceTecRCTUtils.rejectWith(message, status!.rawValue, rejecter: rejecter)*/
     }
-    
+
     func onSessionTokenError() {
         let message = "Session could not be started due to an unexpected issue during the network request."
-        
-        ZoomRCTUtils.rejectWith(message, ZoomSessionStatus.unknownInternalError.rawValue, rejecter: rejecter)
+
+        FaceTecRCTUtils.rejectWith(message, -1/*FaceTecSessionStatus.unknownInternalError.rawValue*/, rejecter: rejecter)
     }
-    
+
     func onCameraAccessError() {
-        let noCameraAccess = ZoomSessionStatus.cameraPermissionDenied
-        let message = Zoom.sdk.description(for: noCameraAccess)
-        
-        ZoomRCTUtils.rejectWith(message, noCameraAccess.rawValue, rejecter: rejecter)
+        /*let noCameraAccess = FaceTecSessionStatus.cameraPermissionDenied
+        let message = FaceTec.sdk.description(for: noCameraAccess)
+
+        FaceTecRCTUtils.rejectWith(message, noCameraAccess.rawValue, rejecter: rejecter)*/
+        FaceTecRCTUtils.rejectWith("Camera not accessible", 0, rejecter: rejecter)
     }
 }
 
-class ZoomRCTUtils {
+class FaceTecRCTUtils {
     static func rejectWith(_ message: String, _ code: Int, rejecter: RCTPromiseRejectBlock) -> Void {
         let exception = NSError(domain: message, code: code)
-        
+
         rejecter(String(code), message, exception)
     }
 }

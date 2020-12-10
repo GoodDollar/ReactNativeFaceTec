@@ -1,11 +1,11 @@
 import { NativeEventEmitter } from 'react-native'
 
 // sdk class
-export class ZoomSDK {
+export class FaceTecSDK {
   _subscriptions = {}
 
   constructor(module) {
-    const wrapMethods = ['preload', 'initialize', 'enroll', 'unload']
+    const wrapMethods = ['initialize', 'enroll']
 
     this.module = module
     this.eventEmitter = new NativeEventEmitter(module)
@@ -13,13 +13,13 @@ export class ZoomSDK {
     // wrap methods
     wrapMethods.forEach(method => this[method] = async (...args) => {
       try {
-        const result = await ZoomSDK.prototype[method](...args)
+        const result = await FaceTecSDK.prototype[method](...args)
 
         return result
       } catch ({ code, message }) {
         // RCTBridge doesn't returns/rejects with JS Error object
         // it returns just object literal with the Error-like shape
-        // also, codes are returning as strings (but actually Zoom statuses are numbers)
+        // also, codes are returning as strings (but actually FaceTec statuses are numbers)
         // so we have to use this method to convert codes to numbers
         // and convert error-like shape to the JS Error object
         const exception = new Error(message)
@@ -32,35 +32,23 @@ export class ZoomSDK {
     })
 
     // pre-create subscriptions maps
-    Object.values(module.ZoomUxEvent).forEach(event => this._subscriptions[event] = new WeakMap())
-  }
-
-  async preload() {
-    const { module } = this
-
-    await module.preload()
+    Object.values(module.FaceTecUxEvent).forEach(event => this._subscriptions[event] = new WeakMap())
   }
 
   // eslint-disable-line require-await
-  async initialize(licenseKey, preload, serverUrl, zoomServerUrl) {
+  async initialize(serverUrl, jsonWebToken, licenseKey, encryptionKey = null, licenseText = null) {
     const { module } = this
 
-    return module.initialize(licenseKey, preload, serverUrl, zoomServerUrl)
-  }
-
-  async enroll(enrollmentIdentifier, jsonWebToken) {
     // we're passing current JWT to the native code allowing it to call GoodServer for verification
     // unfortunately we couldn't pass callback which could return some data back to the native code
-    // so it's only way to integrate Zoom on native - to reimplement all logic about calling server
-    const { module } = this
-
-    return module.faceVerification(enrollmentIdentifier, jsonWebToken)
+    // so it's only way to integrate FaceTec on native - to reimplement all logic about calling server
+    return module.initialize(serverUrl, jsonWebToken, licenseKey, encryptionKey, licenseText)
   }
 
-  async unload() {
+  async enroll(enrollmentIdentifier, maxRetries = -1) {
     const { module } = this
 
-    await module.unload()
+    return module.faceVerification(enrollmentIdentifier, maxRetries)
   }
 
   addListener(event, handler) {
