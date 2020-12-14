@@ -8,6 +8,8 @@ import com.facebook.react.bridge.Promise;
 import java.util.Map;
 import java.util.HashMap;
 
+import com.facetec.sdk.*;
+
 public class FaceTecModule extends ReactContextBaseJavaModule {
     private final ReactApplicationContext reactContext;
 
@@ -40,7 +42,7 @@ public class FaceTecModule extends ReactContextBaseJavaModule {
         String licenseKey, String encryptionKey, String licenseText,
         Promise promise
     ) {
-        promise.resolve(null);
+        promise.resolve(FaceTecSDK.version());
     }
 
     @ReactMethod

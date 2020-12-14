@@ -18,10 +18,10 @@ export default class App extends Component<{}> {
     message: '--'
   };
   componentDidMount() {
-    FaceTec.sdk.initialize().then(()=> {
+    FaceTec.sdk.initialize().then(version=> {
       this.setState({
         status: 'native callback received',
-        message: 'FaceTec initialized'
+        message: `FaceTec ${version} initialized`
       });
     });
   }
