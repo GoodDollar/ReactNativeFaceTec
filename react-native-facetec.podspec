@@ -12,12 +12,11 @@ Pod::Spec.new do |s|
   DESC
 
   s.homepage     = "https://github.com/GoodDollar/ReactNativeFaceTec"
-  s.license    = { :type => "MIT", :file => "LICENSE" }
+  s.license      = { :type => "MIT", :file => "LICENSE" }
   s.authors      = { "Good Dollar" => "builders@gooddollar.org" }
   s.platforms    = { :ios => "9.0" }
   s.source       = { :git => "https://github.com/GoodDollar/ReactNativeFaceTec.git", :tag => "#{s.version}" }
 
-  # s.vendored_frameworks = "ios/Frameworks/<todo: facetec framework>"
   s.source_files = "ios/**/*.{h,c,m,swift}"
   s.requires_arc = true
 

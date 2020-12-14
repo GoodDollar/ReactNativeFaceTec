@@ -1,6 +1,5 @@
 //
-//  FaceTecAuthenticationModule.swift
-//  FaceTecVerificationNative
+//  FaceTec.swift
 //
 //  Created by Alex Serdukov on 4/27/20.
 //  Copyright © 2020 Facebook. All rights reserved.
@@ -10,10 +9,10 @@ import UIKit
 // import FaceTecAuthentication
 // import LocalAuthentication
 
-@objc(FaceTecModule)
-open class FaceTecModule: RCTEventEmitter {
+@objc(FaceTec)
+open class FaceTec: RCTEventEmitter {
     override static public func moduleName() -> String! {
-        return "FaceTecModule";
+        return "FaceTec";
     }
 
     override static public func requiresMainQueueSetup() -> Bool {

@@ -13,9 +13,7 @@ export class FaceTecSDK {
     // wrap methods
     wrapMethods.forEach(method => this[method] = async (...args) => {
       try {
-        const result = await FaceTecSDK.prototype[method](...args)
-
-        return result
+        return await FaceTecSDK.prototype[method].apply(this, args)
       } catch ({ code, message }) {
         // RCTBridge doesn't returns/rejects with JS Error object
         // it returns just object literal with the Error-like shape
@@ -25,8 +23,6 @@ export class FaceTecSDK {
         const exception = new Error(message)
 
         exception.code = Number(code)
-        log.warn(`${logPrefix} failed`, { exception })
-
         throw exception
       }
     })
