@@ -38,7 +38,7 @@ export class FaceTecSDK {
     // we're passing current JWT to the native code allowing it to call GoodServer for verification
     // unfortunately we couldn't pass callback which could return some data back to the native code
     // so it's only way to integrate FaceTec on native - to reimplement all logic about calling server
-    return module.initialize(serverUrl, jsonWebToken, licenseKey, encryptionKey, licenseText)
+    return module.initializeSDK(serverUrl, jsonWebToken, licenseKey, encryptionKey, licenseText)
   }
 
   async enroll(enrollmentIdentifier, maxRetries = -1) {
@@ -65,6 +65,6 @@ export class FaceTecSDK {
     }
 
     subscriptionsMap.get(handler).remove()
-    subscriptionsMap.remove(handler)
+    subscriptionsMap.delete(handler)
   }
 }

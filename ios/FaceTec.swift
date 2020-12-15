@@ -99,8 +99,8 @@ open class FaceTec: RCTEventEmitter {
         ]
     }
 
-    @objc(initialize:jwtAccessToken:licenseKey:encryptionKey:licenseText:resolver:rejecter:)
-    open func initialize(_ serverURL: String, jwtAccessToken: String,
+    @objc(initializeSDK:jwtAccessToken:licenseKey:encryptionKey:licenseText:resolver:rejecter:)
+    open func initializeSDK(_ serverURL: String, jwtAccessToken: String,
         licenseKey: String, encryptionKey: String, licenseText: String,
         resolver resolve: @escaping RCTPromiseResolveBlock,
         rejecter reject: @escaping RCTPromiseRejectBlock) -> Void

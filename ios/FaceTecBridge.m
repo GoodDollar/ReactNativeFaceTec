@@ -11,7 +11,7 @@
 @interface RCT_EXTERN_MODULE(FaceTec, NSObject)
 
 RCT_EXTERN_METHOD(
-  initialize:(NSString *)serverURL
+  initializeSDK:(NSString *)serverURL
   jwtAccessToken:(NSString *)jwtAccessToken
   licenseKey:(NSString *)licenseKey
   encryptionKey:(NSString *)encryptionKey

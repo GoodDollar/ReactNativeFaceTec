@@ -6,6 +6,12 @@
 //  Copyright © 2020 Facebook. All rights reserved.
 //
 
+enum UXEvent: String, CaseIterable {
+    case UI_READY = "onUIReady"
+    case CAPTURE_DONE = "onCaptureDone"
+    case FV_RETRY = "onRetry"
+}
+
 class EventEmitter {
     // singletone instance
     public static let shared = EventEmitter()
