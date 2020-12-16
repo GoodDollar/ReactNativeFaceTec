@@ -17,6 +17,7 @@ import org.gooddollar.processors.EnrollmentProcessor;
 
 import org.gooddollar.util.EventEmitter;
 import org.gooddollar.util.Customization;
+import org.gooddollar.util.RCTPromise;
 
 import com.facetec.sdk.FaceTecSDK;
 import com.facetec.sdk.FaceTecSessionStatus;
@@ -124,6 +125,7 @@ public class FaceTecModule extends ReactContextBaseJavaModule {
         // set corresponding error message (like in swift implementation)
         // 7. reject promise with (code, error mesage)
 
+        //RCTPromise.rejectWith(promise, FaceTecSDKStatus.DEVICE_NOT_SUPPORTED);
         promise.resolve(FaceTecSDK.version());
     }
 

@@ -29,7 +29,7 @@ export default function App () {
     }
 
     const initialize = async () => {
-      const version = await FaceTec.sdk.initialize()
+      const version = await FaceTec.sdk.initialize().catch(console.log)
       const lastStatus = 'native promise resolved'
       const lastMessage = `FaceTec ${version} initialized`
 
