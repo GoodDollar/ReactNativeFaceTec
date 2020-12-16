@@ -6,11 +6,38 @@ import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
 import com.facebook.react.bridge.WritableMap;
 
-import org.gooddollar.util.UXEvent;
+import java.util.Map;
+import java.util.HashMap;
 
 public final class EventEmitter {
   private EventEmitter() {}
   private static DeviceEventManagerModule.RCTDeviceEventEmitter rctEventEmitter;
+
+  public static enum UXEvent {
+    UI_READY("onUIReady"),
+    CAPTURE_DONE("onCaptureDone"),
+    FV_RETRY("onRetry");
+
+    private final String eventName;
+
+    UXEvent(String eventName) {
+      this.eventName = eventName;
+    }
+
+    public String eventName() {
+      return eventName;
+    }
+
+    public static Map<String, String> toMap() {
+      Map<String, String> enumMap = new HashMap<>();
+
+      for (UXEvent enumItem : UXEvent.values()) {
+        enumMap.put(enumItem.name(), enumItem.eventName());
+      }
+
+      return enumMap;
+    }
+  }
 
   public static void register(ReactApplicationContext reactContext) {
     rctEventEmitter = reactContext.getJSModule(
