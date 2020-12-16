@@ -1,5 +1,7 @@
 package org.gooddollar;
 
+import android.app.Activity;
+
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
@@ -10,7 +12,7 @@ import com.facebook.react.modules.core.DeviceEventManagerModule;
 import java.util.Map;
 import java.util.HashMap;
 
-import org.gooddollar.api.FaceTecAPI;
+import org.gooddollar.api.FaceVerification;
 import org.gooddollar.processors.EnrollmentProcessor;
 
 import org.gooddollar.util.EventEmitter;
@@ -104,8 +106,24 @@ public class FaceTecModule extends ReactContextBaseJavaModule {
         String licenseKey, String encryptionKey, String licenseText,
         Promise promise
     ) {
-        FaceTecAPI.register(serverURL, jwtAccessToken);
-        FaceTecSDK.setDynamicStrings(Customization.UITextStrings);
+        Activity activity = getCurrentActivity();
+
+        //TODO: see Facetec.swift initializeSDK func or initialize method of FaceTecSDK.web on GoodDapp
+        // pass activity as "context" param to the all FaceTect SDK calls
+
+        // 1. get current status. if already initialized - resolve promise with true
+        // 2. if licenseText is set call initializeInProductionMode, initializeInDevelopmentMode otherwise
+        // 3. in FaceTecSDK.InitializeCallback check 'initialized' argument
+        // 4. if initialized:
+        //   a) call
+        //   FaceVerification.register(serverURL, jwtAccessToken);
+        //   FaceTecSDK.setDynamicStrings(Customization.UITextStrings);
+        //   b) resolve with true
+        // 5. if not initialized - get status, error code - status.ordinal() an error message - status.toString()
+        // 6. if status is still never intitialized - it means you tring to initialize on emulator.
+        // set corresponding error message (like in swift implementation)
+        // 7. reject promise with (code, error mesage)
+
         promise.resolve(FaceTecSDK.version());
     }
 
@@ -113,6 +131,8 @@ public class FaceTecModule extends ReactContextBaseJavaModule {
     public void faceVerification(String enrollmentIdentifier,
         int maxRetries, Promise promise
     ) {
+        Activity activity = getCurrentActivity();
+
         new EnrollmentProcessor();
         promise.resolve(null);
     }

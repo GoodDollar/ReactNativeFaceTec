@@ -8,6 +8,7 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.MediaType;
 import okhttp3.Call;
+import okhttp3.Callback;
 import okhttp3.Response;
 
 import org.json.JSONException;
@@ -15,8 +16,8 @@ import org.json.JSONObject;
 
 import org.gooddollar.api.NetworkingHelpers;
 
-public final class FaceTecAPI {
-  private FaceTecAPI() {}
+public final class FaceVerification {
+  private FaceVerification() {}
   private final static OkHttpClient http = NetworkingHelpers.getApiClient();
   private static String _jwtAccessToken;
   private static String _serverURL;
@@ -26,16 +27,16 @@ public final class FaceTecAPI {
   private static String errorMessageProperty = "error";
   private static String sessionTokenProperty = "sessionToken";
 
-  public static class Exception extends IOException {
+  public static class APIException extends IOException {
     JSONObject response = null;
 
-    Exception(String message, @Nullable JSONObject response) {
+    APIException(String message, @Nullable JSONObject response) {
       super(message);
 
       this.response = response;
     }
 
-    Exception(Throwable cause, @Nullable JSONObject response) {
+    APIException(Throwable cause, @Nullable JSONObject response) {
       super(cause);
 
       this.response = response;
@@ -47,10 +48,10 @@ public final class FaceTecAPI {
   }
 
   interface CallbackBase {
-    void onFailure(Exception exception);
+    void onFailure(APIException exception);
   }
 
-  public static interface Callback extends CallbackBase {
+  public static interface APICallback extends CallbackBase {
     void onSuccess(JSONObject response);
   }
 
@@ -70,34 +71,34 @@ public final class FaceTecAPI {
   public static void getSessionToken(final SessionTokenCallback callback) {
     Request tokenRequest = createRequest("/verify/face/session", "post", new JSONObject());
 
-    sendRequest(tokenRequest, new Callback() {
+    sendRequest(tokenRequest, new APICallback() {
       @Override
       public void onSuccess(JSONObject response) {
         try {
           if (response.has(sessionTokenProperty) == false) {
-            throw new Exception("FaceTec API response is empty", response);
+            throw new APIException("FaceTec API response is empty", response);
           }
 
           callback.onSessionTokenReceived(response.getString(sessionTokenProperty));
-        } catch (Exception exception) {
+        } catch (APIException exception) {
           callback.onFailure(exception);
-        } catch (java.lang.Exception exception) {
-          callback.onFailure(new Exception(exception, response));
+        } catch (Exception exception) {
+          callback.onFailure(new APIException(exception, response));
         }
       }
 
       @Override
-      public void onFailure(Exception exception) {
+      public void onFailure(APIException exception) {
         callback.onFailure(exception);
       }
     });
   }
 
-  public static void enroll(String enrollmentIdentifier, JSONObject payload, final Callback callback) {
+  public static void enroll(String enrollmentIdentifier, JSONObject payload, final APICallback callback) {
     enroll(enrollmentIdentifier, jsonStringify(payload), callback);
   }
 
-  public static void enroll(String enrollmentIdentifier, RequestBody customRequest, final Callback callback) {
+  public static void enroll(String enrollmentIdentifier, RequestBody customRequest, final APICallback callback) {
     Request enrollmentRequest = createRequest("/verify/face/" + enrollmentIdentifier, "put", customRequest);
 
     sendRequest(enrollmentRequest, callback);
@@ -116,13 +117,6 @@ public final class FaceTecAPI {
       case "put":
         request.put(body);
         break;
-      case "delete":
-        request.delete();
-        break;
-      case "get":
-      default:
-        request.get();
-        break;
     }
 
     return request.build();
@@ -134,8 +128,8 @@ public final class FaceTecAPI {
     return createRequest(url, method, requestBody);
   }
 
-  private static void sendRequest(Request request, final Callback requestCallback) {
-    http.newCall(request).enqueue(new okhttp3.Callback() {
+  private static void sendRequest(Request request, final APICallback requestCallback) {
+    http.newCall(request).enqueue(new Callback() {
       @Override
       public void onResponse(Call call, Response response) throws IOException {
         try {
@@ -145,7 +139,7 @@ public final class FaceTecAPI {
           JSONObject responseJSON = new JSONObject(responseString);
 
           if (responseJSON.has(succeedProperty) == false) {
-            throw new Exception(unexpectedMessage, responseJSON);
+            throw new APIException(unexpectedMessage, responseJSON);
           }
 
           String errorMessage = null;
@@ -164,17 +158,17 @@ public final class FaceTecAPI {
             errorMessage = unexpectedMessage;
           }
 
-          throw new Exception(errorMessage, responseJSON);
-        } catch (Exception exception) {
+          throw new APIException(errorMessage, responseJSON);
+        } catch (APIException exception) {
           requestCallback.onFailure(exception);
-        } catch (java.lang.Exception exception) {
-          requestCallback.onFailure(new Exception(exception, null));
+        } catch (Exception exception) {
+          requestCallback.onFailure(new APIException(exception, null));
         }
       }
 
       @Override
       public void onFailure(Call call, IOException e) {
-        requestCallback.onFailure(new Exception(e, null));
+        requestCallback.onFailure(new APIException(e, null));
       }
     });
   }
