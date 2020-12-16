@@ -14,6 +14,7 @@ import java.util.HashMap;
 
 import org.gooddollar.api.FaceVerification;
 import org.gooddollar.processors.EnrollmentProcessor;
+import org.gooddollar.processors.ProcessingSubscriber;
 
 import org.gooddollar.util.EventEmitter;
 import org.gooddollar.util.Customization;
@@ -123,9 +124,9 @@ public class FaceTecModule extends ReactContextBaseJavaModule {
         // 5. if not initialized - get status, error code - status.ordinal() an error message - status.toString()
         // 6. if status is still never intitialized - it means you tring to initialize on emulator.
         // set corresponding error message (like in swift implementation)
-        // 7. reject promise with (code, error mesage)
+        // 7. reject promise with (status, error mesage), use promise util
+        // RCTPromise.rejectWith(promise, status, errorMessage);
 
-        //RCTPromise.rejectWith(promise, FaceTecSDKStatus.DEVICE_NOT_SUPPORTED);
         promise.resolve(FaceTecSDK.version());
     }
 
@@ -134,8 +135,9 @@ public class FaceTecModule extends ReactContextBaseJavaModule {
         int maxRetries, Promise promise
     ) {
         Activity activity = getCurrentActivity();
+        ProcessingSubscriber subscriber = new ProcessingSubscriber(promise);
+        EnrollmentProcessor processor = new EnrollmentProcessor(activity, subscriber);
 
-        new EnrollmentProcessor();
-        promise.resolve(null);
+        processor.enroll(enrollmentIdentifier, maxRetries);
     }
 }
