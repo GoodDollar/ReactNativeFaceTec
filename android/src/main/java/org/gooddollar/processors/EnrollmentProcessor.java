@@ -40,7 +40,7 @@ public class EnrollmentProcessor implements FaceTecFaceScanProcessor {
   // c) dispatch UI_READY event
 
   // 3. process enrollment failure (including maxRetries logic - see EnrollmentProcessor.web.js)
-  // a) FaceVerification.APIException has JSONObject response property which contains server response
+  // a) FaceVerification.APIException has JSONObject getResponse() method which returns server response
   // b) we're calling OUR server so it will have { success, error, enrollmentResult: { isLive, isEnroll, ... etc flags } } shape
   // c) look at the web processor fot the logic should be used
   // d) call lastResultCallback.cancel() or retry()
@@ -80,8 +80,12 @@ public class EnrollmentProcessor implements FaceTecFaceScanProcessor {
     // a) call .succeed()
     // b) FaceTecCustomization.overrideResultScreenSuccessMessage = Customization.resultSuccessMessage
     // c) set lastMessage Customization.resultSuccessMessage
+    // d) set isSuccess to true
+    // e) call FaceTecSDK.unload() to free resources.
+    // also read the docs / test - pribably it should be done always even in FV failed
+    // in that case call unload from onFaceTecSDKCompletelyDone
     // 9. in onFailure
-    // if error is FaceVerification.APIException = call process enrollment failure helper
+    // if error is FaceVerification.APIException and getResponse() doesn't returns null = call process enrollment failure helper
     // otherwise - just .cancel()
   }
 
