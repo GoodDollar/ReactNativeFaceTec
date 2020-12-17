@@ -156,7 +156,7 @@ public class FaceTecModule extends ReactContextBaseJavaModule {
         EnrollmentProcessor processor = new EnrollmentProcessor(activity, subscriber);
 
         if (lastProcessor != null) {
-            ProcessingSubscriber lastSubscriber = lastProcessor.getSubscriber()
+            ProcessingSubscriber lastSubscriber = lastProcessor.getSubscriber();
 
             lastSubscriber.onSessionContextSwitch();
         }
