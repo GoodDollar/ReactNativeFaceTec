@@ -17,11 +17,10 @@ Pod::Spec.new do |s|
   s.platforms    = { :ios => "9.0" }
   s.source       = { :git => "https://github.com/GoodDollar/ReactNativeFaceTec.git", :tag => "#{s.version}" }
 
+  s.vendored_frameworks = "ios/Frameworks/FaceTecSDK.framework"
   s.source_files = "ios/**/*.{h,c,m,swift}"
   s.requires_arc = true
 
   s.dependency "React"
-  # ...
-  # s.dependency "..."
 end
 
