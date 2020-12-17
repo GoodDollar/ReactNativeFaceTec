@@ -1,8 +1,11 @@
 package org.gooddollar;
 
 import android.app.Activity;
+import android.content.Intent;
 
 import com.facebook.react.bridge.ReactApplicationContext;
+import com.facebook.react.bridge.ActivityEventListener;
+import com.facebook.react.bridge.BaseActivityEventListener;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.Promise;
@@ -26,11 +29,25 @@ import com.facetec.sdk.FaceTecSDKStatus;
 
 public class FaceTecModule extends ReactContextBaseJavaModule {
     private final ReactApplicationContext reactContext;
+    private EnrollmentProcessor lastProcessor = null;
+
+    private final ActivityEventListener activityListener = new BaseActivityEventListener() {
+        @Override
+        public void onActivityResult(Activity activity, int requestCode, int resultCode, Intent intent) {
+            if (lastProcessor == null) {
+                return;
+            }
+
+            lastProcessor.onFaceTecSDKCompletelyDone();
+            lastProcessor = null;
+        }
+    };
 
     public FaceTecModule(ReactApplicationContext reactContext) {
         super(reactContext);
 
         this.reactContext = reactContext;
+        reactContext.addActivityEventListener(activityListener);
     }
 
     @Override
@@ -138,6 +155,11 @@ public class FaceTecModule extends ReactContextBaseJavaModule {
         ProcessingSubscriber subscriber = new ProcessingSubscriber(promise);
         EnrollmentProcessor processor = new EnrollmentProcessor(activity, subscriber);
 
+        if (lastProcessor != null) {
+            lastProcessor.getSubscriber().onSessionContextSwitch();
+        }
+
+        lastProcessor = processor;
         processor.enroll(enrollmentIdentifier, maxRetries);
     }
 }

@@ -35,6 +35,10 @@ public class ProcessingSubscriber {
     RCTPromise.rejectWith(promise, FaceTecSessionStatus.UNKNOWN_INTERNAL_ERROR, message);
   }
 
+  public void onSessionContextSwitch() {
+    RCTPromise.rejectWith(promise, FaceTecSessionStatus.CONTEXT_SWITCH);
+  }
+
   public void onCameraAccessError() {
     RCTPromise.rejectWith(promise, FaceTecSessionStatus.CAMERA_PERMISSION_DENIED);
   }
