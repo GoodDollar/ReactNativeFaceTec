@@ -26,9 +26,6 @@ export class FaceTecSDK {
         throw exception
       }
     })
-
-    // pre-create subscriptions maps
-    Object.values(module.FaceTecUxEvent).forEach(event => this._subscriptions[event] = new WeakMap())
   }
 
   // eslint-disable-line require-await
@@ -49,8 +46,13 @@ export class FaceTecSDK {
 
   addListener(event, handler) {
     const { eventEmitter, _subscriptions } = this
-    const subscriptionsMap = _subscriptions[event]
     const subscription = eventEmitter.addListener(event, handler)
+    let subscriptionsMap = _subscriptions[event]
+
+    if (!subscriptionsMap) {
+      subscriptionsMap = new WeakMap()
+      _subscriptions[event] = subscriptionsMap
+    }
 
     subscriptionsMap.set(handler, subscription)
     return () => this.removeListener(event, handler)
@@ -60,7 +62,7 @@ export class FaceTecSDK {
     const { _subscriptions } = this
     const subscriptionsMap = _subscriptions[event]
 
-    if (!subscriptionsMap.has(handler)) {
+    if (!subscriptionsMap || !subscriptionsMap.has(handler)) {
       return
     }
 

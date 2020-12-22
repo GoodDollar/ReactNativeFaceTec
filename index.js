@@ -1,14 +1,20 @@
 import { NativeModules } from 'react-native'
 import { FaceTecSDK } from './src/FaceTecSDK'
 
-const { FaceTec } = NativeModules
+const { FaceTecModule } = NativeModules
 
-export const sdk = new FaceTecSDK(FaceTec)
+export const sdk = new FaceTecSDK(FaceTecModule)
 
 export const {
   FaceTecUxEvent,
   FaceTecSDKStatus,
   FaceTecSessionStatus
-} = FaceTec.getConstants()
+} = FaceTecModule.getConstants()
+
+console.log({
+  FaceTecUxEvent,
+  FaceTecSDKStatus,
+  FaceTecSessionStatus
+})
 
 export default { sdk }

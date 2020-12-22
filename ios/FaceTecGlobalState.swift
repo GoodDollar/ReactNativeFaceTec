@@ -1,6 +1,6 @@
 import UIKit
 import Foundation
-import FaceTecAuthentication
+import FaceTecSDK
 
 class FaceTecGlobalState {
     // FaceTec (Face Recognition / Liveness Test API) License key

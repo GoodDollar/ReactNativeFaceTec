@@ -60,7 +60,7 @@ public class FaceTecModule extends ReactContextBaseJavaModule {
 
     @Override
     public String getName() {
-        return "FaceTec";
+        return "FaceTecModule";
     }
 
     @Override

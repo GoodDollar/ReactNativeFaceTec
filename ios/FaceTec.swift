@@ -6,15 +6,11 @@
 //
 
 import UIKit
-// import FaceTecAuthentication
-// import LocalAuthentication
+import FaceTecSDK
+import LocalAuthentication
 
-@objc(FaceTec)
-open class FaceTec: RCTEventEmitter {
-    override static public func moduleName() -> String! {
-        return "FaceTec";
-    }
-
+@objc(FaceTecModule)
+open class FaceTecModule: RCTEventEmitter {
     override static public func requiresMainQueueSetup() -> Bool {
         return true
     }
@@ -93,7 +89,7 @@ open class FaceTec: RCTEventEmitter {
 
         return [
             // returning .rawValue explicitly, due to the reason described above
-            "FaceTecUXEvent": uxEvents.mapValues({ $0.rawValue }),
+            "FaceTecUxEvent": uxEvents.mapValues({ $0.rawValue }),
             "FaceTecSDKStatus": [:], // sdkStatuses.mapValues({ $0.rawValue }),
             "FaceTecSessionStatus": [:] // sessionStatuses.mapValues({ $0.rawValue })
         ]
@@ -105,7 +101,8 @@ open class FaceTec: RCTEventEmitter {
         resolver resolve: @escaping RCTPromiseResolveBlock,
         rejecter reject: @escaping RCTPromiseRejectBlock) -> Void
     {
-        resolve(nil)
+        //FaceTec.sdk.setCustomization(Customization.UICustomization)        
+        resolve(FaceTec.sdk.version)
         /*if FaceTecSDKStatus.initialized == FaceTec.sdk.getStatus() {
             resolve(nil)
             return
@@ -143,11 +140,11 @@ open class FaceTec: RCTEventEmitter {
         resolver resolve: @escaping RCTPromiseResolveBlock,
         rejecter reject: @escaping RCTPromiseRejectBlock) -> Void
     {
-        // let presentedVC = RCTPresentedViewController()!
-        let delegate = FaceTecRCTPromiseProcessingDelegate(resolver: resolve, rejecter: reject)
-        /* let processor = EnrollmentProcessor(fromVC: presentedVC, delegate: delegate)
+        let presentedVC = RCTPresentedViewController()!
+        let promise = Promise(resolver: resolve, rejecter: reject)
+        let delegate = PromiseProcessingDelegate(promise: promise)
+        let processor = EnrollmentProcessor(fromVC: presentedVC, delegate: delegate)
 
-        processor.enroll(enrollmentIdentifier, jwtAccessToken) */
-        delegate.onProcessingComplete(isSuccess: true)
+        processor.enroll(enrollmentIdentifier, maxRetries)
     }
 }

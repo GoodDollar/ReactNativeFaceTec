@@ -1,8 +1,9 @@
 import UIKit
 import Foundation
-// import FaceTecAuthentication
+import FaceTecSDK
 
-class EnrollmentProcessor: NSObject, URLSessionDelegate/*, FaceTecFaceMapProcessorDelegate, FaceTecSessionDelegate*/ {
+class EnrollmentProcessor: NSObject {
+    /*, URLSessionDelegate, FaceTecFaceMapProcessorDelegate, FaceTecSessionDelegate*/ 
     /*var faceTecFaceMapResultCallback: FaceTecFaceMapResultCallback!
     var latestFaceTecSessionResult: FaceTecSessionResult?
     var latestFaceTecSessionMessage: String?
@@ -19,6 +20,13 @@ class EnrollmentProcessor: NSObject, URLSessionDelegate/*, FaceTecFaceMapProcess
 
         super.init()
     }
+
+    func enroll(_ enrollmentIdentifier: String, _ maxRetries: Int?) {
+        EventEmitter.shared.dispatch(UXEvent.UI_READY)
+        
+        delegate.onProcessingComplete(isSuccess: true, sessionResult: nil, sessionMessage: Customization.resultSuccessMessage)
+    }
+
     /*
     func enroll(_ enrollmentIdentifier: String, _ jwtAccessToken: String) {
         startSession() { (sessionToken) in
@@ -122,7 +130,7 @@ class EnrollmentProcessor: NSObject, URLSessionDelegate/*, FaceTecFaceMapProcess
                 faceTecFaceMapResultCallback.onFaceMapResultCancel()
             }
         }
-    }*/
+    }
 
     // iOS way to get upload progress and update FaceTec UI.
     func urlSession(_ session: URLSession, task: URLSessionTask,
@@ -134,7 +142,7 @@ class EnrollmentProcessor: NSObject, URLSessionDelegate/*, FaceTecFaceMapProcess
         // faceTecFaceMapResultCallback.onFaceMapUploadProgress(uploadedPercent: uploadProgress)
     }
 
-    /*
+    
     // The final callback FaceTec SDK calls when done with everything.
     func onFaceTecSessionComplete() {
         delegate.onProcessingComplete(isSuccess: isSuccess,

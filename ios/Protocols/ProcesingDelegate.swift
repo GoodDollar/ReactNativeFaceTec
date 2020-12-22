@@ -1,9 +1,9 @@
 // Helpful interfaces and enums
 
-// import FaceTecAuthentication
+import FaceTecSDK
 
 protocol ProcessingDelegate: class {
-    func onProcessingComplete(isSuccess: Bool/*, faceTecSessionResult: FaceTecSessionResult?, faceTecSessionMessage: String?*/)
+    func onProcessingComplete(isSuccess: Bool, sessionResult: FaceTecSessionResult?, sessionMessage: String?)
     func onSessionTokenError()
     func onCameraAccessError()
 }

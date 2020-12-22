@@ -8,7 +8,7 @@
 
 #import <React/RCTBridgeModule.h>
 
-@interface RCT_EXTERN_MODULE(FaceTec, NSObject)
+@interface RCT_EXTERN_MODULE(FaceTecModule, NSObject)
 
 RCT_EXTERN_METHOD(
   initializeSDK:(NSString *)serverURL
