@@ -22,7 +22,7 @@ class EventEmitter {
     private init() {}
 
     func register(withRCTEventEmitter: RCTEventEmitter) {
-        EventEmitter.rctEventEmitter = withRCTEventEmitter
+        Self.rctEventEmitter = withRCTEventEmitter
         restore()
     }
 
@@ -39,6 +39,6 @@ class EventEmitter {
             return
         }
 
-        EventEmitter.rctEventEmitter.sendEvent(withName: event.rawValue, body: body)
+        Self.rctEventEmitter.sendEvent(withName: event.rawValue, body: body)
     }
 }

@@ -18,6 +18,7 @@ open class FaceTecModule: RCTEventEmitter {
     override public init() {
         super.init()
 
+        FaceTec.sdk.setCustomization(Customization.UICustomization)
         EventEmitter.shared.register(withRCTEventEmitter: self)
     }
 
@@ -101,7 +102,8 @@ open class FaceTecModule: RCTEventEmitter {
         resolver resolve: @escaping RCTPromiseResolveBlock,
         rejecter reject: @escaping RCTPromiseRejectBlock) -> Void
     {
-        //FaceTec.sdk.setCustomization(Customization.UICustomization)        
+        //FaceTec.sdk.setCustomization(Customization.UICustomization)
+        FaceVerification.shared.register(serverURL, jwtAccessToken)
         resolve(FaceTec.sdk.version)
         /*if FaceTecSDKStatus.initialized == FaceTec.sdk.getStatus() {
             resolve(nil)

@@ -17,6 +17,7 @@ final class Customization {
         
     // TODO: define color constants from GD theme (e.g. lightBlue800, primary, green, gray50Percent, darkGray etc)
     // some of them are defined as UIColor class vars (e.g. white)
+    private static let faceTecNS: String = "FaceTec"
     private static let primary: UIColor = UIColor("#00AFFF")
     
     private(set) static var UICustomization: FaceTecCustomization = {
@@ -39,10 +40,18 @@ final class Customization {
     }()
     
     private(set) static var UITextStrings: [String: String] = {
-        var i18n: [String: String] = [:]
+        let i18n: [String: String] = [
+            "resultSuccessMessage": resultSuccessMessage,
+            "resultFacescanUploadMessage": resultFacescanUploadMessage,
+            
+            "retryInstructionMessage1": "Hold Your Camera at Eye Level.",
+            "retryInstructionMessage2": "Light Your Face Evenly.\nAvoid Smiling & Back Light",
+            
+            "instructionsMessageReady": "Please Frame Your Face In The Small\nOval, Then The Big Oval"
+        ]
         
-        // i18n[FaceTecStringKeyResultFacescanUploadMessage] = resultFacescanUploadMessage
-        // i18n[FaceTecStringKeyResultSuccessMessage] = resultSuccessMessage
-        return i18n
+        return i18n.reduce(into: [String: String]()) { result, keyValue in
+            result["\(faceTecNS)_\(keyValue.key.snakeCased())"] = keyValue.value
+        }
     }()
 }

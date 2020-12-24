@@ -108,7 +108,7 @@ public final class FaceVerification {
     Request.Builder request = new Request.Builder()
       .url(_serverURL + url)
       .header("Content-Type", "application/json")
-      .header("Authorization", "Bearer: " + _jwtAccessToken);
+      .header("Authorization", "Bearer " + _jwtAccessToken);
 
     switch (method) {
       case "post":
