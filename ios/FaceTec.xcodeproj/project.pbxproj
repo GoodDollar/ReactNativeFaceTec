@@ -14,6 +14,9 @@
 		6878F551258BAF0F00E010B2 /* FaceTecBridge.m in Sources */ = {isa = PBXBuildFile; fileRef = 6878F549258BAF0F00E010B2 /* FaceTecBridge.m */; };
 		6878F552258BAF0F00E010B2 /* EnrollmentProcessor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6878F54A258BAF0F00E010B2 /* EnrollmentProcessor.swift */; };
 		6878F553258BAF0F00E010B2 /* FaceTecGlobalState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6878F54B258BAF0F00E010B2 /* FaceTecGlobalState.swift */; };
+		68AB4789259688A7006B2E4C /* String+UrlEncoded.swift in Sources */ = {isa = PBXBuildFile; fileRef = 68AB4788259688A7006B2E4C /* String+UrlEncoded.swift */; };
+		68AB478C259689DA006B2E4C /* FaceVerificationError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 68AB478B259689DA006B2E4C /* FaceVerificationError.swift */; };
+		68AB478F259693D6006B2E4C /* Dictionary+RawRepresentable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 68AB478E259693D6006B2E4C /* Dictionary+RawRepresentable.swift */; };
 		68B9B6F42594DA2A007E6027 /* String+SnakeCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 68B9B6F32594DA2A007E6027 /* String+SnakeCase.swift */; };
 		68B9B7292594E482007E6027 /* FaceVerification.swift in Sources */ = {isa = PBXBuildFile; fileRef = 68B9B7282594E482007E6027 /* FaceVerification.swift */; };
 		68C160762590B77400843347 /* PromiseDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 68C160752590B77400843347 /* PromiseDelegate.swift */; };
@@ -44,6 +47,9 @@
 		6878F549258BAF0F00E010B2 /* FaceTecBridge.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FaceTecBridge.m; sourceTree = "<group>"; };
 		6878F54A258BAF0F00E010B2 /* EnrollmentProcessor.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EnrollmentProcessor.swift; sourceTree = "<group>"; };
 		6878F54B258BAF0F00E010B2 /* FaceTecGlobalState.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FaceTecGlobalState.swift; sourceTree = "<group>"; };
+		68AB4788259688A7006B2E4C /* String+UrlEncoded.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "String+UrlEncoded.swift"; sourceTree = "<group>"; };
+		68AB478B259689DA006B2E4C /* FaceVerificationError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FaceVerificationError.swift; sourceTree = "<group>"; };
+		68AB478E259693D6006B2E4C /* Dictionary+RawRepresentable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Dictionary+RawRepresentable.swift"; sourceTree = "<group>"; };
 		68B9B5272594BA7E007E6027 /* InstructionsInitialRetry.nib */ = {isa = PBXFileReference; lastKnownFileType = file; path = InstructionsInitialRetry.nib; sourceTree = "<group>"; };
 		68B9B5282594BA7E007E6027 /* FaceTec.strings */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; path = FaceTec.strings; sourceTree = "<group>"; };
 		68B9B52A2594BA7E007E6027 /* Ys4TQh4aewlf1CpyzWLi */ = {isa = PBXFileReference; lastKnownFileType = file; path = Ys4TQh4aewlf1CpyzWLi; sourceTree = "<group>"; };
@@ -213,6 +219,7 @@
 			isa = PBXGroup;
 			children = (
 				68B9B7282594E482007E6027 /* FaceVerification.swift */,
+				68AB478B259689DA006B2E4C /* FaceVerificationError.swift */,
 			);
 			path = API;
 			sourceTree = "<group>";
@@ -231,6 +238,8 @@
 			children = (
 				68C2E7782592597500EE4A75 /* UIColor+HexString.swift */,
 				68B9B6F32594DA2A007E6027 /* String+SnakeCase.swift */,
+				68AB4788259688A7006B2E4C /* String+UrlEncoded.swift */,
+				68AB478E259693D6006B2E4C /* Dictionary+RawRepresentable.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -298,7 +307,9 @@
 				6878F54D258BAF0F00E010B2 /* FaceTec.swift in Sources */,
 				68C160762590B77400843347 /* PromiseDelegate.swift in Sources */,
 				6878F550258BAF0F00E010B2 /* EventEmitter.swift in Sources */,
+				68AB4789259688A7006B2E4C /* String+UrlEncoded.swift in Sources */,
 				68C2E7792592597600EE4A75 /* UIColor+HexString.swift in Sources */,
+				68AB478F259693D6006B2E4C /* Dictionary+RawRepresentable.swift in Sources */,
 				68C2E775259257AE00EE4A75 /* Customization.swift in Sources */,
 				6878F551258BAF0F00E010B2 /* FaceTecBridge.m in Sources */,
 				68C160792590B98D00843347 /* PromiseProcessingDelegate.swift in Sources */,
@@ -306,6 +317,7 @@
 				6878F54F258BAF0F00E010B2 /* Promise.swift in Sources */,
 				68B9B7292594E482007E6027 /* FaceVerification.swift in Sources */,
 				68B9B6F42594DA2A007E6027 /* String+SnakeCase.swift in Sources */,
+				68AB478C259689DA006B2E4C /* FaceVerificationError.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

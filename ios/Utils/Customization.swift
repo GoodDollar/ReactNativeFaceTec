@@ -12,7 +12,7 @@ import FaceTecSDK
 
 final class Customization {
     public static let resultSuccessMessage = "You’re a beautiful\n& unique unicorn!"
-    public static let resultFacescanUploadMessage = "Uploading Your face snapshot to verify";
+    public static let resultFacescanUploadMessage = "Uploading Your face\nsnapshot to verify";
     public static let resultFacescanProcessingMessage = "Verifying you're\none of a kind";
         
     // TODO: define color constants from GD theme (e.g. lightBlue800, primary, green, gray50Percent, darkGray etc)
@@ -45,9 +45,10 @@ final class Customization {
             "resultFacescanUploadMessage": resultFacescanUploadMessage,
             
             "retryInstructionMessage1": "Hold Your Camera at Eye Level.",
-            "retryInstructionMessage2": "Light Your Face Evenly.\nAvoid Smiling & Back Light",
+            "retryInstructionMessage2": "Light Your Face Evenly.",
+            "retryInstructionMessage3": "Avoid Smiling & Back Light",
             
-            "instructionsMessageReady": "Please Frame Your Face In The Small\nOval, Then The Big Oval"
+            "instructionsMessageReady": "Please Frame Your Face In The Small Oval, Then The Big Oval"
         ]
         
         return i18n.reduce(into: [String: String]()) { result, keyValue in

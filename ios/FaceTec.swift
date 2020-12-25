@@ -39,101 +39,108 @@ open class FaceTecModule: RCTEventEmitter {
 
     @objc
     override open func constantsToExport() -> [AnyHashable : Any]! {
-        /*
-        // should do it manually as FaceTecSDKStatus is an NS_ENUM so
-        //    a) it doesn't implements CaseIterable
-        //    b) we couldn't define all cases then map to the dictionary
-        //       as NS_ENUM's doesn't supports enum case name to string conversion
-        let sdkStatuses = [
+        let sdkStatuses: [String: FaceTecSDKStatus] = [
             // common statuses (status names are aligned with the web sdk)
-            "NeverInitialized": FaceTecSDKStatus.neverInitialized,
-            "Initialized": FaceTecSDKStatus.initialized,
-            "NetworkIssues": FaceTecSDKStatus.networkIssues,
-            "InvalidDeviceLicenseKeyIdentifier": FaceTecSDKStatus.invalidDeviceLicenseKeyIdentifier,
-            "VersionDeprecated": FaceTecSDKStatus.versionDeprecated,
-            "DeviceNotSupported": FaceTecSDKStatus.unknownError,
-            "DeviceInLandscapeMode": FaceTecSDKStatus.deviceInLandscapeMode,
-            "DeviceInReversePortraitMode": FaceTecSDKStatus.deviceInReversePortraitMode,
-            "DeviceLockedOut": FaceTecSDKStatus.deviceLockedOut,
-            "LicenseExpiredOrInvalid": FaceTecSDKStatus.licenseExpiredOrInvalid,
+            "NeverInitialized": .neverInitialized,
+            "Initialized": .initialized,
+            "NetworkIssues": .networkIssues,
+            "InvalidDeviceKeyIdentifier": .invalidDeviceKeyIdentifier,
+            "VersionDeprecated": .versionDeprecated,
+            "DeviceNotSupported": .unknownError,
+            "DeviceInLandscapeMode": .deviceInLandscapeMode,
+            "DeviceInReversePortraitMode": .deviceInReversePortraitMode,
+            "DeviceLockedOut": .deviceLockedOut,
+            "KeyExpiredOrInvalid": .keyExpiredOrInvalid,
+            
             // native-specific statuses
-            "EncryptionKeyInvalid": FaceTecSDKStatus.encryptionKeyInvalid,
-            "OfflineSessionsExceeded": FaceTecSDKStatus.offlineSessionsExceeded,
+            "EncryptionKeyInvalid": .encryptionKeyInvalid,
+            "OfflineSessionsExceeded": .offlineSessionsExceeded
         ]
-
-        let sessionStatuses = [
+        
+        let sessionStatuses: [String: FaceTecSessionStatus] = [
             // common statuses (status names are aligned with the web sdk)
-            "SessionCompletedSuccessfully": FaceTecSessionStatus.sessionCompletedSuccessfully,
-            "MissingGuidanceImages": FaceTecSessionStatus.missingGuidanceImages,
-            "NonProductionModeNetworkRequired": FaceTecSessionStatus.nonProductionModeNetworkRequired,
-            "Timeout": FaceTecSessionStatus.timeout,
-            "ContextSwitch": FaceTecSessionStatus.contextSwitch,
-            "LandscapeModeNotAllowed": FaceTecSessionStatus.landscapeModeNotAllowed,
-            "ReversePortraitNotAllowed": FaceTecSessionStatus.reversePortraitNotAllowed,
-            "UserCancelled": FaceTecSessionStatus.userCancelled,
-            "UserCancelledViaClickableReadyScreenSubtext": FaceTecSessionStatus.userCancelledViaClickableReadyScreenSubtext,
-            "UserCancelledWhenAttemptingToGetCameraPermissions": FaceTecSessionStatus.cameraPermissionDenied,
-            "LockedOut": FaceTecSessionStatus.lockedOut,
-            "NonProductionModeLicenseInvalid": FaceTecSessionStatus.nonProductionModeLicenseInvalid,
-            "UnmanagedSessionVideoInitializationNotCompleted": FaceTecSessionStatus.cameraInitializationIssue,
-            "UnknownInternalError": FaceTecSessionStatus.unknownInternalError,
+            "SessionCompletedSuccessfully": .sessionCompletedSuccessfully,
+            "MissingGuidanceImages": .missingGuidanceImages,
+            "Timeout": .timeout,
+            "ContextSwitch": .contextSwitch,
+            "ProgrammaticallyCancelled": .sessionUnsuccessful,
+            "OrientationChangeDuringSession": .reversePortraitNotAllowed,
+            "LandscapeModeNotAllowed": .landscapeModeNotAllowed,
+            "UserCancelled": .userCancelled,
+            "UserCancelledWhenAttemptingToGetCameraPermissions": .cameraPermissionDenied,
+            "CameraNotEnabled": .cameraInitializationIssue,
+            "LockedOut": .lockedOut,
+            "NonProductionModeDeviceKeyIdentifierInvalid": .nonProductionModeKeyInvalid,
+            "UnknownInternalError": .unknownInternalError,
+            "UserCancelledViaClickableReadyScreenSubtext": .userCancelledViaClickableReadyScreenSubtext,
+            
             // native-specific statuses
-            "SessionUnsuccessful": FaceTecSessionStatus.sessionUnsuccessful,
-            "LowMemory": FaceTecSessionStatus.lowMemory,
-            "GracePeriodExceeded": FaceTecSessionStatus.gracePeriodExceeded,
-            "EncryptionKeyInvalid": FaceTecSessionStatus.encryptionKeyInvalid,
-        ]*/
+            "LowMemory": .lowMemory,
+            "NetworkRequired": .nonProductionModeNetworkRequired,
+            "GracePeriodExceeded": .gracePeriodExceeded,
+            "EncryptionKeyInvalid": .encryptionKeyInvalid
+        ]
 
         let uxEvents = UXEvent.allCases.reduce(into: [String: UXEvent]()) {
             $0[String(describing: $1)] = $1
         }
 
         return [
-            // returning .rawValue explicitly, due to the reason described above
-            "FaceTecUxEvent": uxEvents.mapValues({ $0.rawValue }),
-            "FaceTecSDKStatus": [:], // sdkStatuses.mapValues({ $0.rawValue }),
-            "FaceTecSessionStatus": [:] // sessionStatuses.mapValues({ $0.rawValue })
+            "FaceTecUxEvent": uxEvents.rawValues(),
+            "FaceTecSDKStatus": sdkStatuses.rawValues(),
+            "FaceTecSessionStatus": sessionStatuses.rawValues()
         ]
     }
 
     @objc(initializeSDK:jwtAccessToken:licenseKey:encryptionKey:licenseText:resolver:rejecter:)
     open func initializeSDK(_ serverURL: String, jwtAccessToken: String,
-        licenseKey: String, encryptionKey: String, licenseText: String,
+        licenseKey: String, encryptionKey: String, licenseText: String?,
         resolver resolve: @escaping RCTPromiseResolveBlock,
         rejecter reject: @escaping RCTPromiseRejectBlock) -> Void
     {
-        //FaceTec.sdk.setCustomization(Customization.UICustomization)
-        FaceVerification.shared.register(serverURL, jwtAccessToken)
-        resolve(FaceTec.sdk.version)
-        /*if FaceTecSDKStatus.initialized == FaceTec.sdk.getStatus() {
-            resolve(nil)
+        let promise = Promise(resolve, reject)
+                
+        if FaceTecSDKStatus.initialized == FaceTec.sdk.getStatus() {
+            promise.resolve(true)
             return
         }
+        
+        func initalizeCallback(initializationSuccessful: Bool) -> Void {
+            if initializationSuccessful {
+                FaceTec.sdk.setDynamicStrings(Customization.UITextStrings)
+                FaceVerification.shared.register(serverURL, jwtAccessToken)
+                promise.resolve(initializationSuccessful)
+                return
+            }
 
-        FaceTecGlobalState.DeviceLicenseKeyIdentifier = licenseKey
-        FaceTecGlobalState.GoodServerURL = goodServerURL
-        FaceTecGlobalState.FaceTecServerBaseURL = faceTecServerURL
-
-        FaceTec.sdk.initialize(
-            licenseKeyIdentifier: licenseKey,
-            faceMapEncryptionKey: FaceTecGlobalState.PublicFaceMapEncryptionKey,
-            preloadFaceTecSDK: preloadSDK,
-            completion: { initializationSuccessful in
-                if initializationSuccessful {
-                    resolve(initializationSuccessful)
-                    return
-                }
-
-                let status = FaceTec.sdk.getStatus()
-                let message = FaceTecSDKStatus.neverInitialized != status
-                    ? FaceTec.sdk.description(for: status)
-                    : """
+            let status = FaceTec.sdk.getStatus()
+            var customMessage: String? = nil
+                
+            if FaceTecSDKStatus.neverInitialized == status {
+                customMessage = """
                 Initialize wasn't attempted as Simulator has been detected. \
                 FaceTec FaceTecSDK could be ran on the real devices only
                 """
-
-                FaceTecRCTUtils.rejectWith(message, status.rawValue, rejecter: reject)
-        })*/
+            }
+            
+            promise.reject(status, customMessage)
+        }
+        
+        if licenseText != nil {
+            FaceTec.sdk.initializeInProductionMode(
+                productionKeyText: licenseText!,
+                deviceKeyIdentifier: licenseKey,
+                faceScanEncryptionKey: encryptionKey,
+                completion: initalizeCallback
+            )
+        }
+                
+        
+        FaceTec.sdk.initializeInDevelopmentMode(
+            deviceKeyIdentifier: licenseKey,
+            faceScanEncryptionKey: encryptionKey,
+            completion: initalizeCallback
+        )
     }
 
     @objc(faceVerification:maxRetries:resolver:rejecter:)
@@ -142,9 +149,9 @@ open class FaceTecModule: RCTEventEmitter {
         resolver resolve: @escaping RCTPromiseResolveBlock,
         rejecter reject: @escaping RCTPromiseRejectBlock) -> Void
     {
+        let promise = Promise(resolve, reject)
         let presentedVC = RCTPresentedViewController()!
-        let promise = Promise(resolver: resolve, rejecter: reject)
-        let delegate = PromiseProcessingDelegate(promise: promise)
+        let delegate = PromiseProcessingDelegate(promise)
         let processor = EnrollmentProcessor(fromVC: presentedVC, delegate: delegate)
 
         processor.enroll(enrollmentIdentifier, maxRetries)

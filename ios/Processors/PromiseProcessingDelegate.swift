@@ -12,7 +12,7 @@ import FaceTecSDK
 class PromiseProcessingDelegate: NSObject, ProcessingDelegate {
     private var promise: PromiseDelegate
     
-    init(promise: PromiseDelegate) {
+    init(_ promise: PromiseDelegate) {
         self.promise = promise
     }
     
