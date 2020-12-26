@@ -1,5 +1,5 @@
 import { FaceTecSDK } from './src/FaceTecSDK'
-import FaceTecModule from './src/FaceTecPublicApi'
+import FaceTecModule from './src/FaceTecModule'
 
 export const sdk = new FaceTecSDK(FaceTecModule)
 
