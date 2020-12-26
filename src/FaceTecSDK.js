@@ -1,5 +1,7 @@
 import { NativeEventEmitter } from 'react-native'
 
+import { FaceTecUxEvent } from './FaceTecPublicApi'
+
 // sdk class
 export class FaceTecSDK {
   _subscriptions = {}
@@ -45,9 +47,9 @@ export class FaceTecSDK {
   }
 
   addListener(event, handler) {
-    const { eventEmitter, _subscriptions } = this
-    const subscription = eventEmitter.addListener(event, handler)
+    const { _subscriptions } = this
     let subscriptionsMap = _subscriptions[event]
+    const subscription = this.subscribeTo(event, handler)
 
     if (!subscriptionsMap) {
       subscriptionsMap = new WeakMap()
@@ -68,5 +70,24 @@ export class FaceTecSDK {
 
     subscriptionsMap.get(handler).remove()
     subscriptionsMap.delete(handler)
+  }
+
+  // some events could contain error objects inside event data
+  // as React bridge doesn't returns JS errors (see above)
+  // we have to convert event data for those specific events
+  // before call the original event handling callback
+  subscribeTo(event, handler) {
+    const { eventEmitter } = this
+    let eventHandler = handler
+
+    if (FaceTecUxEvent.FV_RETRY === event) {
+      eventHandler = eventData => {
+        const { reason, ...failureFlags } = eventData
+
+        handler({ reason: new Error(reason), ...failureFlags })
+      }
+    }
+
+    return eventEmitter.addListener(event, eventHandler)
   }
 }
