@@ -33,7 +33,7 @@ class PromiseProcessingDelegate: NSObject, ProcessingDelegate {
     }
     
     func onSessionTokenError() {
-        let message = "Session could not be started due to an unexpected issue during the network request."
+        let message = FaceVerificationError.unexpectedResponse.message
         
         promise.reject(FaceTecSessionStatus.unknownInternalError, message)
     }

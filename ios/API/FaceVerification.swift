@@ -14,6 +14,7 @@ class FaceVerification {
     
     private var serverURL: String?
     private var jwtAccessToken: String?
+    private var lastRequest: URLSessionTask?
     
     private let succeedProperty = "success"
     private let errorMessageProperty = "error"
@@ -63,6 +64,13 @@ class FaceVerification {
         }
     }
     
+    func cancelInFlightRequests() {
+        if lastRequest != nil {
+            lastRequest!.cancel()
+            lastRequest = nil
+        }
+    }
+    
     private func request(
         _ url: String,
         _ method: String,
@@ -85,7 +93,9 @@ class FaceVerification {
         let session = withDelegate == nil ? URLSession(configuration: config)
             : URLSession(configuration: config, delegate: withDelegate, delegateQueue: OperationQueue.main)
         
-        let task = session.dataTask(with: request as URLRequest) { data, response, httpError in
+        lastRequest = session.dataTask(with: request as URLRequest) { data, response, httpError in
+            self.lastRequest = nil
+            
             if httpError != nil {
                 resultCallback(nil, httpError)
                 return
@@ -107,7 +117,7 @@ class FaceVerification {
             resultCallback(json, nil)
         }
         
-        task.resume()
+        lastRequest.resume()
     }
     
     private func createRequest(_ url: String, _ method: String, _ parameters: [String : Any] = [:]) -> URLRequest {
