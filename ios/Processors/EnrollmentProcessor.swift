@@ -4,21 +4,14 @@ import FaceTecSDK
 import AVFoundation
 
 class EnrollmentProcessor: NSObject, FaceTecFaceScanProcessorDelegate, URLSessionDelegate {
-    /*, URLSessionDelegate, FaceTecFaceMapProcessorDelegate, FaceTecSessionDelegate*/ 
-    /*var faceTecFaceMapResultCallback: FaceTecFaceMapResultCallback!
-    var latestFaceTecSessionResult: FaceTecSessionResult?
-    var latestFaceTecSessionMessage: String?
-    var latestEnrollmentIdentidier: String!
-    var latestJWTAccessToken: String!
-    var isSuccess = false*/
-    
-    var maxRetries = -1
-    var enrollmentIdentifier: String
+    var maxRetries: Int?
+    var enrollmentIdentifier: String!
+    private let defaultMaxRetries = -1
     
     var isSuccess = false
-    var lastMessage: String
-    var lastResult: FaceTecSessionResult
-    var resultCallback: FaceTecFaceScanResultCallback
+    var lastMessage: String!
+    var lastResult: FaceTecSessionResult!
+    var resultCallback: FaceTecFaceScanResultCallback!
     var retryAttempt = 0
     
     var delegate: ProcessingDelegate
@@ -26,7 +19,7 @@ class EnrollmentProcessor: NSObject, FaceTecFaceScanProcessorDelegate, URLSessio
     
     private var alwaysRetry: Bool {
         get {
-            return maxRetries == nil || maxRetries < 0
+            return maxRetries == nil || maxRetries! < 0
         }
     }
 
@@ -39,11 +32,11 @@ class EnrollmentProcessor: NSObject, FaceTecFaceScanProcessorDelegate, URLSessio
 
     func enroll(_ enrollmentIdentifier: String, _ maxRetries: Int?) {
         requestCameraPermissions() {
-            startSession() { sessionToken in
+            self.startSession() { sessionToken in
                 let sessionVC = FaceTec.sdk.createSessionVC(faceScanProcessorDelegate: self, sessionToken: sessionToken)
                 
                 self.enrollmentIdentifier = enrollmentIdentifier
-                self.maxRetries = maxRetries
+                self.maxRetries = maxRetries ?? self.defaultMaxRetries
                 
                 self.presentSessionVCFrom.present(sessionVC, animated: true, completion: {
                     EventEmitter.shared.dispatch(.UI_READY)
@@ -79,8 +72,8 @@ class EnrollmentProcessor: NSObject, FaceTecFaceScanProcessorDelegate, URLSessio
         let uploaded: Float = Float(totalBytesSent) / Float(totalBytesExpectedToSend)
         
         if uploaded >= 1 {
-            let processingMessage = Customization.resultFacescanProcessingMessage
-            
+            let processingMessage = NSMutableAttributedString.init(string: Customization.resultFacescanProcessingMessage)
+                        
             // switch status message to processing once upload completed
             resultCallback.onFaceScanUploadMessageOverride(uploadMessageOverride: processingMessage)
         }
@@ -104,7 +97,6 @@ class EnrollmentProcessor: NSObject, FaceTecFaceScanProcessorDelegate, URLSessio
         switch AVCaptureDevice.authorizationStatus(for: .video) {
         case .authorized:
             requestCallback()
-
         case .notDetermined:
             AVCaptureDevice.requestAccess(for: .video) { (granted) in
                 if (granted) {
@@ -113,9 +105,10 @@ class EnrollmentProcessor: NSObject, FaceTecFaceScanProcessorDelegate, URLSessio
                     self.delegate.onCameraAccessError()
                 }
             }
-
         case .denied,
              .restricted:
+            delegate.onCameraAccessError()
+        @unknown default:
             delegate.onCameraAccessError()
         }
     }
@@ -124,31 +117,31 @@ class EnrollmentProcessor: NSObject, FaceTecFaceScanProcessorDelegate, URLSessio
         // setting initial progress to 0 for freeze progress bar
         resultCallback.onFaceScanUploadProgress(uploadedPercent: 0)
         
-        var payload: [String : Any] = [
-            "faceScan": lastResult.faceScanBase64,
-            "auditTrailImage": lastResult.auditTrailCompressedBase64?.first!,
-            "lowQualityAuditTrailImage": lastResult.lowQualityAuditTrailCompressedBase64?.first!,
-            "externalDatabaseRefID": enrollmentIdentifier,
+        let payload: [String : Any] = [
+            "faceScan": lastResult.faceScanBase64!,
+            "auditTrailImage": lastResult.auditTrailCompressedBase64!.first!,
+            "lowQualityAuditTrailImage": lastResult.lowQualityAuditTrailCompressedBase64!.first!,
+            "externalDatabaseRefID": enrollmentIdentifier!,
             "sessionId": lastResult.sessionId
         ]
         
         FaceVerification.shared.enroll(
-            enrollmentIdentifier,
+            enrollmentIdentifier!,
             payload,
             withDelegate: self
         ) { response, error in
-            resultCallback.onFaceScanUploadProgress(uploadedPercent: 1)
+            self.resultCallback.onFaceScanUploadProgress(uploadedPercent: 1)
             
             if error != nil {
                 self.handleEnrollmentError(error!, response)
                 return
             }
             
-            isSuccess = true
-            lastMessage = Customization.resultSuccessMessage
+            self.isSuccess = true
+            self.lastMessage = Customization.resultSuccessMessage
             
-            FaceTecCustomization.setOverrideResultScreenSuccessMessage(lastMessage)
-            resultCallback.onFaceScanResultSucceed()
+            FaceTecCustomization.setOverrideResultScreenSuccessMessage(self.lastMessage)
+            self.resultCallback.onFaceScanResultSucceed()
         }
     }
     
@@ -159,8 +152,8 @@ class EnrollmentProcessor: NSObject, FaceTecFaceScanProcessorDelegate, URLSessio
         lastMessage = faceTecError.message
         
         if response != nil {
-            let errorMessage: String? = response["error"]
-            let enrollmentResult = response["enrollmentResult"]
+            let errorMessage: String? = response?["error"] as? String
+            let enrollmentResult = response?["enrollmentResult"] as? [String: Bool]
             
             // if isDuplicate is strictly true, that means we have dup face
             let isDuplicateIssue = true == enrollmentResult?["isDuplicate"]
@@ -170,7 +163,7 @@ class EnrollmentProcessor: NSObject, FaceTecFaceScanProcessorDelegate, URLSessio
             
             if errorMessage != nil {
                 // setting lastMessage from server's response if was sent
-                lastMessage = errorMessage
+                lastMessage = errorMessage!
             }
             
             // if there's no duplicate / 3d match issues but we have
@@ -178,17 +171,19 @@ class EnrollmentProcessor: NSObject, FaceTecFaceScanProcessorDelegate, URLSessio
             if !isDuplicateIssue && !is3DMatchIssue && isLivenessIssue {
                 // if haven't reached retries threshold or max retries is disabled
                 // (is null or < 0) we'll ask to retry capturing
-                if alwaysRetry || retryAttempt < maxRetries {
+                if alwaysRetry || retryAttempt < maxRetries! {
+                    let retryMessage = NSMutableAttributedString.init(string: lastMessage)
+                        
                     // increasing retry attempts counter
                     retryAttempt += 1
                     // showing reason
-                    resultCallback.onFaceScanUploadMessageOverride(uploadMessageOverride: lastMessage)
+                    resultCallback.onFaceScanUploadMessageOverride(uploadMessageOverride: retryMessage)
                     // notifying about retry
                     resultCallback.onFaceScanResultRetry()
                     
                     // dispatching retry event
                     EventEmitter.shared.dispatch(.FV_RETRY, [
-                        "reason": lastMessage,
+                        "reason": lastMessage!,
                         "match3d": !is3DMatchIssue,
                         "liveness": !isLivenessIssue,
                         "duplicate": isDuplicateIssue,

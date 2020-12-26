@@ -34,7 +34,7 @@ class EventEmitter {
         suspended = false
     }
 
-    func dispatch(_ event: UXEvent, body: Any? = nil) {
+    func dispatch(_ event: UXEvent, _ body: Any? = nil) {
         if suspended {
             return
         }

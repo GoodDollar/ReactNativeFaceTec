@@ -48,13 +48,13 @@ class FaceVerification {
         _ payload: [String : Any],
         enrollmentResultCallback: @escaping ([String: AnyObject]?, Error?) -> Void
     ) -> Void {
-        enroll(enrollmentIdentifier, payload, nil, callback: enrollmentResultCallback)
+        enroll(enrollmentIdentifier, payload, withDelegate: nil, callback: enrollmentResultCallback)
     }
     
     func enroll(
         _ enrollmentIdentifier: String,
         _ payload: [String : Any],
-        _ withDelegate: URLSessionDelegate? = nil,
+        withDelegate: URLSessionDelegate? = nil,
         callback enrollmentResultCallback: @escaping ([String: AnyObject]?, Error?) -> Void
     ) -> Void {
         let enrollmentUri = "/verify/face/" + enrollmentIdentifier.urlEncoded()
@@ -117,7 +117,7 @@ class FaceVerification {
             resultCallback(json, nil)
         }
         
-        lastRequest.resume()
+        lastRequest!.resume()
     }
     
     private func createRequest(_ url: String, _ method: String, _ parameters: [String : Any] = [:]) -> URLRequest {
