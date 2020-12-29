@@ -15,21 +15,21 @@ final class Customization {
     public static let resultFacescanUploadMessage = "Uploading Your face\nsnapshot to verify";
     public static let resultFacescanProcessingMessage = "Verifying you're\none of a kind";
         
-    fileprivate static let isLargeDevice = UIScreen.main.bounds.width >= 395
+    private static let isLargeDevice = UIScreen.main.bounds.width >= 395
     
-    fileprivate static let black = UIColor.black
-    fileprivate static let white = UIColor.white
-    fileprivate static let green = UIColor.green
-    fileprivate static let darkGray = UIColor.darkGray
-    fileprivate static let lightGray = UIColor.lightGray
+    private static let black = UIColor.black
+    private static let white = UIColor.white
+    private static let green = UIColor.green
+    private static let darkGray = UIColor.darkGray
+    private static let lightGray = UIColor.lightGray
     
-    fileprivate static let primary = UIColor("#00afff")
-    fileprivate static let gray50Percent = UIColor("#cbcbcb")
+    private static let primary = UIColor("#00afff")
+    private static let gray50Percent = UIColor("#cbcbcb")
     
-    fileprivate static let defaultCornerRadius: Int32 = 5
-    fileprivate static let defaultFont = UIFont.robotoFont(12)
+    private static let defaultCornerRadius: Int32 = 5
+    private static let defaultFont = UIFont.robotoFont(12)
     
-    private(set) static lazy var UICustomization: FaceTecCustomization = {
+    static let UICustomization: FaceTecCustomization = {
         let ui = FaceTecCustomization()
         
         let oval = ui.ovalCustomization
@@ -114,7 +114,7 @@ final class Customization {
         return ui
     }()
     
-    private(set) static lazy var UITextStrings: [String: String] = {
+    static let UITextStrings: [String: String] = {
         let i18n: [String: String] = [
             "resultSuccessMessage": resultSuccessMessage,
             "resultFacescanUploadMessage": resultFacescanUploadMessage,
