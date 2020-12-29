@@ -8,61 +8,69 @@
  * https://github.com/facebook/react-native
  */
 
-import React, { useEffect, useRef, useState } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { Button, StyleSheet, Text, View } from 'react-native';
 import FaceTec, { FaceTecUxEvent, FaceTecSDKStatus, FaceTecSessionStatus } from 'react-native-facetec';
+import Config from 'react-native-config'
+
+const {
+  REACT_APP_ZOOM_ENCRYPTION_KEY,
+  REACT_APP_ZOOM_LICENSE_KEY,
+  REACT_APP_ZOOM_LICENSE_TEXT,
+  REACT_APP_SERVER_URL = 'http://localhost:3003',
+  REACT_APP_SERVER_TOKEN,
+  REACT_APP_ENROLLMENT_IDENTIFIER,
+  REACT_APP_MAX_RETRIES = 3,
+} = Config
 
 export default function App () {
-  const [status, setStatus] = useState('starting')
-  const [message, setMessage] = useState('--')
-  const subscriptionRef = useRef(null)
+  const [status, setStatus] = useState('initializing')
+  const [verified, setVerified] = useState('not verified')
 
-  useEffect(() => {
-    const unsubscribe = () => {
-      const { current: _unsubscribe } = subscriptionRef
-
-      if (!_unsubscribe) {
-        return
-      }
-
-      _unsubscribe()
-    }
-
-    const initialize = async () => {
-      const version = await FaceTec.sdk.initialize().catch(console.log)
-      const lastStatus = 'native promise resolved'
-      const lastMessage = `FaceTec ${version} initialized`
-
-      setStatus(lastStatus)
-      setMessage(lastMessage)
-
-      subscriptionRef.current = FaceTec.sdk
-        .addListener(FaceTecUxEvent.UI_READY, () => {
-          setStatus(`${lastStatus},\nnative event received`)
-          setMessage(`${lastMessage},\nUI is ready`)
-          unsubscribe()
-        }
+  const onPressVerify = useCallback(async () => {
+    try {
+      await FaceTec.sdk.enroll(
+        REACT_APP_ENROLLMENT_IDENTIFIER,
+        REACT_APP_MAX_RETRIES
       )
 
-      FaceTec.sdk.enroll()
+      setVerified('verified')
+    } catch (e) {
+      setVerified('failed')
+      console.log(e)
+    }
+  }, [setVerified])
+
+  useEffect(() => {
+    const initialize = async () => {
+      try {
+        await FaceTec.sdk.initialize(
+          REACT_APP_SERVER_URL,
+          REACT_APP_SERVER_TOKEN,
+          REACT_APP_ZOOM_LICENSE_KEY,
+          REACT_APP_ZOOM_ENCRYPTION_KEY,
+          REACT_APP_ZOOM_LICENSE_TEXT
+        )
+
+        setStatus('initialized')
+        setMessage(`FaceTec initialized`)
+      } catch (e) {
+        setStatus('initialization failed')
+        console.error(e)
+      }
     }
 
-    console.log('SDK', {
-      FaceTecUxEvent,
-      FaceTecSDKStatus,
-      FaceTecSessionStatus
-    })
-
     initialize()
-    return unsubscribe
   }, [])
 
   return (
     <View style={styles.container}>
       <Text style={styles.welcome}>☆FaceTec example☆</Text>
       <Text style={styles.instructions}>STATUS: {status}</Text>
-      <Text style={styles.welcome}>☆NATIVE CALLBACK MESSAGE☆</Text>
-      <Text style={styles.instructions}>{message}</Text>
+      {'initialized' === status && (<>
+        <Button onPress={onPressVerify} title="Verify me!" />
+        <Text style={styles.instructions}>VERIFICATION: {verified}</Text>
+      </>)}
     </View>
   );
 }

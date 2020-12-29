@@ -29,6 +29,13 @@ final class Customization {
     private static let defaultCornerRadius: Int32 = 5
     private static let defaultFont = UIFont.robotoFont(12)
     
+    private static let defaultBundle: Bundle = {
+        let podBundle = Bundle(for: Customization.self)
+        let bundleUrl = podBundle.url(forResource: "FaceTec", withExtension: "bundle")!
+        
+        return Bundle(url: bundleUrl)!
+    }()
+    
     static let UICustomization: FaceTecCustomization = {
         let ui = FaceTecCustomization()
         
@@ -46,7 +53,7 @@ final class Customization {
         
         // setting custom location & image of cancel button
         cancelButton.location = .topRight
-        cancelButton.customImage = UIImage(named: "FaceTecCancel")!
+        cancelButton.customImage = UIImage(named: "Cancel", in: defaultBundle, compatibleWith: nil)!
         
         // configuring feedback bar typography & border radius
         feedback.backgroundColor = CAGradientLayer.solidFill(color: black)
@@ -109,7 +116,7 @@ final class Customization {
         resultScreen.uploadProgressTrackColor = lightGray
         resultScreen.resultAnimationBackgroundColor = white
         resultScreen.resultAnimationForegroundColor = primary
-        resultScreen.customActivityIndicatorImage = UIImage(named: "FaceTecActivityIndicator")!
+        resultScreen.customActivityIndicatorImage = UIImage(named: "ActivityIndicator", in: defaultBundle, compatibleWith: nil)!
         
         return ui
     }()
