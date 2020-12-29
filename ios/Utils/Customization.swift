@@ -15,28 +15,19 @@ final class Customization {
     public static let resultFacescanUploadMessage = "Uploading Your face\nsnapshot to verify";
     public static let resultFacescanProcessingMessage = "Verifying you're\none of a kind";
         
-    private static let faceTecNS: String = "FaceTec"
+    fileprivate static let isLargeDevice = UIScreen.main.bounds.width >= 395
     
-    private static let black = UIColor.black
-    private static let white = UIColor.white
-    private static let green = UIColor.green
-    private static let darkGray = UIColor.darkGray
-    private static let lightGray = UIColor.lightGray
+    fileprivate static let black = UIColor.black
+    fileprivate static let white = UIColor.white
+    fileprivate static let green = UIColor.green
+    fileprivate static let darkGray = UIColor.darkGray
+    fileprivate static let lightGray = UIColor.lightGray
     
-    private static let primary = UIColor("#00afff")
-    private static let gray50Percent = UIColor("#cbcbcb")
+    fileprivate static let primary = UIColor("#00afff")
+    fileprivate static let gray50Percent = UIColor("#cbcbcb")
     
-    private static let defaultCornerRadius: Int = 5
-    private static lazy var defaultFont: UIFont = {
-        let defaultSize = 12
-        let font = UIFont.init(name: family, size: defaultSize)
-        
-        if font == nil {
-            return UIFont.systemFont(ofSize: size)
-        }
-        
-        return font
-    }()
+    fileprivate static let defaultCornerRadius: Int32 = 5
+    fileprivate static let defaultFont = UIFont.robotoFont(12)
     
     private(set) static lazy var UICustomization: FaceTecCustomization = {
         let ui = FaceTecCustomization()
@@ -51,18 +42,17 @@ final class Customization {
         
         // removing branding image from overlay
         overlay.showBrandingImage = false
-        overlay.backgroundColor = FaceTecColor(white, 0.5)
+        overlay.backgroundColor = white.withAlphaComponent(0.5)
         
         // setting custom location & image of cancel button
         cancelButton.location = .topRight
-        cancelButton.customImage = FaceTecImage("cancel")
+        cancelButton.customImage = UIImage(named: "FaceTecCancel")!
         
         // configuring feedback bar typography & border radius
-        feedback.backgroundColor = primary
+        feedback.backgroundColor = CAGradientLayer.solidFill(color: black)
         feedback.cornerRadius = defaultCornerRadius
         feedback.textColor = white
-        feedback.textFont = FaceTecFont(defaultFont, 24)
-        // TODO: bold font
+        feedback.textFont = UIFont.robotoFont(.bold, 24)
         
         // setting oval border color & width
         oval.strokeWidth = 6
@@ -71,18 +61,16 @@ final class Customization {
         oval.progressColor2 = green
         
         // frame (zoom's popup) customizations
-        
         // setting frame border, radius & shadow
-        frame.borderColor = FaceTecColor(white, 0)
+        frame.borderColor = white.withAlphaComponent(0)
         frame.cornerRadius = defaultCornerRadius
         frame.borderWidth = 0
-        //TODO: shadow
-        
+        frame.shadow = FaceTecShadow.css(boxShadow: [0, 19, 38, 0], black, 0.42)
+ 
         // setting Zoom UI background color
         frame.backgroundColor = white
         
         // guidance screens ("frame your face", "retry" etc) customizations
-        
         // setting setting Zoom UI default text color
         guidance.foregroundColor = darkGray        
         
@@ -98,9 +86,7 @@ final class Customization {
         guidance.buttonBackgroundDisabledColor = primary
         
         // customizing header / subtext
-        guidance.headerFont = FaceTecFont(defaultFont, 22)
-        // TODO: set 20 for small screens
-        // TODO: set medium font weight
+        guidance.headerFont = UIFont.robotoFont(.medium, isLargeDevice ? 22 : 20)
         
         // subtext
         guidance.subtextFont = defaultFont
@@ -116,14 +102,14 @@ final class Customization {
         
         // customizing result screen - progress bar & success animation
         resultScreen.foregroundColor = darkGray
-        resultScreen.messageFont = FaceTecFont(defaultFont, 16)
+        resultScreen.messageFont = defaultFont.withSize(16)
         resultScreen.messageTextSpacing = 0.08
         resultScreen.showUploadProgressBar = true
         resultScreen.uploadProgressFillColor = primary
         resultScreen.uploadProgressTrackColor = lightGray
         resultScreen.resultAnimationBackgroundColor = white
         resultScreen.resultAnimationForegroundColor = primary
-        // TODO: find Earth icon with pole side view (to be rotated clockwise, not by 3d)
+        resultScreen.customActivityIndicatorImage = UIImage(named: "FaceTecActivityIndicator")!
         
         return ui
     }()
@@ -141,29 +127,7 @@ final class Customization {
         ]
         
         return i18n.reduce(into: [String: String]()) { result, keyValue in
-            result["\(faceTecNS)_\(keyValue.key.snakeCased())"] = keyValue.value
+            result["FaceTec_\(keyValue.key.snakeCased())"] = keyValue.value
         }
     }()
-    
-    private static func FaceTecColor(_ color: UIColor, _ alpha: CGFloat? = nil) -> UIColor {
-        return alpha == nil ? alpha : color.withAlphaComponent(alpha)
-    }
-    
-    private static func FaceTecBackground(_ color: UIColor, _ alpha: CGFloat? = nil) -> CAGradientLayer {
-        let backgroundLayer = CAGradientLayer.init()
-        let bgColor = FaceTecColor(color, alpha)
-        
-        backgroundLayer.colors = [bgColor.cgColor, bgColor.cgColor]
-        backgroundLayer.locations = [0, 1]
-        backgroundLayer.startPoint = CGPoint.init(x: 0, y: 0)
-        backgroundLayer.endPoint = CGPoint.init(x: 1, y: 0)
-    }
-    
-    private static func FaceTecImage(_ name: String) -> UIImage {
-        return UIImage(named: faceTecNS + name.capitalize())
-    }
-    
-    private static func FaceTecFont(_ font: UIFont, _ size: CGFloat? = nil) -> UIFont {
-        return size == nil ? font : font.withSize(size)
-    }
 }

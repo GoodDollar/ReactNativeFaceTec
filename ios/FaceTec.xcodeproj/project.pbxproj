@@ -7,6 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		6877D1C9259BB39D00B54D84 /* UIFont+Roboto.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6877D1C8259BB39D00B54D84 /* UIFont+Roboto.swift */; };
+		6877D1CC259BC04900B54D84 /* FaceTecShadow+CSS.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6877D1CB259BC04900B54D84 /* FaceTecShadow+CSS.swift */; };
+		6877D1CF259BC1B900B54D84 /* CAGradientLayer+SolidFill.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6877D1CE259BC1B900B54D84 /* CAGradientLayer+SolidFill.swift */; };
 		6878F54C258BAF0F00E010B2 /* ProcesingDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6878F541258BAF0F00E010B2 /* ProcesingDelegate.swift */; };
 		6878F54D258BAF0F00E010B2 /* FaceTec.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6878F543258BAF0F00E010B2 /* FaceTec.swift */; };
 		6878F54F258BAF0F00E010B2 /* Promise.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6878F547258BAF0F00E010B2 /* Promise.swift */; };
@@ -41,6 +44,9 @@
 /* Begin PBXFileReference section */
 		134814201AA4EA6300B7C361 /* libFaceTec.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libFaceTec.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		681756B1258BAF7500177E7F /* FaceTec-Bridging-Header.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "FaceTec-Bridging-Header.h"; sourceTree = "<group>"; };
+		6877D1C8259BB39D00B54D84 /* UIFont+Roboto.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIFont+Roboto.swift"; sourceTree = "<group>"; };
+		6877D1CB259BC04900B54D84 /* FaceTecShadow+CSS.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "FaceTecShadow+CSS.swift"; sourceTree = "<group>"; };
+		6877D1CE259BC1B900B54D84 /* CAGradientLayer+SolidFill.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CAGradientLayer+SolidFill.swift"; sourceTree = "<group>"; };
 		6878F541258BAF0F00E010B2 /* ProcesingDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProcesingDelegate.swift; sourceTree = "<group>"; };
 		6878F543258BAF0F00E010B2 /* FaceTec.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FaceTec.swift; sourceTree = "<group>"; };
 		6878F547258BAF0F00E010B2 /* Promise.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Promise.swift; sourceTree = "<group>"; };
@@ -245,6 +251,9 @@
 				68AB4788259688A7006B2E4C /* String+UrlEncoded.swift */,
 				68AB478E259693D6006B2E4C /* Dictionary+RawRepresentable.swift */,
 				68866C58259A53C200466B5E /* String+Capitalize.swift */,
+				6877D1C8259BB39D00B54D84 /* UIFont+Roboto.swift */,
+				6877D1CB259BC04900B54D84 /* FaceTecShadow+CSS.swift */,
+				6877D1CE259BC1B900B54D84 /* CAGradientLayer+SolidFill.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -309,14 +318,17 @@
 			files = (
 				6878F553258BAF0F00E010B2 /* FaceTecGlobalState.swift in Sources */,
 				6878F54C258BAF0F00E010B2 /* ProcesingDelegate.swift in Sources */,
+				6877D1CF259BC1B900B54D84 /* CAGradientLayer+SolidFill.swift in Sources */,
 				68866C59259A53C200466B5E /* String+Capitalize.swift in Sources */,
 				6878F54D258BAF0F00E010B2 /* FaceTec.swift in Sources */,
 				68C160762590B77400843347 /* PromiseDelegate.swift in Sources */,
 				6878F550258BAF0F00E010B2 /* EventEmitter.swift in Sources */,
 				68AB4789259688A7006B2E4C /* String+UrlEncoded.swift in Sources */,
+				6877D1C9259BB39D00B54D84 /* UIFont+Roboto.swift in Sources */,
 				68C2E7792592597600EE4A75 /* UIColor+HexString.swift in Sources */,
 				68AB478F259693D6006B2E4C /* Dictionary+RawRepresentable.swift in Sources */,
 				68C2E775259257AE00EE4A75 /* Customization.swift in Sources */,
+				6877D1CC259BC04900B54D84 /* FaceTecShadow+CSS.swift in Sources */,
 				6878F551258BAF0F00E010B2 /* FaceTecBridge.m in Sources */,
 				68C160792590B98D00843347 /* PromiseProcessingDelegate.swift in Sources */,
 				6878F552258BAF0F00E010B2 /* EnrollmentProcessor.swift in Sources */,

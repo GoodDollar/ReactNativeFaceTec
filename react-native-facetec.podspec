@@ -22,9 +22,10 @@ Pod::Spec.new do |s|
   s.requires_arc = true
 
   spec.resource_bundles = {
-    'FaceTecCancel' => ['ios/Resources.xcassets/Cancel.imageset/*.svg']
+    'FaceTecCancel' => ['ios/Resources.xcassets/Cancel.imageset/*.svg'],
+    'FaceTecActivityIndicator' => ['ios/Resources.xcassets/ActivityIndicator.imageset/*.svg']
   }
 
   s.dependency "React"
+  s.dependency "MDFRobotoFontLoader"
 end
-
