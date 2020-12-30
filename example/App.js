@@ -20,7 +20,6 @@ const {
   REACT_APP_SERVER_URL = 'http://localhost:3003',
   REACT_APP_SERVER_TOKEN,
   REACT_APP_ENROLLMENT_IDENTIFIER,
-  REACT_APP_MAX_RETRIES = 3,
 } = Config
 
 export default function App () {
@@ -29,10 +28,7 @@ export default function App () {
 
   const onPressVerify = useCallback(async () => {
     try {
-      await FaceTec.sdk.enroll(
-        REACT_APP_ENROLLMENT_IDENTIFIER,
-        REACT_APP_MAX_RETRIES
-      )
+      await FaceTec.sdk.enroll(REACT_APP_ENROLLMENT_IDENTIFIER, 3)
 
       setVerified('verified')
     } catch (e) {
@@ -53,7 +49,6 @@ export default function App () {
         )
 
         setStatus('initialized')
-        setMessage(`FaceTec initialized`)
       } catch (e) {
         setStatus('initialization failed')
         console.error(e)

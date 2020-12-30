@@ -51,12 +51,12 @@ open class FaceTecModule: RCTEventEmitter {
             "DeviceInReversePortraitMode": .deviceInReversePortraitMode,
             "DeviceLockedOut": .deviceLockedOut,
             "KeyExpiredOrInvalid": .keyExpiredOrInvalid,
-            
+
             // native-specific statuses
             "EncryptionKeyInvalid": .encryptionKeyInvalid,
             "OfflineSessionsExceeded": .offlineSessionsExceeded
         ]
-        
+
         let sessionStatuses: [String: FaceTecSessionStatus] = [
             // common statuses (status names are aligned with the web sdk)
             "SessionCompletedSuccessfully": .sessionCompletedSuccessfully,
@@ -73,7 +73,7 @@ open class FaceTecModule: RCTEventEmitter {
             "NonProductionModeDeviceKeyIdentifierInvalid": .nonProductionModeKeyInvalid,
             "UnknownInternalError": .unknownInternalError,
             "UserCancelledViaClickableReadyScreenSubtext": .userCancelledViaClickableReadyScreenSubtext,
-            
+
             // native-specific statuses
             "LowMemory": .lowMemory,
             "NetworkRequired": .nonProductionModeNetworkRequired,
@@ -94,55 +94,40 @@ open class FaceTecModule: RCTEventEmitter {
 
     @objc(initializeSDK:jwtAccessToken:licenseKey:encryptionKey:licenseText:resolver:rejecter:)
     open func initializeSDK(_ serverURL: String, jwtAccessToken: String,
-        licenseKey: String, encryptionKey: String, licenseText: String?,
+        licenseKey: String, encryptionKey: String, licenseText: String? = nil,
         resolver resolve: @escaping RCTPromiseResolveBlock,
         rejecter reject: @escaping RCTPromiseRejectBlock) -> Void
     {
         let promise = Promise(resolve, reject)
-                
-        if FaceTecSDKStatus.initialized == FaceTec.sdk.getStatus() {
-            promise.resolve(true)
-            return
-        }
         
-        func initalizeCallback(initializationSuccessful: Bool) -> Void {
-            if initializationSuccessful {
+        getSDKStatus() { sdkStatus in
+            switch sdkStatus {
+            case .initialized, .deviceInLandscapeMode, .deviceInReversePortraitMode:
                 FaceTec.sdk.setDynamicStrings(Customization.UITextStrings)
+                promise.resolve(true)
+            case .neverInitialized, .networkIssues:
                 FaceVerification.shared.register(serverURL, jwtAccessToken)
-                promise.resolve(initializationSuccessful)
-                return
-            }
-
-            let status = FaceTec.sdk.getStatus()
-            var customMessage: String? = nil
                 
-            if FaceTecSDKStatus.neverInitialized == status {
-                customMessage = """
-                Initialize wasn't attempted as Simulator has been detected. \
-                FaceTec FaceTecSDK could be ran on the real devices only
-                """
-            }
-            
-            promise.reject(status, customMessage)
-        }
-        
-        if licenseText != nil {
-            FaceTec.sdk.initializeInProductionMode(
-                productionKeyText: licenseText!,
-                deviceKeyIdentifier: licenseKey,
-                faceScanEncryptionKey: encryptionKey,
-                completion: initalizeCallback
-            )
-        }
+                if !licenseText.isEmptyOrNil {
+                    FaceTec.sdk.initializeInProductionMode(
+                        productionKeyText: licenseText!,
+                        deviceKeyIdentifier: licenseKey,
+                        faceScanEncryptionKey: encryptionKey
+                    ) { success in self.onInitializationAttempt(promise, success) }
+                    
+                    return
+                }
                 
-        
-        FaceTec.sdk.initializeInDevelopmentMode(
-            deviceKeyIdentifier: licenseKey,
-            faceScanEncryptionKey: encryptionKey,
-            completion: initalizeCallback
-        )
+                FaceTec.sdk.initializeInDevelopmentMode(
+                    deviceKeyIdentifier: licenseKey,
+                    faceScanEncryptionKey: encryptionKey
+                ) { success in self.onInitializationAttempt(promise, success) }
+            default:
+                promise.reject(sdkStatus)
+            }
+        }
     }
-
+    
     @objc(faceVerification:maxRetries:resolver:rejecter:)
     open func faceVerification(
         _ enrollmentIdentifier: String, maxRetries: Int,
@@ -155,5 +140,35 @@ open class FaceTecModule: RCTEventEmitter {
         let processor = EnrollmentProcessor(fromVC: presentedVC, delegate: delegate)
 
         processor.enroll(enrollmentIdentifier, maxRetries)
+    }
+    
+    private func onInitializationAttempt(
+        _ promise: PromiseDelegate,
+        _ initializationSuccessful: Bool
+    ) -> Void {
+        if initializationSuccessful {
+            FaceTec.sdk.setDynamicStrings(Customization.UITextStrings)
+            promise.resolve(initializationSuccessful)
+            return
+        }
+        
+        getSDKStatus() { sdkStatus in
+            var customMessage: String? = nil
+
+            if .neverInitialized == sdkStatus {
+                customMessage = """
+                Initialize wasn't attempted as Simulator has been detected. \
+                FaceTec SDK could be ran on the real devices only
+                """
+            }
+
+            promise.reject(sdkStatus, customMessage)
+        }
+    }
+    
+    private func getSDKStatus(completion: @escaping (FaceTecSDKStatus) -> Void) -> Void {
+        DispatchQueue.main.async {
+            completion(FaceTec.sdk.getStatus())
+        }
     }
 }

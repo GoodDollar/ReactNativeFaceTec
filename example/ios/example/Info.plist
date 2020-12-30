@@ -53,5 +53,7 @@
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
+	<key>NSCameraUsageDescription</key>
+	<string>GoodDollar needs to access your camera to be able to scan the QR codes and check your identity using face verification</string>
 </dict>
 </plist>
