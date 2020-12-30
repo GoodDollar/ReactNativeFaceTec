@@ -145,6 +145,7 @@ public class FaceTecModule extends ReactContextBaseJavaModule {
             case INITIALIZED:
             case DEVICE_IN_LANDSCAPE_MODE:
             case DEVICE_IN_REVERSE_PORTRAIT_MODE:
+                // status is already initialized - resolve promise with true
                 FaceTecSDK.setDynamicStrings(Customization.UITextStrings);
                 promise.resolve(true);
                 break;
@@ -152,6 +153,7 @@ public class FaceTecModule extends ReactContextBaseJavaModule {
             case NETWORK_ISSUES:
                 FaceVerification.register(serverURL, jwtAccessToken);
 
+                // based on licenseText value, init in prod|dev mode
                 if (!(licenseText == null || licenseText.isEmpty())) {
                     FaceTecSDK.initializeInProductionMode(activity, licenseText, licenseKey, encryptionKey, onInitializationAttempt(activity, promise));
                     return;
@@ -183,10 +185,13 @@ public class FaceTecModule extends ReactContextBaseJavaModule {
     }
 
     private FaceTecSDK.InitializeCallback onInitializationAttempt(final Activity activity, final Promise promise) {
+        // unique callback for both prod|dev init
         return new FaceTecSDK.InitializeCallback() {
             @Override
             public void onCompletion(final boolean successful) {
+                // the value of successful determines if the sdk has been initialized or not
                 if(successful) {
+                    // status is already initialized - resolve promise with true
                     FaceTecSDK.setDynamicStrings(Customization.UITextStrings);
                     promise.resolve(true);
                     return;
@@ -196,6 +201,7 @@ public class FaceTecModule extends ReactContextBaseJavaModule {
                 String newLine = System.getProperty("line.separator");
                 String customMessage = null;
 
+                // if status still hasn't been initialized it means user is using an emulator
                 if (sdkStatus == FaceTecSDKStatus.NEVER_INITIALIZED) {
                     customMessage = "Initialize wasn't attempted as Android Emulator has been detected." + newLine + "FaceTec SDK could be ran on the real devices only";
                 }
