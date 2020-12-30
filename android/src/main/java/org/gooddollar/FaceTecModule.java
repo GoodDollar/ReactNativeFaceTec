@@ -135,29 +135,35 @@ public class FaceTecModule extends ReactContextBaseJavaModule {
 
     @ReactMethod
     public void initializeSDK(String serverURL, String jwtAccessToken,
-        String licenseKey, String encryptionKey, String licenseText,
-        Promise promise
+          String licenseKey, String encryptionKey, String licenseText,
+          final Promise promise
     ) {
-        Activity activity = getCurrentActivity();
+        final Activity activity = getCurrentActivity();
+        FaceTecSDKStatus status = getSDKStatus(activity);
 
-        //TODO: see Facetec.swift initializeSDK func or initialize method of FaceTecSDK.web on GoodDapp
-        // pass activity as "context" param to the all FaceTect SDK calls
+        switch (status) {
+            case INITIALIZED:
+            case DEVICE_IN_LANDSCAPE_MODE:
+            case DEVICE_IN_REVERSE_PORTRAIT_MODE:
+                FaceTecSDK.setDynamicStrings(Customization.UITextStrings);
+                promise.resolve(true);
 
-        // 1. get current status. if already initialized - resolve promise with true
-        // 2. if licenseText is set call initializeInProductionMode, initializeInDevelopmentMode otherwise
-        // 3. in FaceTecSDK.InitializeCallback check 'initialized' argument
-        // 4. if initialized:
-        //   a) call
-        //   FaceVerification.register(serverURL, jwtAccessToken);
-        //   FaceTecSDK.setDynamicStrings(Customization.UITextStrings);
-        //   b) resolve with true
-        // 5. if not initialized - get status, error code - status.ordinal() an error message - status.toString()
-        // 6. if status is still never intitialized - it means you tring to initialize on emulator.
-        // set corresponding error message (like in swift implementation)
-        // 7. reject promise with (status, error mesage), use promise util
-        // RCTPromise.rejectWith(promise, status, errorMessage);
+                break;
+            case NEVER_INITIALIZED:
+            case NETWORK_ISSUES:
+                FaceVerification.register(serverURL, jwtAccessToken);
 
-        promise.resolve(FaceTecSDK.version());
+                if (!licenseText.isEmpty()) {
+                    FaceTecSDK.initializeInProductionMode(activity, licenseText, licenseKey, encryptionKey, onInitializationAttempt(activity, promise));
+                    return;
+                }
+
+                FaceTecSDK.initializeInDevelopmentMode(activity, licenseKey, encryptionKey, onInitializationAttempt(activity, promise));
+
+                break;
+            default:
+                RCTPromise.rejectWith(promise, status);
+        }
     }
 
     @ReactMethod
@@ -176,5 +182,30 @@ public class FaceTecModule extends ReactContextBaseJavaModule {
 
         lastProcessor = processor;
         processor.enroll(enrollmentIdentifier, maxRetries);
+    }
+
+    private FaceTecSDKStatus getSDKStatus(Activity activity) {
+        return FaceTecSDK.getStatus(activity);
+    }
+
+    private FaceTecSDK.InitializeCallback onInitializationAttempt(final Activity activity, final Promise promise) {
+        return new FaceTecSDK.InitializeCallback() {
+            @Override
+            public void onCompletion(final boolean successful) {
+                if(successful) {
+                    FaceTecSDK.setDynamicStrings(Customization.UITextStrings);
+                    promise.resolve(true);
+                    return;
+                }
+
+                FaceTecSDKStatus sdkStatus = getSDKStatus(activity);
+                String customMessage = null;
+                if (sdkStatus == FaceTecSDKStatus.NEVER_INITIALIZED) {
+                    customMessage = "Initialize wasn't attempted as Simulator has been detected. FaceTec SDK could be ran on the real devices only";
+                }
+
+                RCTPromise.rejectWith(promise, sdkStatus, customMessage);
+            }
+        };
     }
 }
