@@ -139,7 +139,7 @@ public class FaceTecModule extends ReactContextBaseJavaModule {
           final Promise promise
     ) {
         final Activity activity = getCurrentActivity();
-        FaceTecSDKStatus status = getSDKStatus(activity);
+        FaceTecSDKStatus status = FaceTecSDK.getStatus(activity);
 
         switch (status) {
             case INITIALIZED:
@@ -147,19 +147,17 @@ public class FaceTecModule extends ReactContextBaseJavaModule {
             case DEVICE_IN_REVERSE_PORTRAIT_MODE:
                 FaceTecSDK.setDynamicStrings(Customization.UITextStrings);
                 promise.resolve(true);
-
                 break;
             case NEVER_INITIALIZED:
             case NETWORK_ISSUES:
                 FaceVerification.register(serverURL, jwtAccessToken);
 
-                if (!licenseText.isEmpty()) {
+                if (!(licenseText == null || licenseText.isEmpty())) {
                     FaceTecSDK.initializeInProductionMode(activity, licenseText, licenseKey, encryptionKey, onInitializationAttempt(activity, promise));
                     return;
                 }
 
                 FaceTecSDK.initializeInDevelopmentMode(activity, licenseKey, encryptionKey, onInitializationAttempt(activity, promise));
-
                 break;
             default:
                 RCTPromise.rejectWith(promise, status);
@@ -184,10 +182,6 @@ public class FaceTecModule extends ReactContextBaseJavaModule {
         processor.enroll(enrollmentIdentifier, maxRetries);
     }
 
-    private FaceTecSDKStatus getSDKStatus(Activity activity) {
-        return FaceTecSDK.getStatus(activity);
-    }
-
     private FaceTecSDK.InitializeCallback onInitializationAttempt(final Activity activity, final Promise promise) {
         return new FaceTecSDK.InitializeCallback() {
             @Override
@@ -198,10 +192,12 @@ public class FaceTecModule extends ReactContextBaseJavaModule {
                     return;
                 }
 
-                FaceTecSDKStatus sdkStatus = getSDKStatus(activity);
+                FaceTecSDKStatus sdkStatus = FaceTecSDK.getStatus(activity);
+                String newLine = System.getProperty("line.separator");
                 String customMessage = null;
+
                 if (sdkStatus == FaceTecSDKStatus.NEVER_INITIALIZED) {
-                    customMessage = "Initialize wasn't attempted as Simulator has been detected. FaceTec SDK could be ran on the real devices only";
+                    customMessage = "Initialize wasn't attempted as Android Emulator has been detected." + newLine + "FaceTec SDK could be ran on the real devices only";
                 }
 
                 RCTPromise.rejectWith(promise, sdkStatus, customMessage);
