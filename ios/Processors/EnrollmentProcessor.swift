@@ -3,7 +3,7 @@ import Foundation
 import FaceTecSDK
 import AVFoundation
 
-class EnrollmentProcessor: NSObject, FaceTecFaceScanProcessorDelegate, URLSessionDelegate {
+class EnrollmentProcessor: NSObject, FaceTecFaceScanProcessorDelegate, URLSessionDelegate, URLSessionTaskDelegate {
     var maxRetries: Int?
     var enrollmentIdentifier: String!
     private let defaultMaxRetries = -1
@@ -70,18 +70,19 @@ class EnrollmentProcessor: NSObject, FaceTecFaceScanProcessorDelegate, URLSessio
     }
 
     func urlSession(_ session: URLSession, task: URLSessionTask, didSendBodyData bytesSent: Int64, totalBytesSent: Int64, totalBytesExpectedToSend: Int64) {
+        // get progress while performing the upload
+        let uploaded: Float = Float(totalBytesSent) / Float(totalBytesExpectedToSend)
+
+        // updating the UX, upload progress from 10 to 80%
+        resultCallback.onFaceScanUploadProgress(uploadedPercent: 0.1 + 0.7 * uploaded)
+         
         if (totalBytesSent == totalBytesExpectedToSend) {
             let processingMessage = NSMutableAttributedString.init(string: Customization.resultFacescanProcessingMessage)
 
             // switch status message to processing once upload completed
             resultCallback.onFaceScanUploadMessageOverride(uploadMessageOverride: processingMessage)
             return
-        }
-        
-        // get progress while performing the upload
-        let uploaded: Float = Float(totalBytesSent) / Float(totalBytesExpectedToSend)
-
-        resultCallback.onFaceScanUploadProgress(uploadedPercent: 0.1 + 0.7 * uploaded)
+        }                
     }
 
     private func startSession(sessionTokenCallback: @escaping (String) -> Void) {
