@@ -30,17 +30,19 @@ class EnrollmentProcessor: NSObject, FaceTecFaceScanProcessorDelegate, URLSessio
         super.init()
     }
 
-    func enroll(_ enrollmentIdentifier: String, _ maxRetries: Int?) {
+    func enroll(_ enrollmentIdentifier: String, _ maxRetries: Int? = nil) {
         requestCameraPermissions() {
             self.startSession() { sessionToken in
-                let sessionVC = FaceTec.sdk.createSessionVC(faceScanProcessorDelegate: self, sessionToken: sessionToken)
-
                 self.enrollmentIdentifier = enrollmentIdentifier
                 self.maxRetries = maxRetries ?? self.defaultMaxRetries
 
-                self.presentSessionVCFrom.present(sessionVC, animated: true, completion: {
-                    EventEmitter.shared.dispatch(.UI_READY)
-                })
+                DispatchQueue.main.async {
+                    let sessionVC = FaceTec.sdk.createSessionVC(faceScanProcessorDelegate: self, sessionToken: sessionToken)
+                    
+                    self.presentSessionVCFrom.present(sessionVC, animated: true, completion: {
+                        EventEmitter.shared.dispatch(.UI_READY)
+                    })
+                }
             }
         }
     }
@@ -68,17 +70,17 @@ class EnrollmentProcessor: NSObject, FaceTecFaceScanProcessorDelegate, URLSessio
     }
 
     func urlSession(_ session: URLSession, task: URLSessionTask, didSendBodyData bytesSent: Int64, totalBytesSent: Int64, totalBytesExpectedToSend: Int64) {
-        // get progress while performing the upload
-        let uploaded: Float = Float(totalBytesSent) / Float(totalBytesExpectedToSend)
-
-        if uploaded >= 1 {
+        if (totalBytesSent == totalBytesExpectedToSend) {
             let processingMessage = NSMutableAttributedString.init(string: Customization.resultFacescanProcessingMessage)
 
             // switch status message to processing once upload completed
             resultCallback.onFaceScanUploadMessageOverride(uploadMessageOverride: processingMessage)
+            return
         }
+        
+        // get progress while performing the upload
+        let uploaded: Float = Float(totalBytesSent) / Float(totalBytesExpectedToSend)
 
-        // updating the UX, upload progress from 10 to 80%
         resultCallback.onFaceScanUploadProgress(uploadedPercent: 0.1 + 0.7 * uploaded)
     }
 

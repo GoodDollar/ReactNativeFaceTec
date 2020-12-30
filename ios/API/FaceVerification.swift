@@ -28,7 +28,7 @@ class FaceVerification {
     }
     
     func getSessionToken(sessionTokenCallback: @escaping (String?, Error?) -> Void) -> Void {
-        request("/verify/face/session", "GET", [:]) { response, error in
+        request("/verify/face/session", "POST", [:]) { response, error in
             if error != nil {
                 sessionTokenCallback(nil, error)
                 return
