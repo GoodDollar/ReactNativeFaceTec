@@ -61,7 +61,11 @@ public class EnrollmentProcessor implements FaceTecFaceScanProcessor {
 
   public void enroll(String enrollmentIdentifier, @Nullable Integer maxRetries) {
     // 1. request camera permissions. if fails - call subscriber.onCameraAccessError()
+
     // 2. store enrollmentIdentifier and maxRetries in the corresponding instance vars
+    this.enrollmentIdentifier = enrollmentIdentifier;
+    this.maxRetries = maxRetries;
+
     // 3. call start session
     FaceVerification.getSessionToken(new FaceVerification.SessionTokenCallback() {
       @Override
