@@ -2,6 +2,8 @@ package org.gooddollar;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.util.SparseArray;
+import android.content.pm.PackageManager;
 
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ActivityEventListener;
@@ -9,8 +11,11 @@ import com.facebook.react.bridge.BaseActivityEventListener;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.Promise;
+import com.facebook.react.bridge.Callback;
 
 import com.facebook.react.modules.core.DeviceEventManagerModule;
+import com.facebook.react.modules.core.PermissionListener;
+import com.facebook.react.modules.core.PermissionAwareActivity;
 
 import java.util.Map;
 import java.util.HashMap;
@@ -27,9 +32,12 @@ import com.facetec.sdk.FaceTecSDK;
 import com.facetec.sdk.FaceTecSessionStatus;
 import com.facetec.sdk.FaceTecSDKStatus;
 
-public class FaceTecModule extends ReactContextBaseJavaModule {
+public class FaceTecModule extends ReactContextBaseJavaModule implements PermissionListener {
     private final ReactApplicationContext reactContext;
     private EnrollmentProcessor lastProcessor = null;
+
+    private final SparseArray<Request> mRequests;
+    private int mRequestCode = 0;
 
     private final ActivityEventListener activityListener = new BaseActivityEventListener() {
         @Override
@@ -48,6 +56,7 @@ public class FaceTecModule extends ReactContextBaseJavaModule {
 
         this.reactContext = reactContext;
         reactContext.addActivityEventListener(activityListener);
+        mRequests = new SparseArray<Request>();
     }
 
     @Override
@@ -167,12 +176,12 @@ public class FaceTecModule extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod
-    public void faceVerification(String enrollmentIdentifier,
-        int maxRetries, Promise promise
+    public void faceVerification(final String enrollmentIdentifier,
+                                 final int maxRetries, Promise promise
     ) {
         Activity activity = getCurrentActivity();
-        ProcessingSubscriber subscriber = new ProcessingSubscriber(promise);
-        EnrollmentProcessor processor = new EnrollmentProcessor(activity, subscriber);
+        final ProcessingSubscriber subscriber = new ProcessingSubscriber(promise);
+        final EnrollmentProcessor processor = new EnrollmentProcessor(activity, subscriber);
 
         if (lastProcessor != null) {
             ProcessingSubscriber lastSubscriber = lastProcessor.getSubscriber();
@@ -181,7 +190,43 @@ public class FaceTecModule extends ReactContextBaseJavaModule {
         }
 
         lastProcessor = processor;
-        processor.enroll(enrollmentIdentifier, maxRetries);
+
+        try {
+            final String permission = "android.permission.CAMERA";
+            PermissionAwareActivity permissionAwareActivity = getPermissionAwareActivity();
+            boolean[] rationaleStatuses = new boolean[1];
+            rationaleStatuses[0] = permissionAwareActivity.shouldShowRequestPermissionRationale(permission);
+
+            mRequests.put(mRequestCode, new Request(
+                    rationaleStatuses,
+                    new Callback() {
+                        @Override
+                        public void invoke(Object... args) {
+                            int[] results = (int[]) args[0];
+
+                            if (results.length > 0 && results[0] == PackageManager.PERMISSION_GRANTED) {
+                                processor.enroll(enrollmentIdentifier, maxRetries);
+                            } else {
+                                PermissionAwareActivity activity = (PermissionAwareActivity) args[1];
+                                boolean[] rationaleStatuses = (boolean[]) args[2];
+
+                                if (rationaleStatuses[0] &&
+                                        !activity.shouldShowRequestPermissionRationale(permission)) {
+                                    subscriber.onCameraAccessError();
+                                } else {
+                                    subscriber.onCameraAccessError();
+                                }
+                            }
+                        }
+                    }
+            ));
+
+            permissionAwareActivity.requestPermissions(new String[] {permission}, mRequestCode, this);
+            mRequestCode++;
+        } catch (IllegalStateException e) {
+            e.printStackTrace();
+            subscriber.onCameraAccessError();
+        }
     }
 
     private FaceTecSDK.InitializeCallback onInitializationAttempt(final Activity activity, final Promise promise) {
@@ -209,5 +254,36 @@ public class FaceTecModule extends ReactContextBaseJavaModule {
                 RCTPromise.rejectWith(promise, sdkStatus, customMessage);
             }
         };
+    }
+
+    @Override
+    public boolean onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        Request request = mRequests.get(requestCode);
+        request.callback.invoke(grantResults, getPermissionAwareActivity(), request.rationaleStatuses);
+        mRequests.remove(requestCode);
+        return mRequests.size() == 0;
+    }
+
+    private PermissionAwareActivity getPermissionAwareActivity() {
+        Activity activity = getCurrentActivity();
+        if (activity == null) {
+            throw new IllegalStateException(
+                    "Tried to use permissions API while not attached to an " + "Activity.");
+        } else if (!(activity instanceof PermissionAwareActivity)) {
+            throw new IllegalStateException(
+                    "Tried to use permissions API but the host Activity doesn't"
+                            + " implement PermissionAwareActivity.");
+        }
+        return (PermissionAwareActivity) activity;
+    }
+
+    private class Request {
+        public boolean[] rationaleStatuses;
+        public Callback callback;
+
+        public Request(boolean[] rationaleStatuses, Callback callback) {
+            this.rationaleStatuses = rationaleStatuses;
+            this.callback = callback;
+        }
     }
 }
