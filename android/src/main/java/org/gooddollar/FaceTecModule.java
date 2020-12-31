@@ -2,8 +2,6 @@ package org.gooddollar;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.util.SparseArray;
-import android.content.pm.PackageManager;
 
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ActivityEventListener;
@@ -11,11 +9,8 @@ import com.facebook.react.bridge.BaseActivityEventListener;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.Promise;
-import com.facebook.react.bridge.Callback;
 
 import com.facebook.react.modules.core.DeviceEventManagerModule;
-import com.facebook.react.modules.core.PermissionListener;
-import com.facebook.react.modules.core.PermissionAwareActivity;
 
 import java.util.Map;
 import java.util.HashMap;
@@ -36,9 +31,6 @@ public class FaceTecModule extends ReactContextBaseJavaModule implements Permiss
     private final ReactApplicationContext reactContext;
     private EnrollmentProcessor lastProcessor = null;
 
-    private final SparseArray<Request> mRequests;
-    private int mRequestCode = 0;
-
     private final ActivityEventListener activityListener = new BaseActivityEventListener() {
         @Override
         public void onActivityResult(Activity activity, int requestCode, int resultCode, Intent intent) {
@@ -56,7 +48,6 @@ public class FaceTecModule extends ReactContextBaseJavaModule implements Permiss
 
         this.reactContext = reactContext;
         reactContext.addActivityEventListener(activityListener);
-        mRequests = new SparseArray<Request>();
     }
 
     @Override
@@ -190,35 +181,7 @@ public class FaceTecModule extends ReactContextBaseJavaModule implements Permiss
         }
 
         lastProcessor = processor;
-
-        try {
-            final String permission = "android.permission.CAMERA";
-            PermissionAwareActivity permissionAwareActivity = getPermissionAwareActivity();
-            boolean[] rationaleStatuses = new boolean[1];
-            rationaleStatuses[0] = permissionAwareActivity.shouldShowRequestPermissionRationale(permission);
-
-            mRequests.put(mRequestCode, new Request(
-                rationaleStatuses,
-                new Callback() {
-                    @Override
-                    public void invoke(Object... args) {
-                        int[] results = (int[]) args[0];
-                        // check if permission has been granted, if not reject with error
-                        if (results.length > 0 && results[0] == PackageManager.PERMISSION_GRANTED) {
-                            processor.enroll(enrollmentIdentifier, maxRetries);
-                        } else {
-                            subscriber.onCameraAccessError();
-                        }
-                    }
-                }
-            ));
-
-            permissionAwareActivity.requestPermissions(new String[] {permission}, mRequestCode, this);
-            mRequestCode++;
-        } catch (IllegalStateException e) {
-            e.printStackTrace();
-            subscriber.onCameraAccessError();
-        }
+        processor.enroll(enrollmentIdentifier, maxRetries);
     }
 
     private FaceTecSDK.InitializeCallback onInitializationAttempt(final Activity activity, final Promise promise) {
@@ -246,36 +209,5 @@ public class FaceTecModule extends ReactContextBaseJavaModule implements Permiss
                 RCTPromise.rejectWith(promise, sdkStatus, customMessage);
             }
         };
-    }
-
-    @Override
-    public boolean onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
-        Request request = mRequests.get(requestCode);
-        request.callback.invoke(grantResults, getPermissionAwareActivity(), request.rationaleStatuses);
-        mRequests.remove(requestCode);
-        return mRequests.size() == 0;
-    }
-
-    private PermissionAwareActivity getPermissionAwareActivity() {
-        Activity activity = getCurrentActivity();
-        if (activity == null) {
-            throw new IllegalStateException(
-                    "Tried to use permissions API while not attached to an " + "Activity.");
-        } else if (!(activity instanceof PermissionAwareActivity)) {
-            throw new IllegalStateException(
-                    "Tried to use permissions API but the host Activity doesn't"
-                            + " implement PermissionAwareActivity.");
-        }
-        return (PermissionAwareActivity) activity;
-    }
-
-    private class Request {
-        public boolean[] rationaleStatuses;
-        public Callback callback;
-
-        public Request(boolean[] rationaleStatuses, Callback callback) {
-            this.rationaleStatuses = rationaleStatuses;
-            this.callback = callback;
-        }
     }
 }

@@ -2,6 +2,12 @@ package org.gooddollar.processors;
 
 import androidx.annotation.Nullable;
 import android.content.Context;
+import android.content.pm.PackageManager;
+import android.util.SparseArray;
+
+import com.facebook.react.bridge.Callback;
+import com.facebook.react.modules.core.PermissionListener;
+import com.facebook.react.modules.core.PermissionAwareActivity;
 
 import com.facetec.sdk.FaceTecSDK;
 import com.facetec.sdk.FaceTecFaceScanProcessor;
@@ -18,7 +24,7 @@ import org.gooddollar.util.Customization;
 import okhttp3.RequestBody;
 import org.json.JSONObject;
 
-public class EnrollmentProcessor implements FaceTecFaceScanProcessor {
+public class EnrollmentProcessor implements FaceTecFaceScanProcessor, PermissionListener {
   private Context context;
   private ProcessingSubscriber subscriber;
 
@@ -29,6 +35,9 @@ public class EnrollmentProcessor implements FaceTecFaceScanProcessor {
   private int maxRetries = -1;
   private String enrollmentIdentifier = null;
   private boolean isSuccess = false;
+
+  private final SparseArray<Request> mRequests;
+  private int mRequestCode = 0;
 
   // TODO: see EnrollmentProcessor.swift
   // add helper methods for
@@ -49,6 +58,7 @@ public class EnrollmentProcessor implements FaceTecFaceScanProcessor {
   public EnrollmentProcessor(Context context, ProcessingSubscriber subscriber) {
     this.context = context;
     this.subscriber = subscriber;
+    mRequests = new SparseArray<Request>();
   }
 
   public ProcessingSubscriber getSubscriber() {
@@ -59,28 +69,56 @@ public class EnrollmentProcessor implements FaceTecFaceScanProcessor {
     enroll(enrollmentIdentifier, -1);
   }
 
-  public void enroll(String enrollmentIdentifier, @Nullable Integer maxRetries) {
+  public void enroll(final String enrollmentIdentifier, @Nullable final Integer maxRetries) {
     // 1. request camera permissions. if fails - call subscriber.onCameraAccessError()
+    try {
+      final String permission = "android.permission.CAMERA";
+      PermissionAwareActivity permissionAwareActivity = getPermissionAwareActivity();
+      boolean[] rationaleStatuses = new boolean[1];
+      rationaleStatuses[0] = permissionAwareActivity.shouldShowRequestPermissionRationale(permission);
 
-    // 2. store enrollmentIdentifier and maxRetries in the corresponding instance vars
-    this.enrollmentIdentifier = enrollmentIdentifier;
-    this.maxRetries = maxRetries;
+      mRequests.put(mRequestCode, new Request(
+        rationaleStatuses,
+        new Callback() {
+          @Override
+          public void invoke(Object... args) {
+          int[] results = (int[]) args[0];
+          // check if permission has been granted, if not reject with error
+          if (results.length > 0 && results[0] == PackageManager.PERMISSION_GRANTED) {
+            // 2. store enrollmentIdentifier and maxRetries in the corresponding instance vars
+            this.enrollmentIdentifier = enrollmentIdentifier;
+            this.maxRetries = maxRetries;
 
-    // 3. call start session
-    FaceVerification.getSessionToken(new FaceVerification.SessionTokenCallback() {
-      @Override
-      public void onSessionTokenReceived(String sessionToken) {
-        FaceTecSessionActivity.createAndLaunchSession(context, EnrollmentProcessor.this, sessionToken);
-        EventEmitter.dispatch(EventEmitter.UXEvent.UI_READY);
-        subscriber.onProcessingComplete(true, null, Customization.resultSuccessMessage);
-      }
+            // 3. call start session
+            FaceVerification.getSessionToken(new FaceVerification.SessionTokenCallback() {
+              @Override
+              public void onSessionTokenReceived(String sessionToken) {
+                FaceTecSessionActivity.createAndLaunchSession(context, EnrollmentProcessor.this, sessionToken);
+                EventEmitter.dispatch(EventEmitter.UXEvent.UI_READY);
+                subscriber.onProcessingComplete(true, null, Customization.resultSuccessMessage);
+              }
 
-      @Override
-      public void onFailure(FaceVerification.APIException exception) {
-        exception.printStackTrace();
-        subscriber.onCameraAccessError();
-      }
-    });
+              @Override
+              public void onFailure(FaceVerification.APIException exception) {
+                exception.printStackTrace();
+                subscriber.onCameraAccessError();
+              }
+            });
+          } else {
+            subscriber.onCameraAccessError();
+          }
+          }
+        }
+      ));
+
+      permissionAwareActivity.requestPermissions(new String[] {permission}, mRequestCode, this);
+      mRequestCode++;
+    } catch (IllegalStateException e) {
+      e.printStackTrace();
+      subscriber.onCameraAccessError();
+    }
+
+
 
 
   }
@@ -109,5 +147,36 @@ public class EnrollmentProcessor implements FaceTecFaceScanProcessor {
 
   public void onFaceTecSDKCompletelyDone() {
     subscriber.onProcessingComplete(isSuccess, lastResult, lastMessage);
+  }
+
+  @Override
+  public boolean onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+    Request request = mRequests.get(requestCode);
+    request.callback.invoke(grantResults, getPermissionAwareActivity(), request.rationaleStatuses);
+    mRequests.remove(requestCode);
+    return mRequests.size() == 0;
+  }
+
+  private PermissionAwareActivity getPermissionAwareActivity() {
+    Activity activity = getCurrentActivity();
+    if (activity == null) {
+      throw new IllegalStateException(
+              "Tried to use permissions API while not attached to an " + "Activity.");
+    } else if (!(activity instanceof PermissionAwareActivity)) {
+      throw new IllegalStateException(
+              "Tried to use permissions API but the host Activity doesn't"
+                      + " implement PermissionAwareActivity.");
+    }
+    return (PermissionAwareActivity) activity;
+  }
+
+  private class Request {
+    public boolean[] rationaleStatuses;
+    public Callback callback;
+
+    public Request(boolean[] rationaleStatuses, Callback callback) {
+      this.rationaleStatuses = rationaleStatuses;
+      this.callback = callback;
+    }
   }
 }
