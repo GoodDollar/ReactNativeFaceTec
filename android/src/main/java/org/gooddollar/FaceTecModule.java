@@ -243,12 +243,12 @@ public class FaceTecModule extends ReactContextBaseJavaModule implements Permiss
                 }
 
                 FaceTecSDKStatus sdkStatus = FaceTecSDK.getStatus(activity);
-                String newLine = System.getProperty("line.separator");
                 String customMessage = null;
 
                 // if status still hasn't been initialized it means user is using an emulator
                 if (sdkStatus == FaceTecSDKStatus.NEVER_INITIALIZED) {
-                    customMessage = "Initialize wasn't attempted as Android Emulator has been detected." + newLine + "FaceTec SDK could be ran on the real devices only";
+                    customMessage = "Initialize wasn't attempted as Android Emulator has been detected."
+                        + "FaceTec SDK could be ran on the real devices only";
                 }
 
                 RCTPromise.rejectWith(promise, sdkStatus, customMessage);

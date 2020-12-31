@@ -23,7 +23,6 @@ class EventEmitter {
 
     func register(withRCTEventEmitter: RCTEventEmitter) {
         Self.rctEventEmitter = withRCTEventEmitter
-        restore()
     }
 
     func suspend() {

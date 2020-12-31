@@ -135,11 +135,13 @@ open class FaceTecModule: RCTEventEmitter {
         rejecter reject: @escaping RCTPromiseRejectBlock) -> Void
     {
         let promise = Promise(resolve, reject)
-        let presentedVC = RCTPresentedViewController()!
         let delegate = PromiseProcessingDelegate(promise)
-        let processor = EnrollmentProcessor(fromVC: presentedVC, delegate: delegate)
-
-        processor.enroll(enrollmentIdentifier, maxRetries)
+        
+        getPresentedViewController() { presentedVC in
+            let processor = EnrollmentProcessor(fromVC: presentedVC, delegate: delegate)
+            
+            processor.enroll(enrollmentIdentifier, maxRetries)
+        }
     }
     
     private func onInitializationAttempt(
@@ -169,6 +171,12 @@ open class FaceTecModule: RCTEventEmitter {
     private func getSDKStatus(completion: @escaping (FaceTecSDKStatus) -> Void) -> Void {
         DispatchQueue.main.async {
             completion(FaceTec.sdk.getStatus())
+        }
+    }
+    
+    private func getPresentedViewController(completion: @escaping (UIViewController) -> Void) -> Void {
+        DispatchQueue.main.async {
+            completion(RCTPresentedViewController()!)
         }
     }
 }

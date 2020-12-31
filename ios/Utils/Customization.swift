@@ -117,6 +117,7 @@ final class Customization {
         resultScreen.resultAnimationBackgroundColor = white
         resultScreen.resultAnimationForegroundColor = primary
         resultScreen.customActivityIndicatorImage = UIImage(named: "ActivityIndicator", in: defaultBundle, compatibleWith: nil)!
+        resultScreen.customActivityIndicatorRotationInterval = 3000        
         
         return ui
     }()
