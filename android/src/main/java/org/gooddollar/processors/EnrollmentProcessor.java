@@ -63,8 +63,22 @@ public class EnrollmentProcessor implements FaceTecFaceScanProcessor {
     // 1. request camera permissions. if fails - call subscriber.onCameraAccessError()
     // 2. store enrollmentIdentifier and maxRetries in the corresponding instance vars
     // 3. call start session
-    EventEmitter.dispatch(EventEmitter.UXEvent.UI_READY);
-    subscriber.onProcessingComplete(true, null, Customization.resultSuccessMessage);
+    FaceVerification.getSessionToken(new FaceVerification.SessionTokenCallback() {
+      @Override
+      public void onSessionTokenReceived(String sessionToken) {
+        FaceTecSessionActivity.createAndLaunchSession(context, EnrollmentProcessor.this, sessionToken);
+        EventEmitter.dispatch(EventEmitter.UXEvent.UI_READY);
+        subscriber.onProcessingComplete(true, null, Customization.resultSuccessMessage);
+      }
+
+      @Override
+      public void onFailure(FaceVerification.APIException exception) {
+        exception.printStackTrace();
+        subscriber.onCameraAccessError();
+      }
+    });
+
+
   }
 
   public void processSessionWhileFaceTecSDKWaits(final FaceTecSessionResult sessionResult, final FaceTecFaceScanResultCallback faceScanResultCallback) {
