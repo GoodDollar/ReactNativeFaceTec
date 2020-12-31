@@ -198,7 +198,6 @@ public class FaceTecModule extends ReactContextBaseJavaModule {
                 }
 
                 FaceTecSDKStatus sdkStatus = FaceTecSDK.getStatus(activity);
-                String newLine = System.getProperty("line.separator");
                 String customMessage = null;
 
                 // if status still hasn't been initialized it means user is using an emulator
