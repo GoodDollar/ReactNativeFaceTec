@@ -198,27 +198,19 @@ public class FaceTecModule extends ReactContextBaseJavaModule implements Permiss
             rationaleStatuses[0] = permissionAwareActivity.shouldShowRequestPermissionRationale(permission);
 
             mRequests.put(mRequestCode, new Request(
-                    rationaleStatuses,
-                    new Callback() {
-                        @Override
-                        public void invoke(Object... args) {
-                            int[] results = (int[]) args[0];
-
-                            if (results.length > 0 && results[0] == PackageManager.PERMISSION_GRANTED) {
-                                processor.enroll(enrollmentIdentifier, maxRetries);
-                            } else {
-                                PermissionAwareActivity activity = (PermissionAwareActivity) args[1];
-                                boolean[] rationaleStatuses = (boolean[]) args[2];
-
-                                if (rationaleStatuses[0] &&
-                                        !activity.shouldShowRequestPermissionRationale(permission)) {
-                                    subscriber.onCameraAccessError();
-                                } else {
-                                    subscriber.onCameraAccessError();
-                                }
-                            }
+                rationaleStatuses,
+                new Callback() {
+                    @Override
+                    public void invoke(Object... args) {
+                        int[] results = (int[]) args[0];
+                        // check if permission has been granted, if not reject with error
+                        if (results.length > 0 && results[0] == PackageManager.PERMISSION_GRANTED) {
+                            processor.enroll(enrollmentIdentifier, maxRetries);
+                        } else {
+                            subscriber.onCameraAccessError();
                         }
                     }
+                }
             ));
 
             permissionAwareActivity.requestPermissions(new String[] {permission}, mRequestCode, this);
