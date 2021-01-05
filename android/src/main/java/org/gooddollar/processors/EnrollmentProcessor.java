@@ -38,7 +38,7 @@ public class EnrollmentProcessor implements FaceTecFaceScanProcessor, Permission
   private String enrollmentIdentifier = null;
   private boolean isSuccess = false;
 
-  private final SparseArray<Request> mRequests;
+  private final SparseArray<Request> mRequests = new SparseArray<Request>();
   private int mRequestCode = 0;
 
   // TODO: see EnrollmentProcessor.swift
@@ -52,7 +52,6 @@ public class EnrollmentProcessor implements FaceTecFaceScanProcessor, Permission
   public EnrollmentProcessor(Context context, ProcessingSubscriber subscriber) {
     this.context = context;
     this.subscriber = subscriber;
-    mRequests = new SparseArray<Request>();
   }
 
   public ProcessingSubscriber getSubscriber() {
@@ -140,7 +139,6 @@ public class EnrollmentProcessor implements FaceTecFaceScanProcessor, Permission
       public void onSessionTokenReceived(String sessionToken) {
         FaceTecSessionActivity.createAndLaunchSession(context, EnrollmentProcessor.this, sessionToken);
         EventEmitter.dispatch(EventEmitter.UXEvent.UI_READY);
-        subscriber.onProcessingComplete(true, null, Customization.resultSuccessMessage);
       }
 
       @Override
@@ -152,15 +150,19 @@ public class EnrollmentProcessor implements FaceTecFaceScanProcessor, Permission
   }
 
   private PermissionAwareActivity getPermissionAwareActivity() {
-    if (this.context == null) {
+    Context ctx = this.context;
+    
+    if (ctx == null) {
       throw new IllegalStateException(
               "Tried to use permissions API while not attached to an " + "Activity.");
-    } else if (!(this.context instanceof PermissionAwareActivity)) {
-      throw new IllegalStateException(
-              "Tried to use permissions API but the host Activity doesn't"
-                      + " implement PermissionAwareActivity.");
     }
-    return (PermissionAwareActivity) this.context;
+    
+    if (ctx instanceof PermissionAwareActivity) {
+        return (PermissionAwareActivity)ctx;
+    }
+  throw new IllegalStateException(
+      "Tried to use permissions API but the host Activity doesn't implement PermissionAwareActivity."
+  );
   }
 
   private class Request {
