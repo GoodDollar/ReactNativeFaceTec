@@ -167,12 +167,12 @@ public class FaceTecModule extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod
-    public void faceVerification(String enrollmentIdentifier,
-        int maxRetries, Promise promise
+    public void faceVerification(final String enrollmentIdentifier,
+                                 final int maxRetries, Promise promise
     ) {
         Activity activity = getCurrentActivity();
-        ProcessingSubscriber subscriber = new ProcessingSubscriber(promise);
-        EnrollmentProcessor processor = new EnrollmentProcessor(activity, subscriber);
+        final ProcessingSubscriber subscriber = new ProcessingSubscriber(promise);
+        final EnrollmentProcessor processor = new EnrollmentProcessor(activity, subscriber);
 
         if (lastProcessor != null) {
             ProcessingSubscriber lastSubscriber = lastProcessor.getSubscriber();
