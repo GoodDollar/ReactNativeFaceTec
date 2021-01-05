@@ -38,7 +38,7 @@ public class EnrollmentProcessor implements FaceTecFaceScanProcessor, Permission
   private String enrollmentIdentifier = null;
   private boolean isSuccess = false;
 
-  private final SparseArray<Request> mRequests = new SparseArray<Request>();
+  private final SparseArray<PermissionsRequest> mRequests = new SparseArray<PermissionsRequest>();
   private int mRequestCode = 0;
 
   // TODO: see EnrollmentProcessor.swift
@@ -63,40 +63,31 @@ public class EnrollmentProcessor implements FaceTecFaceScanProcessor, Permission
   }
 
   public void enroll(final String enrollmentIdentifier, @Nullable final Integer maxRetries) {
-    // request camera permissions. if fails - call subscriber.onCameraAccessError()
-    try {
-      final String permission = "android.permission.CAMERA";
-      PermissionAwareActivity permissionAwareActivity = getPermissionAwareActivity();
-      boolean[] rationaleStatuses = new boolean[1];
-      rationaleStatuses[0] = permissionAwareActivity.shouldShowRequestPermissionRationale(permission);
+    final Context ctx = this.context;
 
-      mRequests.put(mRequestCode, new Request(
-        rationaleStatuses,
-        new Callback() {
-          @Override
-          public void invoke(Object... args) {
-          int[] results = (int[]) args[0];
-          // check if permission has been granted, if not reject with error
-          if (results.length > 0 && results[0] == PackageManager.PERMISSION_GRANTED) {
-            // store enrollmentIdentifier and maxRetries in the corresponding instance vars
-            this.enrollmentIdentifier = enrollmentIdentifier;
-            this.maxRetries = maxRetries;
+    final SessionCallback onSessionTokenRetrieved = new SessionCallback() {
+      @Override
+      void onSuccess(String sessionToken) {
+        // when got token successfully - start session
+        FaceTecSessionActivity.createAndLaunchSession(ctx, EnrollmentProcessor.this, sessionToken);
+        EventEmitter.dispatch(EventEmitter.UXEvent.UI_READY);
+      }
+    };
 
-            // start FV session
-            startSession();
-          } else {
-            subscriber.onCameraAccessError();
-          }
-          }
-        }
-      ));
+    final PermissionsCallback onCameraAccessGranted = new PermissionsCallback() {
+      @Override
+      void onSuccess() {
+        // on premissions granted - issue token
+        EnrollmentProcessor.this.startSession(onSessionTokenRetrieved);
+      }
+    };
 
-      permissionAwareActivity.requestPermissions(new String[] {permission}, mRequestCode, this);
-      mRequestCode++;
-    } catch (IllegalStateException e) {
-      e.printStackTrace();
-      subscriber.onCameraAccessError();
-    }
+    // store enrollmentIdentifier and maxRetries in the corresponding instance vars
+    this.enrollmentIdentifier = enrollmentIdentifier;
+    this.maxRetries = maxRetries;
+
+    // request camera permissions.
+    requestCameraPermissions(onCameraAccessGranted);
   }
 
   public void processSessionWhileFaceTecSDKWaits(final FaceTecSessionResult sessionResult, final FaceTecFaceScanResultCallback faceScanResultCallback) {
@@ -127,23 +118,53 @@ public class EnrollmentProcessor implements FaceTecFaceScanProcessor, Permission
 
   @Override
   public boolean onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
-    Request request = mRequests.get(requestCode);
+    PermissionsRequest request = mRequests.get(requestCode);
+
     request.callback.invoke(grantResults, getPermissionAwareActivity(), request.rationaleStatuses);
     mRequests.remove(requestCode);
     return mRequests.size() == 0;
   }
 
-  private void startSession() {
+  private void requestCameraPermissions(final PermissionsCallback callback) {
+    try {
+      final String permission = "android.permission.CAMERA";
+      PermissionAwareActivity permissionAwareActivity = getPermissionAwareActivity();
+      boolean[] rationaleStatuses = new boolean[] {permissionAwareActivity.shouldShowRequestPermissionRationale(permission)}
+
+      mRequests.put(mRequestCode, new PermissionsRequest(
+        rationaleStatuses,
+        new Callback() {
+          @Override
+          public void invoke(Object... args) {
+            int[] results = (int[]) args[0];
+
+            // check if permission has been granted, if not reject with error
+            if (results.length > 0 && results[0] == PackageManager.PERMISSION_GRANTED) {
+              callback.onSuccess();
+              return;
+            }
+
+            subscriber.onCameraAccessError();
+          }
+        }
+      ));
+
+      permissionAwareActivity.requestPermissions(new String[]{permission}, mRequestCode, this);
+      mRequestCode++;
+    } catch (Exception e) {
+      subscriber.onCameraAccessError();
+    }
+  }
+
+  private void startSession(final SessionCallback callback) {
     FaceVerification.getSessionToken(new FaceVerification.SessionTokenCallback() {
       @Override
       public void onSessionTokenReceived(String sessionToken) {
-        FaceTecSessionActivity.createAndLaunchSession(context, EnrollmentProcessor.this, sessionToken);
-        EventEmitter.dispatch(EventEmitter.UXEvent.UI_READY);
+        callback.onSuccess(sessionToken);
       }
 
       @Override
       public void onFailure(FaceVerification.APIException exception) {
-        exception.printStackTrace();
         subscriber.onCameraAccessError();
       }
     });
@@ -151,25 +172,34 @@ public class EnrollmentProcessor implements FaceTecFaceScanProcessor, Permission
 
   private PermissionAwareActivity getPermissionAwareActivity() {
     Context ctx = this.context;
-    
+
     if (ctx == null) {
       throw new IllegalStateException(
-              "Tried to use permissions API while not attached to an " + "Activity.");
+        "Tried to use permissions API while not attached to an " + "Activity.");
     }
-    
+
     if (ctx instanceof PermissionAwareActivity) {
-        return (PermissionAwareActivity)ctx;
+      return (PermissionAwareActivity)ctx;
     }
-  throw new IllegalStateException(
+
+    throw new IllegalStateException(
       "Tried to use permissions API but the host Activity doesn't implement PermissionAwareActivity."
-  );
+    );
   }
 
-  private class Request {
+  private interface PermissionsCallback {
+    void onSuccess();
+  }
+
+  private interface SessionCallback {
+    void onSuccess(String sessionToken);
+  }
+
+  private class PermissionsRequest {
     public boolean[] rationaleStatuses;
     public Callback callback;
 
-    public Request(boolean[] rationaleStatuses, Callback callback) {
+    public PermissionsRequest(boolean[] rationaleStatuses, Callback callback) {
       this.rationaleStatuses = rationaleStatuses;
       this.callback = callback;
     }

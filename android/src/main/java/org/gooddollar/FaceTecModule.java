@@ -27,7 +27,7 @@ import com.facetec.sdk.FaceTecSDK;
 import com.facetec.sdk.FaceTecSessionStatus;
 import com.facetec.sdk.FaceTecSDKStatus;
 
-public class FaceTecModule extends ReactContextBaseJavaModule implements PermissionListener {
+public class FaceTecModule extends ReactContextBaseJavaModule {
     private final ReactApplicationContext reactContext;
     private EnrollmentProcessor lastProcessor = null;
 
