@@ -41,6 +41,24 @@ public class EnrollmentProcessor implements FaceTecFaceScanProcessor, Permission
   private final SparseArray<PermissionsRequest> mRequests = new SparseArray<PermissionsRequest>();
   private int mRequestCode = 0;
 
+  private interface PermissionsCallback {
+    void onSuccess();
+  }
+
+  private interface SessionCallback {
+    void onSuccess(String sessionToken);
+  }
+
+  private class PermissionsRequest {
+    public boolean[] rationaleStatuses;
+    public Callback callback;
+
+    public PermissionsRequest(boolean[] rationaleStatuses, Callback callback) {
+      this.rationaleStatuses = rationaleStatuses;
+      this.callback = callback;
+    }
+  }
+
   // TODO: see EnrollmentProcessor.swift
   // 3. process enrollment failure (including maxRetries logic - see EnrollmentProcessor.web.js)
   // a) FaceVerification.APIException has JSONObject getResponse() method which returns server response
@@ -67,7 +85,7 @@ public class EnrollmentProcessor implements FaceTecFaceScanProcessor, Permission
 
     final SessionCallback onSessionTokenRetrieved = new SessionCallback() {
       @Override
-      void onSuccess(String sessionToken) {
+      public void onSuccess(String sessionToken) {
         // when got token successfully - start session
         FaceTecSessionActivity.createAndLaunchSession(ctx, EnrollmentProcessor.this, sessionToken);
         EventEmitter.dispatch(EventEmitter.UXEvent.UI_READY);
@@ -76,7 +94,7 @@ public class EnrollmentProcessor implements FaceTecFaceScanProcessor, Permission
 
     final PermissionsCallback onCameraAccessGranted = new PermissionsCallback() {
       @Override
-      void onSuccess() {
+      public void onSuccess() {
         // on premissions granted - issue token
         EnrollmentProcessor.this.startSession(onSessionTokenRetrieved);
       }
@@ -129,7 +147,7 @@ public class EnrollmentProcessor implements FaceTecFaceScanProcessor, Permission
     try {
       final String permission = "android.permission.CAMERA";
       PermissionAwareActivity permissionAwareActivity = getPermissionAwareActivity();
-      boolean[] rationaleStatuses = new boolean[] {permissionAwareActivity.shouldShowRequestPermissionRationale(permission)}
+      boolean[] rationaleStatuses = new boolean[] { permissionAwareActivity.shouldShowRequestPermissionRationale(permission) };
 
       mRequests.put(mRequestCode, new PermissionsRequest(
         rationaleStatuses,
@@ -175,33 +193,15 @@ public class EnrollmentProcessor implements FaceTecFaceScanProcessor, Permission
 
     if (ctx == null) {
       throw new IllegalStateException(
-        "Tried to use permissions API while not attached to an " + "Activity.");
+        "Tried to use permissions API while not attached to an Activity.");
     }
 
     if (ctx instanceof PermissionAwareActivity) {
-      return (PermissionAwareActivity)ctx;
+      return (PermissionAwareActivity) ctx;
     }
 
     throw new IllegalStateException(
       "Tried to use permissions API but the host Activity doesn't implement PermissionAwareActivity."
     );
-  }
-
-  private interface PermissionsCallback {
-    void onSuccess();
-  }
-
-  private interface SessionCallback {
-    void onSuccess(String sessionToken);
-  }
-
-  private class PermissionsRequest {
-    public boolean[] rationaleStatuses;
-    public Callback callback;
-
-    public PermissionsRequest(boolean[] rationaleStatuses, Callback callback) {
-      this.rationaleStatuses = rationaleStatuses;
-      this.callback = callback;
-    }
   }
 }
