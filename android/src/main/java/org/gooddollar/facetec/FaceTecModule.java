@@ -1,4 +1,4 @@
-package org.gooddollar;
+package org.gooddollar.facetec;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -15,13 +15,13 @@ import com.facebook.react.modules.core.DeviceEventManagerModule;
 import java.util.Map;
 import java.util.HashMap;
 
-import org.gooddollar.api.FaceVerification;
-import org.gooddollar.processors.EnrollmentProcessor;
-import org.gooddollar.processors.ProcessingSubscriber;
+import org.gooddollar.facetec.api.FaceVerification;
+import org.gooddollar.facetec.processors.EnrollmentProcessor;
+import org.gooddollar.facetec.processors.ProcessingSubscriber;
 
-import org.gooddollar.util.EventEmitter;
-import org.gooddollar.util.Customization;
-import org.gooddollar.util.RCTPromise;
+import org.gooddollar.facetec.util.EventEmitter;
+import org.gooddollar.facetec.util.Customization;
+import org.gooddollar.facetec.util.RCTPromise;
 
 import com.facetec.sdk.FaceTecSDK;
 import com.facetec.sdk.FaceTecSessionStatus;

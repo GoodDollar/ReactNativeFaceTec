@@ -88,7 +88,7 @@ def configureReactNativePom(def pom) {
         name packageJson.title
         artifactId packageJson.name
         version = packageJson.version
-        group = "org.gooddollar"
+        group = "org.gooddollar.facetec"
         description packageJson.description
         url packageJson.repository.baseUrl
 

@@ -1,4 +1,4 @@
-package org.gooddollar.processors;
+package org.gooddollar.facetec.processors;
 
 import androidx.annotation.Nullable;
 
@@ -18,10 +18,10 @@ import com.facetec.sdk.FaceTecSessionActivity;
 import com.facetec.sdk.FaceTecSessionStatus;
 import com.facetec.sdk.FaceTecSessionResult;
 
-import org.gooddollar.api.FaceVerification;
-import org.gooddollar.processors.ProcessingSubscriber;
-import org.gooddollar.util.EventEmitter;
-import org.gooddollar.util.Customization;
+import org.gooddollar.facetec.api.FaceVerification;
+import org.gooddollar.facetec.processors.ProcessingSubscriber;
+import org.gooddollar.facetec.util.EventEmitter;
+import org.gooddollar.facetec.util.Customization;
 
 import okhttp3.RequestBody;
 import org.json.JSONObject;

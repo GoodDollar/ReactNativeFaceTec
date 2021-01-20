@@ -1,4 +1,4 @@
-package org.gooddollar.util;
+package org.gooddollar.facetec.util;
 
 import androidx.annotation.NonNull;
 import java.io.IOException;

@@ -1,4 +1,4 @@
-package org.gooddollar;
+package org.gooddollar.facetec;
 
 import java.util.Arrays;
 import java.util.Collections;

@@ -1,9 +1,9 @@
-package org.gooddollar.processors;
+package org.gooddollar.facetec.processors;
 
 import androidx.annotation.Nullable;
 
 import com.facebook.react.bridge.Promise;
-import org.gooddollar.util.RCTPromise;
+import org.gooddollar.facetec.util.RCTPromise;
 
 import com.facetec.sdk.FaceTecSessionResult;
 import com.facetec.sdk.FaceTecSessionStatus;

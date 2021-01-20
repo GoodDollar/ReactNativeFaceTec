@@ -1,4 +1,4 @@
-package org.gooddollar.api;
+package org.gooddollar.facetec.api;
 
 import java.io.IOException;
 import androidx.annotation.Nullable;
@@ -14,7 +14,7 @@ import okhttp3.Response;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import org.gooddollar.api.NetworkingHelpers;
+import org.gooddollar.facetec.api.NetworkingHelpers;
 
 public final class FaceVerification {
   private FaceVerification() {}

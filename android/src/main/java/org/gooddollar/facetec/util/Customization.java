@@ -1,4 +1,4 @@
-package org.gooddollar.util;
+package org.gooddollar.facetec.util;
 
 import android.graphics.Color;
 import androidx.annotation.Nullable;

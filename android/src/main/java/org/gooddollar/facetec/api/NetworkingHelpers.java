@@ -1,4 +1,4 @@
-package org.gooddollar.api;
+package org.gooddollar.facetec.api;
 
 import android.os.Build;
 import androidx.annotation.NonNull;
