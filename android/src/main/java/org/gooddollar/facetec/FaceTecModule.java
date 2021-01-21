@@ -135,8 +135,8 @@ public class FaceTecModule extends ReactContextBaseJavaModule {
 
     @ReactMethod
     public void initializeSDK(String serverURL, String jwtAccessToken,
-          String licenseKey, String encryptionKey, String licenseText,
-          final Promise promise
+        String licenseKey, String encryptionKey, String licenseText,
+        final Promise promise
     ) {
         final Activity activity = getCurrentActivity();
         FaceTecSDKStatus status = FaceTecSDK.getStatus(activity);
@@ -168,7 +168,7 @@ public class FaceTecModule extends ReactContextBaseJavaModule {
 
     @ReactMethod
     public void faceVerification(final String enrollmentIdentifier,
-                                 final int maxRetries, Promise promise
+        final int maxRetries, Promise promise
     ) {
         Activity activity = getCurrentActivity();
         final ProcessingSubscriber subscriber = new ProcessingSubscriber(promise);
@@ -184,13 +184,15 @@ public class FaceTecModule extends ReactContextBaseJavaModule {
         processor.enroll(enrollmentIdentifier, maxRetries);
     }
 
-    private FaceTecSDK.InitializeCallback onInitializationAttempt(final Activity activity, final Promise promise) {
+    private FaceTecSDK.InitializeCallback onInitializationAttempt(
+        final Activity activity, final Promise promise
+    ) {
         // unique callback for both prod|dev init
         return new FaceTecSDK.InitializeCallback() {
             @Override
             public void onCompletion(final boolean successful) {
                 // the value of successful determines if the sdk has been initialized or not
-                if(successful) {
+                if (successful) {
                     // status is already initialized - resolve promise with true
                     FaceTecSDK.setDynamicStrings(Customization.UITextStrings);
                     promise.resolve(true);

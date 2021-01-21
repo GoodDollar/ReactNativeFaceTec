@@ -38,7 +38,7 @@ class EnrollmentProcessor: NSObject, FaceTecFaceScanProcessorDelegate, URLSessio
 
                 DispatchQueue.main.async {
                     let sessionVC = FaceTec.sdk.createSessionVC(faceScanProcessorDelegate: self, sessionToken: sessionToken)
-                    
+
                     self.presentSessionVCFrom.present(sessionVC, animated: true, completion: {
                         EventEmitter.shared.dispatch(.UI_READY)
                     })
@@ -75,14 +75,13 @@ class EnrollmentProcessor: NSObject, FaceTecFaceScanProcessorDelegate, URLSessio
 
         // updating the UX, upload progress from 10 to 80%
         resultCallback.onFaceScanUploadProgress(uploadedPercent: 0.1 + 0.7 * uploaded)
-         
+
         if (totalBytesSent == totalBytesExpectedToSend) {
             let processingMessage = NSMutableAttributedString.init(string: Customization.resultFacescanProcessingMessage)
 
             // switch status message to processing once upload completed
             resultCallback.onFaceScanUploadMessageOverride(uploadMessageOverride: processingMessage)
-            return
-        }                
+        }
     }
 
     private func startSession(sessionTokenCallback: @escaping (String) -> Void) {
@@ -124,7 +123,6 @@ class EnrollmentProcessor: NSObject, FaceTecFaceScanProcessorDelegate, URLSessio
             "faceScan": lastResult.faceScanBase64!,
             "auditTrailImage": lastResult.auditTrailCompressedBase64!.first!,
             "lowQualityAuditTrailImage": lastResult.lowQualityAuditTrailCompressedBase64!.first!,
-            "externalDatabaseRefID": enrollmentIdentifier!,
             "sessionId": lastResult.sessionId
         ]
 

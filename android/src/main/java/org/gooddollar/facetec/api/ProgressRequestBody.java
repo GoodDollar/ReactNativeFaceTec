@@ -1,4 +1,4 @@
-package org.gooddollar.facetec.util;
+package org.gooddollar.facetec.api;
 
 import androidx.annotation.NonNull;
 import java.io.IOException;
@@ -18,7 +18,7 @@ public class ProgressRequestBody extends RequestBody {
     private final RequestBody requestBody;
     private Listener listener;
 
-    ProgressRequestBody(RequestBody requestBody, Listener listener) {
+    public ProgressRequestBody(RequestBody requestBody, Listener listener) {
         this.requestBody = requestBody;
         this.listener = listener;
     }
@@ -71,7 +71,7 @@ public class ProgressRequestBody extends RequestBody {
         }
     }
 
-    interface Listener {
+    public interface Listener {
         void onUploadProgressChanged(long bytesWritten, long totalBytes);
     }
 }

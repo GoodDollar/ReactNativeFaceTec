@@ -51,11 +51,11 @@ public final class FaceVerification {
     void onFailure(APIException exception);
   }
 
-  public static interface APICallback extends CallbackBase {
+  public interface APICallback extends CallbackBase {
     void onSuccess(JSONObject response);
   }
 
-  public static interface SessionTokenCallback extends CallbackBase {
+  public interface SessionTokenCallback extends CallbackBase {
     void onSessionTokenReceived(String sessionToken);
   }
 
