@@ -4,6 +4,9 @@ import androidx.annotation.Nullable;
 import android.content.Context;
 import org.json.JSONObject;
 
+import com.facebook.react.bridge.WritableMap;
+import com.facebook.react.bridge.Arguments;
+
 import com.facetec.sdk.FaceTecSDK;
 import com.facetec.sdk.FaceTecFaceScanProcessor;
 import com.facetec.sdk.FaceTecFaceScanResultCallback;
@@ -32,6 +35,7 @@ public class EnrollmentProcessor implements FaceTecFaceScanProcessor {
   private String lastMessage = null;
 
   private int maxRetries = -1;
+  private int retryAttempt = 0;
   private String enrollmentIdentifier = null;
   private boolean isSuccess = false;
 
@@ -40,7 +44,7 @@ public class EnrollmentProcessor implements FaceTecFaceScanProcessor {
   public EnrollmentProcessor(Context context, ProcessingSubscriber subscriber) {
     this.context = context;
     this.subscriber = subscriber;
-    this.permissions = new Permissions(context);
+    permissions = new Permissions(context);
   }
 
   public ProcessingSubscriber getSubscriber() {
@@ -72,7 +76,10 @@ public class EnrollmentProcessor implements FaceTecFaceScanProcessor {
 
     // store enrollmentIdentifier and maxRetries in the corresponding instance vars
     this.enrollmentIdentifier = enrollmentIdentifier;
-    this.maxRetries = maxRetries;
+
+    if ((maxRetries != null) && (maxRetries > 0)) {
+      this.maxRetries = maxRetries;
+    }
 
     // request camera permissions.
     this.permissions.requestCameraPermissions(new Permissions.PermissionsCallback() {
@@ -93,8 +100,8 @@ public class EnrollmentProcessor implements FaceTecFaceScanProcessor {
     final FaceTecSessionResult sessionResult,
     final FaceTecFaceScanResultCallback faceScanResultCallback
   ) {
-    this.lastResult = sessionResult;
-    this.lastResultCallback = faceScanResultCallback;
+    lastResult = sessionResult;
+    lastResultCallback = faceScanResultCallback;
 
     if (sessionResult.getStatus() != FaceTecSessionStatus.SESSION_COMPLETED_SUCCESSFULLY) {
       NetworkingHelpers.cancelPendingRequests();
@@ -108,16 +115,6 @@ public class EnrollmentProcessor implements FaceTecFaceScanProcessor {
 
     // perform verification
     sendEnrollmentRequest();
-    // TODO: see EnrollmentProcessor.swift and EnrollmentProcessor.java from the demo app
-    // 9. in onFailure
-    // if error is FaceVerification.APIException and getResponse() doesn't returns null = call process enrollment failure helper
-    // otherwise - just .cancel()
-    // to process enrollment failure (including maxRetries logic - see EnrollmentProcessor.web.js)
-    // a) FaceVerification.APIException has JSONObject getResponse() method which returns server response
-    // b) we're calling OUR server so it will have { success, error, enrollmentResult: { isLive, isEnroll, ... etc flags } } shape
-    // c) look at the web processor fot the logic should be used
-    // d) call lastResultCallback.cancel() or retry()
-    // e) dispatch FV_RETRY event if retry
   }
 
   public void onFaceTecSDKCompletelyDone() {
@@ -125,7 +122,7 @@ public class EnrollmentProcessor implements FaceTecFaceScanProcessor {
   }
 
   private RequestBody createEnrollmentRequest(JSONObject payload) {
-    final FaceTecFaceScanResultCallback resultCallback = this.lastResultCallback;
+    final FaceTecFaceScanResultCallback resultCallback = lastResultCallback;
 
     return new ProgressRequestBody(FaceVerification.jsonStringify(payload),
       new ProgressRequestBody.Listener() {
@@ -147,24 +144,24 @@ public class EnrollmentProcessor implements FaceTecFaceScanProcessor {
   }
 
   private void sendEnrollmentRequest() {
-    final FaceTecFaceScanResultCallback resultCallback = this.lastResultCallback;
+    final FaceTecFaceScanResultCallback resultCallback = lastResultCallback;
     JSONObject payload = new JSONObject();
 
     // setting initial progress to 0 for freeze progress bar
     resultCallback.uploadProgress(0);
 
     try {
-      payload.put("faceScan", this.lastResult.getFaceScanBase64());
-      payload.put("auditTrailImage", this.lastResult.getAuditTrailCompressedBase64()[0]);
-      payload.put("lowQualityAuditTrailImage", this.lastResult.getLowQualityAuditTrailCompressedBase64()[0]);
-      payload.put("sessionId", this.lastResult.getSessionId());
+      payload.put("faceScan", lastResult.getFaceScanBase64());
+      payload.put("auditTrailImage", lastResult.getAuditTrailCompressedBase64()[0]);
+      payload.put("lowQualityAuditTrailImage", lastResult.getLowQualityAuditTrailCompressedBase64()[0]);
+      payload.put("sessionId", lastResult.getSessionId());
     } catch(Exception e) {
-      this.lastMessage = "Exception raised while attempting to create JSON payload for upload.";
+      lastMessage = "Exception raised while attempting to create JSON payload for upload.";
       resultCallback.cancel();
     }
 
     RequestBody request = createEnrollmentRequest(payload);
-    FaceVerification.enroll(this.enrollmentIdentifier, request, new FaceVerification.APICallback() {
+    FaceVerification.enroll(enrollmentIdentifier, request, new FaceVerification.APICallback() {
       @Override
       public void onSuccess(JSONObject response) {
         String successMessage = Customization.resultSuccessMessage;
@@ -190,12 +187,50 @@ public class EnrollmentProcessor implements FaceTecFaceScanProcessor {
     JSONObject response = exception.getResponse();
 
     // by default we'll use exception's message as lastMessage
-    this.lastMessage = exception.getMessage();
+    lastMessage = exception.getMessage();
 
     if (response != null) {
-      // TODO: check response, check is liveness issue, apply retry logic
+      JSONObject enrollmentResult = response.optJSONObject("enrollmentResult");
+
+      if (enrollmentResult == null) {
+        enrollmentResult = new JSONObject();
+      }
+
+      // if isDuplicate is strictly true, that means we have dup face
+      boolean isDuplicateIssue = enrollmentResult.optBoolean("isDuplicate", false);
+      boolean is3DMatchIssue = enrollmentResult.optBoolean("isNotMatch", false);
+      boolean isEnrolled = enrollmentResult.optBoolean("isEnrolled", false);
+      // in JS code we're checking for false === isLive strictly. so if no isLive flag in the response,
+      // we assume that liveness check was successfull. That's why we're setting true as fallback value
+      boolean isLivenessIssue = enrollmentResult.optBoolean("isLive", true);
+
+      // if there's no duplicate / 3d match issues but we have
+      // liveness issue strictly - we'll check for possible session retry
+      if (!isDuplicateIssue && !is3DMatchIssue && isLivenessIssue) {
+        // if haven't reached retries threshold or max retries is disabled
+        // (is null or < 0) we'll ask to retry capturing
+        if ((maxRetries < 0) || (retryAttempt < maxRetries)) {
+          // increasing retry attempts counter
+          retryAttempt += 1;
+          // showing reason
+          lastResultCallback.uploadMessageOverride(lastMessage);
+          // notifying about retry
+          lastResultCallback.retry();
+
+          // dispatching retry event
+          WritableMap eventData = Arguments.createMap();
+
+          eventData.putString("reason", lastMessage);
+          eventData.putBoolean("match3d", !is3DMatchIssue);
+          eventData.putBoolean("liveness", !isLivenessIssue);
+          eventData.putBoolean("duplicate", isDuplicateIssue);
+          eventData.putBoolean("enrolled", isEnrolled);
+
+          EventEmitter.dispatch(EventEmitter.UXEvent.FV_RETRY, eventData);
+        }
+      }
     }
 
-    this.lastResultCallback.cancel();
+    lastResultCallback.cancel();
   }
 }
