@@ -23,6 +23,7 @@ RCT_EXTERN_METHOD(
 RCT_EXTERN_METHOD(
   faceVerification:(NSString *)enrollmentIdentifier
   maxRetries:(NSNumber *)maxRetries
+  timeout:(NSNumber *)timeout
   resolver:(RCTPromiseResolveBlock)resolve
   rejecter:(RCTPromiseRejectBlock)reject
 )

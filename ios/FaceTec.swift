@@ -99,7 +99,7 @@ open class FaceTecModule: RCTEventEmitter {
         rejecter reject: @escaping RCTPromiseRejectBlock) -> Void
     {
         let promise = Promise(resolve, reject)
-        
+
         getSDKStatus() { sdkStatus in
             switch sdkStatus {
             case .initialized, .deviceInLandscapeMode, .deviceInReversePortraitMode:
@@ -107,17 +107,17 @@ open class FaceTecModule: RCTEventEmitter {
                 promise.resolve(true)
             case .neverInitialized, .networkIssues:
                 FaceVerification.shared.register(serverURL, jwtAccessToken)
-                
+
                 if !licenseText.isEmptyOrNil {
                     FaceTec.sdk.initializeInProductionMode(
                         productionKeyText: licenseText!,
                         deviceKeyIdentifier: licenseKey,
                         faceScanEncryptionKey: encryptionKey
                     ) { success in self.onInitializationAttempt(promise, success) }
-                    
+
                     return
                 }
-                
+
                 FaceTec.sdk.initializeInDevelopmentMode(
                     deviceKeyIdentifier: licenseKey,
                     faceScanEncryptionKey: encryptionKey
@@ -127,23 +127,23 @@ open class FaceTecModule: RCTEventEmitter {
             }
         }
     }
-    
+
     @objc(faceVerification:maxRetries:resolver:rejecter:)
     open func faceVerification(
-        _ enrollmentIdentifier: String, maxRetries: Int,
+        _ enrollmentIdentifier: String, maxRetries: Int, timeout: Int,
         resolver resolve: @escaping RCTPromiseResolveBlock,
         rejecter reject: @escaping RCTPromiseRejectBlock) -> Void
     {
         let promise = Promise(resolve, reject)
         let delegate = PromiseProcessingDelegate(promise)
-        
+
         getPresentedViewController() { presentedVC in
             let processor = EnrollmentProcessor(fromVC: presentedVC, delegate: delegate)
-            
-            processor.enroll(enrollmentIdentifier, maxRetries)
+
+            processor.enroll(enrollmentIdentifier, maxRetries, timeout)
         }
     }
-    
+
     private func onInitializationAttempt(
         _ promise: PromiseDelegate,
         _ initializationSuccessful: Bool
@@ -153,7 +153,7 @@ open class FaceTecModule: RCTEventEmitter {
             promise.resolve(initializationSuccessful)
             return
         }
-        
+
         getSDKStatus() { sdkStatus in
             var customMessage: String? = nil
 
@@ -167,13 +167,13 @@ open class FaceTecModule: RCTEventEmitter {
             promise.reject(sdkStatus, customMessage)
         }
     }
-    
+
     private func getSDKStatus(completion: @escaping (FaceTecSDKStatus) -> Void) -> Void {
         DispatchQueue.main.async {
             completion(FaceTec.sdk.getStatus())
         }
     }
-    
+
     private func getPresentedViewController(completion: @escaping (UIViewController) -> Void) -> Void {
         DispatchQueue.main.async {
             completion(RCTPresentedViewController()!)

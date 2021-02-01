@@ -24,28 +24,29 @@ import javax.net.ssl.SSLSocketFactory;
 public class NetworkingHelpers {
     private static OkHttpClient _apiClient = null;
     private static OkHttpClient createApiClient() {
-        OkHttpClient client = new OkHttpClient.Builder()
-                .connectTimeout(60, TimeUnit.SECONDS)
-                .readTimeout(60,TimeUnit.SECONDS)
-                .writeTimeout(60, TimeUnit.SECONDS)
-                .build();
+        OkHttpClient client = null;
+        OkHttpClient.Builder builder = setTimeouts(new OkHttpClient.Builder(), 60, TimeUnit.SECONDS);
 
         // Enabling support for TLSv1.1 and TLSv1.2 on Android 4.4 and below.
-        if(Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
             try {
-                client = new OkHttpClient.Builder()
-                        .sslSocketFactory(new TLSSocketFactory())
-                        .build();
+                client = builder.sslSocketFactory(new TLSSocketFactory()).build();
             } catch (KeyManagementException e) {
                 e.printStackTrace();
             } catch (NoSuchAlgorithmException e) {
                 e.printStackTrace();
             }
+        }
 
-            return client;
+        if (client == null) {
+            client = builder.build();
         }
 
         return client;
+    }
+
+    public static OkHttpClient.Builder setTimeouts(OkHttpClient.Builder builder, int timeout, TimeUnit unit = TimeUnit.SECONDS) {
+        return builder.connectTimeout(timeout, unit).readTimeout(timeout, unit).writeTimeout(timeout, unit).callTimeout(timeout, unit);
     }
 
     public static String OK_HTTP_BUILDER_TAG = "APIRequest";
@@ -55,6 +56,7 @@ public class NetworkingHelpers {
         if (_apiClient == null) {
             _apiClient = createApiClient();
         }
+
         return _apiClient;
     }
 

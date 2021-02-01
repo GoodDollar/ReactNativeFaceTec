@@ -13,6 +13,7 @@ class EnrollmentProcessor: NSObject, FaceTecFaceScanProcessorDelegate, URLSessio
     var lastResult: FaceTecSessionResult!
     var resultCallback: FaceTecFaceScanResultCallback!
     var retryAttempt = 0
+    var timeout: TimeInterval? = nil
 
     var delegate: ProcessingDelegate
     var presentSessionVCFrom: UIViewController
@@ -30,11 +31,22 @@ class EnrollmentProcessor: NSObject, FaceTecFaceScanProcessorDelegate, URLSessio
         super.init()
     }
 
-    func enroll(_ enrollmentIdentifier: String, _ maxRetries: Int? = nil) {
+    func enroll(_ enrollmentIdentifier: String, _ maxRetries: Int? = nil, _ timeout: Int? = nil) {
         requestCameraPermissions() {
             self.startSession() { sessionToken in
                 self.enrollmentIdentifier = enrollmentIdentifier
-                self.maxRetries = maxRetries ?? self.defaultMaxRetries
+                self.maxRetries = self.defaultMaxRetries
+
+                // there're issues with passing nil / null for numbers
+                // we're passing -1 if no param was set on JS side
+                // so here we have to add additional > (or >=) 0 check
+                if maxRetries != nil && maxRetries! >= 0 {
+                    self.maxRetries = maxRetries!
+                }
+
+                if timeout != nil && timeout! > 0 {
+                    self.timeout = (timeout as! Float) / 1000
+                }
 
                 DispatchQueue.main.async {
                     let sessionVC = FaceTec.sdk.createSessionVC(faceScanProcessorDelegate: self, sessionToken: sessionToken)
@@ -129,6 +141,7 @@ class EnrollmentProcessor: NSObject, FaceTecFaceScanProcessorDelegate, URLSessio
         FaceVerification.shared.enroll(
             enrollmentIdentifier!,
             payload,
+            withTimeout: timeout,
             withDelegate: self
         ) { response, error in
             self.resultCallback.onFaceScanUploadProgress(uploadedPercent: 1)

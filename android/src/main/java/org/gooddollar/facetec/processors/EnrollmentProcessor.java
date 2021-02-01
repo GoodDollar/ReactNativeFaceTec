@@ -34,6 +34,7 @@ public class EnrollmentProcessor implements FaceTecFaceScanProcessor {
   private FaceTecSessionResult lastResult = null;
   private String lastMessage = null;
 
+  private int timeout = null;
   private int maxRetries = -1;
   private int retryAttempt = 0;
   private String enrollmentIdentifier = null;
@@ -55,7 +56,7 @@ public class EnrollmentProcessor implements FaceTecFaceScanProcessor {
     enroll(enrollmentIdentifier, -1);
   }
 
-  public void enroll(final String enrollmentIdentifier, @Nullable final Integer maxRetries) {
+  public void enroll(final String enrollmentIdentifier, @Nullable final Integer maxRetries, @Nullable final Integer timeout) {
     final Context ctx = this.context;
     final ProcessingSubscriber subscriber = this.subscriber;
 
@@ -74,11 +75,15 @@ public class EnrollmentProcessor implements FaceTecFaceScanProcessor {
         }
       };
 
-    // store enrollmentIdentifier and maxRetries in the corresponding instance vars
+    // store enrollmentIdentifier, maxRetries and timeout in the corresponding instance vars
     this.enrollmentIdentifier = enrollmentIdentifier;
 
-    if ((maxRetries != null) && (maxRetries > 0)) {
+    if ((maxRetries != null) && (maxRetries >= 0)) {
       this.maxRetries = maxRetries;
+    }
+
+    if ((timeout != null) && (timeout > 0)) {
+      this.timeout = timeout;
     }
 
     // request camera permissions.
@@ -161,7 +166,7 @@ public class EnrollmentProcessor implements FaceTecFaceScanProcessor {
     }
 
     RequestBody request = createEnrollmentRequest(payload);
-    FaceVerification.enroll(enrollmentIdentifier, request, new FaceVerification.APICallback() {
+    FaceVerification.enroll(enrollmentIdentifier, request, timeout, new FaceVerification.APICallback() {
       @Override
       public void onSuccess(JSONObject response) {
         String successMessage = Customization.resultSuccessMessage;

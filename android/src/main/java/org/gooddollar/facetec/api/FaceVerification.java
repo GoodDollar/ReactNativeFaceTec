@@ -1,6 +1,7 @@
 package org.gooddollar.facetec.api;
 
 import java.io.IOException;
+import java.util.concurrent.TimeUnit;
 import androidx.annotation.Nullable;
 
 import okhttp3.OkHttpClient;
@@ -95,13 +96,21 @@ public final class FaceVerification {
   }
 
   public static void enroll(String enrollmentIdentifier, JSONObject payload, final APICallback callback) {
-    enroll(enrollmentIdentifier, jsonStringify(payload), callback);
+    enroll(enrollmentIdentifier, jsonStringify(payload), null, callback);
   }
 
   public static void enroll(String enrollmentIdentifier, RequestBody customRequest, final APICallback callback) {
+    enroll(enrollmentIdentifier, customRequest, null, callback);
+  }
+
+  public static void enroll(String enrollmentIdentifier, JSONObject payload, @Nullable int timeout, final APICallback callback) {
+    enroll(enrollmentIdentifier, jsonStringify(payload), timeout, callback);
+  }
+
+  public static void enroll(String enrollmentIdentifier, RequestBody customRequest, @Nullable int timeout, final APICallback callback) {
     Request enrollmentRequest = createRequest("/verify/face/" + enrollmentIdentifier, "put", customRequest);
 
-    sendRequest(enrollmentRequest, callback);
+    sendRequest(enrollmentRequest, timeout, callback);
   }
 
   private static Request createRequest(String url, @Nullable String method, @Nullable RequestBody body) {
@@ -129,7 +138,17 @@ public final class FaceVerification {
   }
 
   private static void sendRequest(Request request, final APICallback requestCallback) {
-    http.newCall(request).enqueue(new Callback() {
+    sendRequest(request, null, requestCallback);
+  }
+
+  private static void sendRequest(Request request, @Nullable int timeout, final APICallback requestCallback) {
+    OkHttpClient httpClient = http
+
+    if (timeout != null) {
+      httpClient = NetworkingHelpers.setTimeouts(http.newBuilder(), timeout, TimeUnit.MILLISECONDS).build();
+    }
+
+    httpClient.newCall(request).enqueue(new Callback() {
       @Override
       public void onResponse(Call call, Response response) throws IOException {
         try {
