@@ -45,7 +45,7 @@ class EnrollmentProcessor: NSObject, FaceTecFaceScanProcessorDelegate, URLSessio
                 }
 
                 if timeout != nil && timeout! > 0 {
-                    self.timeout = (timeout as! Float) / 1000
+                  self.timeout = Double(timeout!) / 1000
                 }
 
                 DispatchQueue.main.async {

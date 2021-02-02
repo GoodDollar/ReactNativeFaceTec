@@ -1,6 +1,7 @@
 package org.gooddollar.facetec.api;
 
 import android.os.Build;
+import androidx.annotation.Nullable;
 import androidx.annotation.NonNull;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -45,7 +46,7 @@ public class NetworkingHelpers {
         return client;
     }
 
-    public static OkHttpClient.Builder setTimeouts(OkHttpClient.Builder builder, int timeout, TimeUnit unit = TimeUnit.SECONDS) {
+    public static OkHttpClient.Builder setTimeouts(OkHttpClient.Builder builder, int timeout, TimeUnit unit) {
         return builder.connectTimeout(timeout, unit).readTimeout(timeout, unit).writeTimeout(timeout, unit).callTimeout(timeout, unit);
     }
 

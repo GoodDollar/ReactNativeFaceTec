@@ -128,7 +128,7 @@ open class FaceTecModule: RCTEventEmitter {
         }
     }
 
-    @objc(faceVerification:maxRetries:resolver:rejecter:)
+    @objc(faceVerification:maxRetries:timeout:resolver:rejecter:)
     open func faceVerification(
         _ enrollmentIdentifier: String, maxRetries: Int, timeout: Int,
         resolver resolve: @escaping RCTPromiseResolveBlock,

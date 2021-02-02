@@ -103,11 +103,11 @@ public final class FaceVerification {
     enroll(enrollmentIdentifier, customRequest, null, callback);
   }
 
-  public static void enroll(String enrollmentIdentifier, JSONObject payload, @Nullable int timeout, final APICallback callback) {
+  public static void enroll(String enrollmentIdentifier, JSONObject payload, @Nullable Integer timeout, final APICallback callback) {
     enroll(enrollmentIdentifier, jsonStringify(payload), timeout, callback);
   }
 
-  public static void enroll(String enrollmentIdentifier, RequestBody customRequest, @Nullable int timeout, final APICallback callback) {
+  public static void enroll(String enrollmentIdentifier, RequestBody customRequest, @Nullable Integer timeout, final APICallback callback) {
     Request enrollmentRequest = createRequest("/verify/face/" + enrollmentIdentifier, "put", customRequest);
 
     sendRequest(enrollmentRequest, timeout, callback);
@@ -141,8 +141,8 @@ public final class FaceVerification {
     sendRequest(request, null, requestCallback);
   }
 
-  private static void sendRequest(Request request, @Nullable int timeout, final APICallback requestCallback) {
-    OkHttpClient httpClient = http
+  private static void sendRequest(Request request, @Nullable Integer timeout, final APICallback requestCallback) {
+    OkHttpClient httpClient = http;
 
     if (timeout != null) {
       httpClient = NetworkingHelpers.setTimeouts(http.newBuilder(), timeout, TimeUnit.MILLISECONDS).build();

@@ -57,7 +57,7 @@ class FaceVerification {
         withTimeout: TimeInterval? = nil,
         enrollmentResultCallback: @escaping ([String: AnyObject]?, Error?) -> Void
     ) -> Void {
-        enroll(enrollmentIdentifier, payload, withTimeout, withDelegate: nil, callback: enrollmentResultCallback)
+      enroll(enrollmentIdentifier, payload, withTimeout: withTimeout, withDelegate: nil, callback: enrollmentResultCallback)
     }
 
     func enroll(
@@ -66,7 +66,7 @@ class FaceVerification {
         withDelegate: URLSessionDelegate? = nil,
         enrollmentResultCallback: @escaping ([String: AnyObject]?, Error?) -> Void
     ) -> Void {
-        enroll(enrollmentIdentifier, payload, withTimeout: nil, withDelegate, callback: enrollmentResultCallback)
+      enroll(enrollmentIdentifier, payload, withTimeout: nil, withDelegate: withDelegate, callback: enrollmentResultCallback)
     }
 
     func enroll(

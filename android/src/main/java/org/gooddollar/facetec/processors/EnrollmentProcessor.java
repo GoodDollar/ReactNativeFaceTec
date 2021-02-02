@@ -34,7 +34,7 @@ public class EnrollmentProcessor implements FaceTecFaceScanProcessor {
   private FaceTecSessionResult lastResult = null;
   private String lastMessage = null;
 
-  private int timeout = null;
+  private Integer timeout = null;
   private int maxRetries = -1;
   private int retryAttempt = 0;
   private String enrollmentIdentifier = null;
@@ -53,7 +53,11 @@ public class EnrollmentProcessor implements FaceTecFaceScanProcessor {
   }
 
   public void enroll(String enrollmentIdentifier) {
-    enroll(enrollmentIdentifier, -1);
+    enroll(enrollmentIdentifier, null, null);
+  }
+
+  public void enroll(String enrollmentIdentifier, final Integer maxRetries) {
+    enroll(enrollmentIdentifier, maxRetries, null);
   }
 
   public void enroll(final String enrollmentIdentifier, @Nullable final Integer maxRetries, @Nullable final Integer timeout) {
