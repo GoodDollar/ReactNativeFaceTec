@@ -28,7 +28,7 @@ export default function App () {
 
   const onPressVerify = useCallback(async () => {
     try {
-      await FaceTec.sdk.enroll(REACT_APP_ENROLLMENT_IDENTIFIER, 3)
+      await FaceTec.sdk.enroll(REACT_APP_ENROLLMENT_IDENTIFIER, 3, 60000)
 
       setVerified('verified')
     } catch (e) {

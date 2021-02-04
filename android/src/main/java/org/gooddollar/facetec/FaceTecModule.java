@@ -154,7 +154,7 @@ public class FaceTecModule extends ReactContextBaseJavaModule {
                 FaceVerification.register(serverURL, jwtAccessToken);
 
                 // based on licenseText value, init in prod|dev mode
-                if (!(licenseText == null || licenseText.isEmpty())) {
+                if (licenseText != null && !licenseText.isEmpty()) {
                     FaceTecSDK.initializeInProductionMode(activity, licenseText, licenseKey, encryptionKey, onInitializationAttempt(activity, promise));
                     return;
                 }
