@@ -82,7 +82,7 @@ public class Customization {
 
     // frame (zoom's popup) customizations
     // setting frame border, radius & elevation
-    frame.borderColor = withAlpha(white, 0);
+    frame.borderColor = withAlpha(white, 0.0f);
     frame.cornerRadius = defaultCornerRadius;
     frame.borderWidth = 0;
     frame.elevation = 19;
@@ -148,10 +148,9 @@ public class Customization {
   }
 
   private static int withAlpha(int color, float alpha) {
-    float red = Color.red(color);
-    float blue = Color.blue(color);
-    float green = Color.green(color);
+    int alphaComponent = (int) (alpha * (float) 0xff);
+    int colorWithoutAlpha = color & 0x00ffffff;
 
-    return Color.argb(alpha, red, green, blue);
+    return (alphaComponent & 0xff) << 24 | colorWithoutAlpha;
   }
 }
