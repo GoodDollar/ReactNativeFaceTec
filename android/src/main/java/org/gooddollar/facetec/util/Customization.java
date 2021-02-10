@@ -34,6 +34,8 @@ public class Customization {
 
   final private static int black = Color.BLACK;
   final private static int white = Color.WHITE;
+  final private static int whiteTransparent = 0x00ffffff;
+  final private static int whiteSemiTransparent = 0x80ffffff;
   final private static int green = Color.GREEN;
   final private static int darkGray = Color.DKGRAY;
   final private static int lightGray = Color.LTGRAY;
@@ -61,7 +63,7 @@ public class Customization {
 
     // removing branding image from overlay
     overlay.showBrandingImage = false;
-    overlay.backgroundColor = withAlpha(white, 0.5f);
+    overlay.backgroundColor = whiteSemiTransparent;
 
     // setting custom location & image of cancel button
     cancelButton.setLocation(FaceTecCancelButtonCustomization.ButtonLocation.TOP_RIGHT);
@@ -82,7 +84,7 @@ public class Customization {
 
     // frame (zoom's popup) customizations
     // setting frame border, radius & elevation
-    frame.borderColor = withAlpha(white, 0.0f);
+    frame.borderColor = whiteTransparent;
     frame.cornerRadius = defaultCornerRadius;
     frame.borderWidth = 0;
     frame.elevation = 19;
@@ -145,12 +147,5 @@ public class Customization {
     UITextStrings.put(R.string.FaceTec_retry_instruction_message_3, "Avoid Smiling & Back Light");
 
     UITextStrings.put(R.string.FaceTec_instructions_message_ready, "Please Frame Your Face In The Small Oval, Then The Big Oval");
-  }
-
-  private static int withAlpha(int color, float alpha) {
-    int alphaComponent = (int) (alpha * (float) 0xff);
-    int colorWithoutAlpha = color & 0x00ffffff;
-
-    return (alphaComponent & 0xff) << 24 | colorWithoutAlpha;
   }
 }
