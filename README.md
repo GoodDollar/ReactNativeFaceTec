@@ -2,16 +2,16 @@
 
 ## Getting started
 
-`$ npm install react-native-facetec --save`
+`$ npm install @gooddollar/react-native-facetec --save`
 
 ### Mostly automatic installation
 
-`$ react-native link react-native-facetec`
+`$ react-native link @gooddollar/react-native-facetec`
 
 ## Usage
 
 ```javascript
-import FaceTec from 'react-native-facetec';
+import FaceTec from '@gooddollar/react-native-facetec';
 import Config from 'react-native-config'
 
 const {
@@ -46,7 +46,7 @@ const onMyButtonClicked = useCallback(() => {
 ### Handling exceptions
 
 ```javascript
-import FaceTec, { FaceTecSDKStatus, FaceTecSessionStatus } from 'react-native-facetec';
+import FaceTec, { FaceTecSDKStatus, FaceTecSessionStatus } from '@gooddollar/react-native-facetec';
 
 // ...
 FaceTec.sdk.initialize(...).then(...)
@@ -69,7 +69,7 @@ FaceTec.sdk.enroll(...).then(...)
 ### Listening events
 
 ```javascript
-import FaceTec, { FaceTecUxEvent } from 'react-native-facetec';
+import FaceTec, { FaceTecUxEvent } from '@gooddollar/react-native-facetec';
 
 // ...
 // subscribe

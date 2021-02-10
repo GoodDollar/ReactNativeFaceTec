@@ -1,6 +1,6 @@
 {
   "name": "example",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "private": true,
   "scripts": {
     "android": "react-native run-android",
@@ -13,7 +13,7 @@
     "react": "16.13.1",
     "react-native": "0.63.4",
     "react-native-config": "^1.4.1",
-    "react-native-facetec": "link:../"
+    "@gooddollar/react-native-facetec": "link:../"
   },
   "devDependencies": {
     "@babel/core": "^7.12.10",

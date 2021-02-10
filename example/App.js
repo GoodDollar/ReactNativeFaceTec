@@ -10,7 +10,7 @@
 
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Button, StyleSheet, Text, View } from 'react-native';
-import FaceTec, { FaceTecUxEvent, FaceTecSDKStatus, FaceTecSessionStatus } from 'react-native-facetec';
+import FaceTec, { FaceTecUxEvent, FaceTecSDKStatus, FaceTecSessionStatus } from '@gooddollar/react-native-facetec';
 import Config from 'react-native-config'
 
 const {
