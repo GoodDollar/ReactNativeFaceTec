@@ -8,9 +8,9 @@
  * https://github.com/facebook/react-native
  */
 
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { Button, StyleSheet, Text, View } from 'react-native';
-import FaceTec, { FaceTecUxEvent, FaceTecSDKStatus, FaceTecSessionStatus } from '@gooddollar/react-native-facetec';
+import FaceTec from '@gooddollar/react-native-facetec';
 import Config from 'react-native-config'
 
 const {
@@ -21,6 +21,8 @@ const {
   REACT_APP_SERVER_TOKEN,
   REACT_APP_ENROLLMENT_IDENTIFIER,
 } = Config
+
+console.log(Config)
 
 export default function App () {
   const [status, setStatus] = useState('initializing')

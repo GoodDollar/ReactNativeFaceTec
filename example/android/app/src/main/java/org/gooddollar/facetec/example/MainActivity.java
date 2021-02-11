@@ -1,4 +1,4 @@
-package com.example;
+package org.gooddollar.facetec.example;
 
 import com.facebook.react.ReactActivity;
 

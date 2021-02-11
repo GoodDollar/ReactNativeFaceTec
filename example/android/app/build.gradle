@@ -137,7 +137,7 @@ android {
     }
 
     defaultConfig {
-        applicationId "com.example"
+        applicationId "org.gooddollar.facetec.example"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1
