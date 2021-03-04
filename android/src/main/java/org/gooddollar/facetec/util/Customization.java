@@ -45,6 +45,7 @@ public class Customization {
 
   final private static int defaultCornerRadius = 5;
   final private static int defaultFontSize = 12;
+  final private static int largeFontSize = 18;
 
   // "sans-serif" family resolves to the Roboto font
   final private static Typeface defaultFont = Typeface.create("sans-serif", Typeface.NORMAL);
@@ -70,11 +71,12 @@ public class Customization {
     cancelButton.customImage = drawable.facetec_cancel;
 
     // configuring feedback bar typography & border radius
-    feedback.backgroundColors = black;
+    feedback.backgroundColors = primary;
     feedback.cornerRadius = defaultCornerRadius;
     feedback.textColor = white;
     feedback.textFont = boldFont;
     feedback.textSize = 24;
+    feedback.elevation = 5;
 
     // setting oval border color & width
     oval.strokeWidth = 6;
@@ -98,7 +100,7 @@ public class Customization {
 
     // customizing buttons
     guidance.buttonFont = defaultFont;
-    guidance.buttonTextSize = defaultFontSize;
+    guidance.buttonTextSize = largeFontSize;
     guidance.buttonBorderWidth = 0;
     guidance.buttonCornerRadius = defaultCornerRadius;
     guidance.buttonTextNormalColor = white;
