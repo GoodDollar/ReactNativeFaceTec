@@ -45,7 +45,7 @@ public class Customization {
 
   final private static int defaultCornerRadius = 5;
   final private static int defaultFontSize = 12;
-  final private static int largeFontSize = 18;
+  final private static int buttonFontSize = 18;
 
   // "sans-serif" family resolves to the Roboto font
   final private static Typeface defaultFont = Typeface.create("sans-serif", Typeface.NORMAL);
@@ -100,7 +100,7 @@ public class Customization {
 
     // customizing buttons
     guidance.buttonFont = defaultFont;
-    guidance.buttonTextSize = largeFontSize;
+    guidance.buttonTextSize = buttonFontSize;
     guidance.buttonBorderWidth = 0;
     guidance.buttonCornerRadius = defaultCornerRadius;
     guidance.buttonTextNormalColor = white;
