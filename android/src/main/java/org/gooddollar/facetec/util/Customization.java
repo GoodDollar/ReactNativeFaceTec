@@ -149,6 +149,7 @@ public class Customization {
     UITextStrings.put(R.string.FaceTec_retry_instruction_message_2, "Light Your Face Evenly.");
     UITextStrings.put(R.string.FaceTec_retry_instruction_message_3, "Avoid Smiling & Back Light");
 
-    UITextStrings.put(R.string.FaceTec_instructions_message_ready, "Please Frame Your Face In The Small Oval, Then The Big Oval");
+    UITextStrings.put(R.string.FaceTec_instructions_message_ready_1, "Please Frame Your Face In The Small");
+    UITextStrings.put(R.string.FaceTec_instructions_message_ready_2, "Oval, Then The Big Oval");
   }
 }
