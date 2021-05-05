@@ -2,7 +2,6 @@ package org.gooddollar.facetec.util;
 
 import android.graphics.Color;
 import android.graphics.Typeface;
-import android.content.res.Resources;
 import androidx.annotation.Nullable;
 
 import com.facetec.sdk.R;
@@ -14,6 +13,7 @@ import com.facetec.sdk.FaceTecOvalCustomization;
 import com.facetec.sdk.FaceTecFrameCustomization;
 import com.facetec.sdk.FaceTecGuidanceCustomization;
 import com.facetec.sdk.FaceTecResultScreenCustomization;
+import com.facetec.sdk.FaceTecVocalGuidanceCustomization;
 
 import java.util.Map;
 import java.util.HashMap;
@@ -30,8 +30,6 @@ public class Customization {
   final public static FaceTecCustomization UICustomization = new FaceTecCustomization();
   final public static Map<Integer, String> UITextStrings = new HashMap<>();
 
-  final private static boolean isLargeDevice = Resources.getSystem().getDisplayMetrics().widthPixels >= 395;
-
   final private static int black = Color.BLACK;
   final private static int white = Color.WHITE;
   final private static int whiteTransparent = 0x00ffffff;
@@ -44,8 +42,6 @@ public class Customization {
   final private static int gray50Percent = 0xffcbcbcb;
 
   final private static int defaultCornerRadius = 5;
-  final private static int defaultFontSize = 12;
-  final private static int buttonFontSize = 18;
   final private static int buttonCornerRadius = 12;
 
   // "sans-serif" family resolves to the Roboto font
@@ -61,6 +57,7 @@ public class Customization {
     FaceTecOvalCustomization oval = UICustomization.getOvalCustomization();
     FaceTecFrameCustomization frame = UICustomization.getFrameCustomization();
     FaceTecGuidanceCustomization guidance = UICustomization.getGuidanceCustomization();
+    FaceTecVocalGuidanceCustomization vocalGuidance = UICustomization.vocalGuidanceCustomization;
     FaceTecResultScreenCustomization resultScreen = UICustomization.getResultScreenCustomization();
 
     // removing branding image from overlay
@@ -76,7 +73,6 @@ public class Customization {
     feedback.cornerRadius = defaultCornerRadius;
     feedback.textColor = white;
     feedback.textFont = boldFont;
-    feedback.textSize = 24;
     feedback.elevation = 5;
 
     // setting oval border color & width
@@ -101,7 +97,6 @@ public class Customization {
 
     // customizing buttons
     guidance.buttonFont = defaultFont;
-    guidance.buttonTextSize = buttonFontSize;
     guidance.buttonBorderWidth = 0;
     guidance.buttonCornerRadius = buttonCornerRadius;
     guidance.buttonTextNormalColor = white;
@@ -113,11 +108,9 @@ public class Customization {
 
     // customizing header / subtext
     guidance.headerFont = mediumFont;
-    guidance.headerTextSize = isLargeDevice ? 22 : 20;
 
     // subtext
     guidance.subtextFont = defaultFont;
-    guidance.subtextTextSize = defaultFontSize;
 
     // enabling additional instructions on retry screen
     guidance.enableRetryScreenBulletedInstructions = true;
@@ -131,8 +124,6 @@ public class Customization {
     // customizing result screen - progress bar & success animation
     resultScreen.foregroundColor = darkGray;
     resultScreen.messageFont = defaultFont;
-    resultScreen.messageTextSize = 16;
-    resultScreen.messageTextSpacing = 0.08f;
     resultScreen.showUploadProgressBar = true;
     resultScreen.uploadProgressFillColor = primary;
     resultScreen.uploadProgressTrackColor = lightGray;
@@ -140,6 +131,9 @@ public class Customization {
     resultScreen.resultAnimationForegroundColor = primary;
     resultScreen.customActivityIndicatorImage = drawable.facetec_activity_indicator;
     resultScreen.customActivityIndicatorRotationInterval = 3000;
+
+    // disable voice help
+    vocalGuidance.mode = FaceTecVocalGuidanceCustomization.VocalGuidanceMode.NO_VOCAL_GUIDANCE;
 
     // override locale strings
     UITextStrings.put(R.string.FaceTec_result_success_message, resultSuccessMessage);
