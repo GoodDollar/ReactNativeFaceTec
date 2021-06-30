@@ -10,13 +10,19 @@ execution_time_limit:
   minutes: 5
 
 blocks:
-  - name: Keep Semaphore Happy
-    dependencies: [ ]
+  - name: Install and Cache Dependencies
+    dependencies: []
     task:
+      secrets:
+        - name: Github Package Access
+      prologue:
+        commands:
+          - checkout
       jobs:
-        - name: Hello World
+        - name: Node Modules Install and Cache
           commands:
-            - echo hello world
+            - export CHECKSUM=$(checksum package-lock.json)
+            - cache has_key node-modules-$CHECKSUM || (npm ci && cache store node-modules-$CHECKSUM node_modules)
 
 promotions:
   - name: Release Promotion

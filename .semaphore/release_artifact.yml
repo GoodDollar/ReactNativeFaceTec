@@ -11,8 +11,7 @@ execution_time_limit:
 
 blocks:
   - name: Publish Artifact
-    dependencies:
-      - Create Artifact
+    dependencies: []
     task:
       secrets:
         - name: Github Package Access
@@ -20,6 +19,8 @@ blocks:
       prologue:
         commands:
           - checkout
+          - export CHECKSUM=$(checksum package-lock.json)
+          - cache restore node-modules-$CHECKSUM
       jobs:
         - name: Publish to Github
           commands:
