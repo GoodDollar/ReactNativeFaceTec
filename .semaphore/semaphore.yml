@@ -20,10 +20,6 @@ blocks:
       prologue:
         commands:
           - checkout
-          - export CHECKSUM=$(checksum package-lock.json)
-          - cache restore node-modules-$CHECKSUM
-          - cache restore git-$(git describe --dirty=-$(date +%F-%H%M%S) --always)
-          - nvm use
       jobs:
         - name: Publish to Github
           commands:

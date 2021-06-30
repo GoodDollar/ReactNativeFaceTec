@@ -1,5 +1,5 @@
 {
-  "name": "@gooddollar/react-native-facetec",
+  "name": "@chippercash/gooddollar-react-native-facetec",
   "title": "React Native module that integrates FaceTec face verification API",
   "version": "1.0.9",
   "description": "React Native module that integrates FaceTec face verification API",
@@ -19,8 +19,8 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/GoodDollar/ReactNativeFaceTec.git",
-    "baseUrl": "https://github.com/GoodDollar/ReactNativeFaceTec"
+    "url": "git+https://github.com/ChipperCash/ReactNativeFaceTec.git",
+    "baseUrl": "https://github.com/ChipperCash/ReactNativeFaceTec"
   },
   "keywords": [
     "react-native"
