@@ -107,12 +107,29 @@ open class FaceTecModule: RCTEventEmitter {
                 promise.resolve(true)
             case .neverInitialized, .networkIssues:
                 FaceVerification.shared.register(serverURL, jwtAccessToken)
+                /*
+                   TODO Clean this up task: https://www.notion.so/chippercash/Facetec-pass-down-public-key-to-native-code-cef7d7c00ef24aadbebf296d83c16a48
+                   Diff from fork, passing this down from the Javascript in encryptionKey was causing errors.
+                   I'm assuming something is going wrong with the new lines and JS to Swift Strings,
+                   for now it's hard coded below.
+                */
+                 let PublicFaceScanEncryptionKey =
+                        "-----BEGIN PUBLIC KEY-----\n" +
+                        "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA5PxZ3DLj+zP6T6HFgzzk\n" +
+                        "M77LdzP3fojBoLasw7EfzvLMnJNUlyRb5m8e5QyyJxI+wRjsALHvFgLzGwxM8ehz\n" +
+                        "DqqBZed+f4w33GgQXFZOS4AOvyPbALgCYoLehigLAbbCNTkeY5RDcmmSI/sbp+s6\n" +
+                        "mAiAKKvCdIqe17bltZ/rfEoL3gPKEfLXeN549LTj3XBp0hvG4loQ6eC1E1tRzSkf\n" +
+                        "GJD4GIVvR+j12gXAaftj3ahfYxioBH7F7HQxzmWkwDyn3bqU54eaiB7f0ftsPpWM\n" +
+                        "ceUaqkL2DZUvgN0efEJjnWy5y1/Gkq5GGWCROI9XG/SwXJ30BbVUehTbVcD70+ZF\n" +
+                        "8QIDAQAB\n" +
+                        "-----END PUBLIC KEY-----"
 
                 if !licenseText.isEmptyOrNil {
                     FaceTec.sdk.initializeInProductionMode(
                         productionKeyText: licenseText!,
                         deviceKeyIdentifier: licenseKey,
-                        faceScanEncryptionKey: encryptionKey
+                        // Diff from fork, previously this used the encryptionKey passed down from the JavaScript code.
+                        faceScanEncryptionKey: PublicFaceScanEncryptionKey
                     ) { success in self.onInitializationAttempt(promise, success) }
 
                     return

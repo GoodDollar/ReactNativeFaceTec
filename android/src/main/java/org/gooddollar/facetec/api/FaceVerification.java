@@ -70,7 +70,8 @@ public final class FaceVerification {
   }
 
   public static void getSessionToken(final SessionTokenCallback callback) {
-    Request tokenRequest = createRequest("/verify/face/session", "post", new JSONObject());
+   // Diff from fork URL & Method updated
+    Request tokenRequest = createRequest("/face-verification/session-token", "get", new JSONObject());
 
     sendRequest(tokenRequest, new APICallback() {
       @Override
@@ -108,7 +109,8 @@ public final class FaceVerification {
   }
 
   public static void enroll(String enrollmentIdentifier, RequestBody customRequest, @Nullable Integer timeout, final APICallback callback) {
-    Request enrollmentRequest = createRequest("/verify/face/" + enrollmentIdentifier, "put", customRequest);
+    // Diff from fork URL & Method updated
+    Request enrollmentRequest = createRequest("/face-verification/liveness-3d", "post", customRequest);
 
     sendRequest(enrollmentRequest, timeout, callback);
   }

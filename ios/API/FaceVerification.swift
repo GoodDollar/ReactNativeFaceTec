@@ -28,7 +28,8 @@ class FaceVerification {
     }
 
     func getSessionToken(sessionTokenCallback: @escaping (String?, Error?) -> Void) -> Void {
-        request("/verify/face/session", "POST", [:]) { response, error in
+        // Diff from fork URL & Method updated
+        request("/face-verification/session-token", "GET") { response, error in
             if error != nil {
                 sessionTokenCallback(nil, error)
                 return
@@ -76,9 +77,10 @@ class FaceVerification {
         withDelegate: URLSessionDelegate? = nil,
         callback enrollmentResultCallback: @escaping ([String: AnyObject]?, Error?) -> Void
     ) -> Void {
-        let enrollmentUri = "/verify/face/" + enrollmentIdentifier.urlEncoded()
+         // Diff from fork URL & Method updated
+        let enrollmentUri = "/face-verification/liveness-3d" + enrollmentIdentifier.urlEncoded()
 
-        request(enrollmentUri, "PUT", payload, withTimeout, withDelegate) { response, error in
+        request(enrollmentUri, "POST", payload, withTimeout, withDelegate) { response, error in
             enrollmentResultCallback(response, error)
         }
     }
@@ -172,8 +174,11 @@ class FaceVerification {
 
         request.addValue("application/json", forHTTPHeaderField: "Content-Type")
         request.addValue("Bearer " + jwtAccessToken!, forHTTPHeaderField: "Authorization")
+        // Diff from fork as we're using a GET for some API calls which shouldn't have a body.
+        if method != "GET" {
+            request.httpBody = try! JSONSerialization.data(withJSONObject: parameters, options: JSONSerialization.WritingOptions(rawValue: 0))
 
-        request.httpBody = try! JSONSerialization.data(withJSONObject: parameters, options: JSONSerialization.WritingOptions(rawValue: 0))
+        }
 
         return request as URLRequest
     }

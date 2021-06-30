@@ -23,7 +23,7 @@ import org.gooddollar.facetec.R.drawable;
 public class Customization {
   private Customization() {}
 
-  final public static String resultSuccessMessage = "You’re a beautiful\n& unique unicorn!";
+  final public static String resultSuccessMessage = "Uploaded successfully";
   final public static String resultFacescanUploadMessage = "Uploading Your face snapshot to verify";
   final public static String resultFacescanProcessingMessage = "Verifying you're\none of a kind";
 
@@ -38,7 +38,7 @@ public class Customization {
   final private static int darkGray = Color.DKGRAY;
   final private static int lightGray = Color.LTGRAY;
 
-  final private static int primary = 0xff00afff;
+  final private static int primary = 0xFF8413F5;
   final private static int gray50Percent = 0xffcbcbcb;
 
   final private static int defaultCornerRadius = 5;
@@ -129,7 +129,7 @@ public class Customization {
     resultScreen.uploadProgressTrackColor = lightGray;
     resultScreen.resultAnimationBackgroundColor = white;
     resultScreen.resultAnimationForegroundColor = primary;
-    resultScreen.customActivityIndicatorImage = drawable.facetec_activity_indicator;
+    resultScreen.customActivityIndicatorImage = drawable.facetec_loading;
     resultScreen.customActivityIndicatorRotationInterval = 3000;
 
     // disable voice help
