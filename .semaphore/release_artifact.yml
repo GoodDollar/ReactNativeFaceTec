@@ -1,0 +1,26 @@
+version: v1.0
+name: Release
+
+agent:
+  machine:
+    type: e1-standard-2
+    os_image: ubuntu1804
+
+execution_time_limit:
+  minutes: 5
+
+blocks:
+  - name: Publish Artifact
+    dependencies:
+      - Create Artifact
+    task:
+      secrets:
+        - name: Github Package Access
+        - name: Github Commit Access
+      prologue:
+        commands:
+          - checkout
+      jobs:
+        - name: Publish to Github
+          commands:
+            - npm run release:publish

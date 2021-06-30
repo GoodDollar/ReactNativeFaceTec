@@ -1,5 +1,5 @@
 {
-  "name": "@gooddollar/react-native-facetec",
+  "name": "@chippercash/gooddollar-react-native-facetec",
   "title": "React Native module that integrates FaceTec face verification API",
   "version": "1.0.9",
   "description": "React Native module that integrates FaceTec face verification API",
@@ -15,12 +15,12 @@
   ],
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "version": "auto-changelog -p && git add CHANGELOG.md"
+    "release:publish": "semantic-release"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/GoodDollar/ReactNativeFaceTec.git",
-    "baseUrl": "https://github.com/GoodDollar/ReactNativeFaceTec"
+    "url": "git+https://github.com/ChipperCash/ReactNativeFaceTec.git",
+    "baseUrl": "https://github.com/ChipperCash/ReactNativeFaceTec"
   },
   "keywords": [
     "react-native"
@@ -37,7 +37,9 @@
     "react-native": "^0.61.5"
   },
   "devDependencies": {
-    "auto-changelog": "^2.2.1",
+    "@semantic-release/changelog": "^5.0.1",
+    "@semantic-release/git": "^9.0.0",
+    "semantic-release": "^17.4.2",
     "react": "^16.14.0",
     "react-native": "^0.61.5"
   }
