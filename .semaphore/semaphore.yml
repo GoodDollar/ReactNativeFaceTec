@@ -9,6 +9,13 @@ agent:
 execution_time_limit:
   minutes: 5
 
+blocks:
+  task:
+    jobs:
+      - name: Keep Semaphore Happy
+        commands:
+          - echo hello world
+
 promotions:
   - name: Release Promotion
     pipeline_file: release_artifact.yml
