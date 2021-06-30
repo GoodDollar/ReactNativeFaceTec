@@ -1,3 +1,19 @@
+# 1.0.0 (2021-06-30)
+
+
+### Bug Fixes
+
+* adding block ([6e5f25f](https://github.com/ChipperCash/ReactNativeFaceTec/commit/6e5f25fa2036b106b7e6b6060b5fd13963e64f0e))
+* name + package name ([f9c80aa](https://github.com/ChipperCash/ReactNativeFaceTec/commit/f9c80aa06ab6c48e5704ee66df400394266505f9))
+* npm install &fixes ([6b17b0d](https://github.com/ChipperCash/ReactNativeFaceTec/commit/6b17b0d8fa4cf41cefc2cfaf0e6dfc48012159b8))
+* semaphore.yml ([719d5f4](https://github.com/ChipperCash/ReactNativeFaceTec/commit/719d5f47f6946f238fae27864cd2ae074423d328))
+* seperate release_artifact file ([836df89](https://github.com/ChipperCash/ReactNativeFaceTec/commit/836df899a4ec38a1bb55332116d5cc6f0490216d))
+
+
+### Features
+
+* add .releaserc ([6c524ed](https://github.com/ChipperCash/ReactNativeFaceTec/commit/6c524edf481ec6684fc3a62e10fc149fa2edddb0))
+
 ### Changelog
 
 All notable changes to this project will be documented in this file. Dates are displayed in UTC.

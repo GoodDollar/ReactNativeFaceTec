@@ -1,7 +1,7 @@
 {
   "name": "@chippercash/gooddollar-react-native-facetec",
   "title": "React Native module that integrates FaceTec face verification API",
-  "version": "1.0.9",
+  "version": "1.0.0",
   "description": "React Native module that integrates FaceTec face verification API",
   "main": "index.js",
   "files": [
@@ -38,9 +38,11 @@
   },
   "devDependencies": {
     "@semantic-release/changelog": "^5.0.1",
+    "@semantic-release/commit-analyzer": "^8.0.1",
     "@semantic-release/git": "^9.0.0",
-    "semantic-release": "^17.4.2",
+    "conventional-changelog-conventionalcommits": "^4.6.0",
     "react": "^16.14.0",
-    "react-native": "^0.61.5"
+    "react-native": "^0.61.5",
+    "semantic-release": "^17.4.2"
   }
 }
