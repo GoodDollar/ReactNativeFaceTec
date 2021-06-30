@@ -1,3 +1,10 @@
+# [1.1.0](https://github.com/ChipperCash/ReactNativeFaceTec/compare/v1.0.0...v1.1.0) (2021-06-30)
+
+
+### Features
+
+* config & api changes to support chipper apis ([#1](https://github.com/ChipperCash/ReactNativeFaceTec/issues/1)) ([c571991](https://github.com/ChipperCash/ReactNativeFaceTec/commit/c571991b8d2609f0517a8b95068176dccd879619))
+
 # 1.0.0 (2021-06-30)
 
 
