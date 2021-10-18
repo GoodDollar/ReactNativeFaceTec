@@ -2,6 +2,8 @@ package org.gooddollar.facetec.processors;
 
 import androidx.annotation.Nullable;
 import android.content.Context;
+import android.util.Log;
+
 import org.json.JSONObject;
 
 import com.facebook.react.bridge.WritableMap;
@@ -52,32 +54,9 @@ public class EnrollmentProcessor implements FaceTecFaceScanProcessor {
     return subscriber;
   }
 
-  public void enroll(String enrollmentIdentifier) {
-    enroll(enrollmentIdentifier, null, null);
-  }
-
-  public void enroll(String enrollmentIdentifier, final Integer maxRetries) {
-    enroll(enrollmentIdentifier, maxRetries, null);
-  }
-
-  public void enroll(final String enrollmentIdentifier, @Nullable final Integer maxRetries, @Nullable final Integer timeout) {
+  public void enroll(final String enrollmentIdentifier, @Nullable final Integer maxRetries, @Nullable final Integer timeout, final String sessionToken) {
     final Context ctx = this.context;
     final ProcessingSubscriber subscriber = this.subscriber;
-
-    final FaceVerification.SessionTokenCallback onSessionTokenRetrieved =
-      new FaceVerification.SessionTokenCallback() {
-        @Override
-        public void onSessionTokenReceived(String sessionToken) {
-          // when got token successfully - start session
-          FaceTecSessionActivity.createAndLaunchSession(ctx, EnrollmentProcessor.this, sessionToken);
-          EventEmitter.dispatch(EventEmitter.UXEvent.UI_READY);
-        }
-
-        @Override
-        public void onFailure(FaceVerification.APIException exception) {
-          subscriber.onSessionTokenError();
-        }
-      };
 
     // store enrollmentIdentifier, maxRetries and timeout in the corresponding instance vars
     this.enrollmentIdentifier = enrollmentIdentifier;
@@ -95,7 +74,11 @@ public class EnrollmentProcessor implements FaceTecFaceScanProcessor {
       @Override
       public void onSuccess() {
         // on premissions granted - issue token
-        FaceVerification.getSessionToken(onSessionTokenRetrieved);
+
+        FaceTecSessionActivity.createAndLaunchSession(ctx, EnrollmentProcessor.this, sessionToken);
+        EventEmitter.dispatch(EventEmitter.UXEvent.UI_READY);
+
+
       }
 
       @Override
@@ -164,32 +147,22 @@ public class EnrollmentProcessor implements FaceTecFaceScanProcessor {
       payload.put("auditTrailImage", lastResult.getAuditTrailCompressedBase64()[0]);
       payload.put("lowQualityAuditTrailImage", lastResult.getLowQualityAuditTrailCompressedBase64()[0]);
       payload.put("sessionId", lastResult.getSessionId());
+
+      String successMessage = Customization.resultSuccessMessage;
+
+      resultCallback.uploadProgress(1);
+      EnrollmentProcessor.this.isSuccess = true;
+
+      EnrollmentProcessor.this.lastMessage = successMessage;
+      FaceTecCustomization.overrideResultScreenSuccessMessage = successMessage;
+
+      resultCallback.succeed();
+
     } catch(Exception e) {
       lastMessage = "Exception raised while attempting to create JSON payload for upload.";
+      EnrollmentProcessor.this.isSuccess = false;
       resultCallback.cancel();
     }
-
-    RequestBody request = createEnrollmentRequest(payload);
-    FaceVerification.enroll(enrollmentIdentifier, request, timeout, new FaceVerification.APICallback() {
-      @Override
-      public void onSuccess(JSONObject response) {
-        String successMessage = Customization.resultSuccessMessage;
-
-        resultCallback.uploadProgress(1);
-        EnrollmentProcessor.this.isSuccess = true;
-
-        EnrollmentProcessor.this.lastMessage = successMessage;
-        FaceTecCustomization.overrideResultScreenSuccessMessage = successMessage;
-
-        resultCallback.succeed();
-      }
-
-      @Override
-      public void onFailure(FaceVerification.APIException exception) {
-        resultCallback.uploadProgress(1);
-        EnrollmentProcessor.this.handleEnrollmentError(exception);
-      }
-    });
   }
 
   private void handleEnrollmentError(FaceVerification.APIException exception) {

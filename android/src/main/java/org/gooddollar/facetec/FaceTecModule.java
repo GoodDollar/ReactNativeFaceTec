@@ -2,6 +2,7 @@ package org.gooddollar.facetec;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.util.Log;
 
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ActivityEventListener;
@@ -168,7 +169,7 @@ public class FaceTecModule extends ReactContextBaseJavaModule {
 
     @ReactMethod
     public void faceVerification(final String enrollmentIdentifier,
-        final int maxRetries, final int timeout, Promise promise
+        final int maxRetries, final int timeout, final String sessionToken, Promise promise
     ) {
         Activity activity = getCurrentActivity();
         final ProcessingSubscriber subscriber = new ProcessingSubscriber(promise);
@@ -181,7 +182,7 @@ public class FaceTecModule extends ReactContextBaseJavaModule {
         }
 
         lastProcessor = processor;
-        processor.enroll(enrollmentIdentifier, maxRetries, timeout);
+        processor.enroll(enrollmentIdentifier, maxRetries, timeout, sessionToken);
     }
 
     private FaceTecSDK.InitializeCallback onInitializationAttempt(

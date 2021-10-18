@@ -14,7 +14,7 @@ import okhttp3.Response;
 
 import org.json.JSONException;
 import org.json.JSONObject;
-
+import android.util.Log;
 import org.gooddollar.facetec.api.NetworkingHelpers;
 
 public final class FaceVerification {
@@ -24,9 +24,9 @@ public final class FaceVerification {
   private static String _serverURL;
 
   private static String unexpectedMessage = "An unexpected issue during the face verification API call";
-  private static String succeedProperty = "success";
+  private static String succeedProperty = "status";
   private static String errorMessageProperty = "error";
-  private static String sessionTokenProperty = "sessionToken";
+  private static String sessionTokenProperty = "session_token";
 
   public static class APIException extends IOException {
     JSONObject response = null;
@@ -70,17 +70,18 @@ public final class FaceVerification {
   }
 
   public static void getSessionToken(final SessionTokenCallback callback) {
-    Request tokenRequest = createRequest("/verify/face/session", "post", new JSONObject());
+    Request tokenRequest = createRequest("/session-token", "get", new JSONObject());
 
     sendRequest(tokenRequest, new APICallback() {
       @Override
       public void onSuccess(JSONObject response) {
         try {
-          if (response.has(sessionTokenProperty) == false) {
+          JSONObject data = response.getJSONObject("data");
+          if (data.has(sessionTokenProperty) == false) {
             throw new APIException("FaceTec API response is empty", response);
           }
 
-          callback.onSessionTokenReceived(response.getString(sessionTokenProperty));
+          callback.onSessionTokenReceived(data.getString(sessionTokenProperty));
         } catch (APIException exception) {
           callback.onFailure(exception);
         } catch (Exception exception) {
@@ -108,16 +109,16 @@ public final class FaceVerification {
   }
 
   public static void enroll(String enrollmentIdentifier, RequestBody customRequest, @Nullable Integer timeout, final APICallback callback) {
-    Request enrollmentRequest = createRequest("/verify/face/" + enrollmentIdentifier, "put", customRequest);
+    Request enrollmentRequest = createRequest("/photo-match" , "post", customRequest);
 
     sendRequest(enrollmentRequest, timeout, callback);
   }
 
   private static Request createRequest(String url, @Nullable String method, @Nullable RequestBody body) {
+
     Request.Builder request = new Request.Builder()
       .url(_serverURL + url)
-      .header("Content-Type", "application/json")
-      .header("Authorization", "Bearer " + _jwtAccessToken);
+      .addHeader("tsp-access-token", _jwtAccessToken);
 
     switch (method) {
       case "post":
@@ -138,6 +139,7 @@ public final class FaceVerification {
   }
 
   private static void sendRequest(Request request, final APICallback requestCallback) {
+
     sendRequest(request, null, requestCallback);
   }
 
@@ -157,14 +159,15 @@ public final class FaceVerification {
 
           JSONObject responseJSON = new JSONObject(responseString);
 
-          if (responseJSON.has(succeedProperty) == false) {
+          JSONObject metaData = responseJSON.getJSONObject("meta");
+
+          boolean hasSucceed = metaData.has(succeedProperty);
+          if (!hasSucceed) {
             throw new APIException(unexpectedMessage, responseJSON);
           }
-
           String errorMessage = null;
-          boolean didSucceed = responseJSON.getBoolean(succeedProperty);
-
-          if (didSucceed == true) {
+          int didSucceed = metaData.getInt(succeedProperty);
+          if (didSucceed == 200) {
             requestCallback.onSuccess(responseJSON);
             return;
           }

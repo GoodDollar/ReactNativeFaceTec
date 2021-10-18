@@ -17,7 +17,13 @@ public class ProcessingSubscriber {
 
   public void onProcessingComplete(boolean isSuccess, @Nullable FaceTecSessionResult sessionResult, @Nullable String sessionMessage) {
     if (isSuccess == true) {
-      promise.resolve(sessionMessage);
+      String results = "" ;
+      if(sessionResult != null) {
+        results += sessionResult.getFaceScanBase64() + "," + sessionResult.getAuditTrailCompressedBase64()[0];
+      } else {
+        results = "";
+      }
+      promise.resolve(results);
       return;
     }
 
