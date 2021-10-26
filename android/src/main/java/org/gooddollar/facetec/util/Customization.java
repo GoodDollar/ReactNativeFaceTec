@@ -37,8 +37,10 @@ public class Customization {
   final private static int green = Color.GREEN;
   final private static int darkGray = Color.DKGRAY;
   final private static int lightGray = Color.LTGRAY;
+  final private static int textColor = 0x1E1E1E;
+  final private static int buttonColor = 0xff06E8B2;
 
-  final private static int primary = 0xff00afff;
+  final private static int primary = buttonColor;
   final private static int gray50Percent = 0xffcbcbcb;
 
   final private static int defaultCornerRadius = 5;
@@ -62,7 +64,7 @@ public class Customization {
 
     // removing branding image from overlay
     overlay.showBrandingImage = false;
-    overlay.backgroundColor = whiteSemiTransparent;
+    overlay.backgroundColor = white;
 
     // setting custom location & image of cancel button
     cancelButton.setLocation(FaceTecCancelButtonCustomization.ButtonLocation.TOP_RIGHT);
@@ -86,7 +88,7 @@ public class Customization {
     frame.borderColor = whiteTransparent;
     frame.cornerRadius = defaultCornerRadius;
     frame.borderWidth = 0;
-    frame.elevation = 19;
+    frame.elevation = 0;
 
     // setting Zoom UI background color
     frame.backgroundColor = white;
@@ -136,7 +138,7 @@ public class Customization {
     vocalGuidance.mode = FaceTecVocalGuidanceCustomization.VocalGuidanceMode.NO_VOCAL_GUIDANCE;
 
     // override locale strings
-    UITextStrings.put(R.string.FaceTec_result_success_message, resultSuccessMessage);
+    /*UITextStrings.put(R.string.FaceTec_result_success_message, resultSuccessMessage);
     UITextStrings.put(R.string.FaceTec_result_facescan_upload_message, resultFacescanUploadMessage);
 
     UITextStrings.put(R.string.FaceTec_retry_instruction_message_1, "Hold Your Camera at Eye Level.");
@@ -144,6 +146,6 @@ public class Customization {
     UITextStrings.put(R.string.FaceTec_retry_instruction_message_3, "Avoid Smiling & Back Light");
 
     UITextStrings.put(R.string.FaceTec_instructions_message_ready_1, "Please Frame Your Face In The Small");
-    UITextStrings.put(R.string.FaceTec_instructions_message_ready_2, "Oval, Then The Big Oval");
+    UITextStrings.put(R.string.FaceTec_instructions_message_ready_2, "Oval, Then The Big Oval");*/
   }
 }

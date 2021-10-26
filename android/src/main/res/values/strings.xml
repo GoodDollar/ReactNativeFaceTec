@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="FaceTec_accessibility_cancel_button">Cancel</string>
+    <string name="FaceTec_accessibility_torch_button">Toggle Light</string>
+    <string name="FaceTec_action_accept_photo">ACCEPT</string>
+    <string name="FaceTec_action_confirm">CONFIRM INFO</string>
+    <string name="FaceTec_action_continue">CONTINUE</string>
+    <string name="FaceTec_action_im_ready">I\'M READY</string>
+    <string name="FaceTec_action_ok">OK</string>
+    <string name="FaceTec_action_retake_photo">RETAKE</string>
+    <string name="FaceTec_action_take_photo">TAKE PHOTO</string>
+    <string name="FaceTec_action_try_again">TRY AGAIN</string>
+    <string name="FaceTec_camera_permission_enable_camera">ENABLE CAMERA</string>
+    <string name="FaceTec_camera_permission_header">Enable Camera</string>
+    <string name="FaceTec_camera_permission_launch_settings">LAUNCH SETTINGS</string>
+    <string name="FaceTec_camera_permission_message_auth">Your camera is disabled. Tap below to edit your settings.</string>
+    <string name="FaceTec_camera_permission_message_enroll">Please click the button below to enable your selfie camera.</string>
+    <string name="FaceTec_feedback_center_face">Center Your Face</string>
+    <string name="FaceTec_feedback_face_not_found">Frame Your Face</string>
+    <string name="FaceTec_feedback_face_not_looking_straight_ahead">Look Straight Ahead</string>
+    <string name="FaceTec_feedback_face_not_upright">Hold Your Head Straight</string>
+    <string name="FaceTec_feedback_hold_steady">Hold Steady</string>
+    <string name="FaceTec_feedback_move_phone_away">Move Away</string>
+    <string name="FaceTec_feedback_move_phone_closer">Move Closer</string>
+    <string name="FaceTec_feedback_move_phone_to_eye_level">Move Camera To Eye Level</string>
+    <string name="FaceTec_feedback_use_even_lighting">Light Face More Evenly</string>
+    <string name="FaceTec_idscan_capture_hold_steady_message">Please Hold Steady</string>
+    <string name="FaceTec_idscan_capture_id_back_instruction_message">Show Back of ID</string>
+    <string name="FaceTec_idscan_capture_id_front_instruction_message">Show Front of ID</string>
+    <string name="FaceTec_idscan_capture_tap_to_focus_message">Tap Screen To Focus</string>
+    <string name="FaceTec_idscan_ocr_confirmation_main_header">Review &amp; Confirm</string>
+    <string name="FaceTec_idscan_review_id_back_instruction_message">Confirm Photo is Clear &amp; Legible</string>
+    <string name="FaceTec_idscan_review_id_front_instruction_message">Confirm Photo is Clear &amp; Legible</string>
+    <string name="FaceTec_idscan_type_selection_header">Prepare to Scan\nYour ID Document</string>
+    <string name="FaceTec_instructions_header_ready_1">Get Ready For</string>
+    <string name="FaceTec_instructions_header_ready_2">Your Video Selfie</string>
+    <string name="FaceTec_instructions_message_ready_1">Frame Your Face in the Oval,</string>
+    <string name="FaceTec_instructions_message_ready_2">Press I’m Ready &amp; Move Closer</string>
+    <string name="FaceTec_internal_dev_mode_tag">This App is in Development Mode</string>
+    <string name="FaceTec_presession_brighten_your_environment">Brighten Your Environment</string>
+    <string name="FaceTec_presession_conditions_too_bright">Conditions Too Bright</string>
+    <string name="FaceTec_presession_eyes_straight_ahead">Look Straight Ahead</string>
+    <string name="FaceTec_presession_frame_your_face">Frame Your Face In The Oval</string>
+    <string name="FaceTec_presession_hold_steady_1">Hold Steady For: 1</string>
+    <string name="FaceTec_presession_hold_steady_2">Hold Steady For: 2</string>
+    <string name="FaceTec_presession_hold_steady_3">Hold Steady For: 3</string>
+    <string name="FaceTec_presession_neutral_expression">Neutral Expression, No Smiling</string>
+    <string name="FaceTec_presession_position_face_straight_in_oval">Look Straight Ahead</string>
+    <string name="FaceTec_presession_remove_dark_glasses">Remove Dark Glasses</string>
+    <string name="FaceTec_result_facescan_upload_message">Uploading\nEncrypted\n3D FaceScan</string>
+    <string name="FaceTec_result_idscan_retry_face_did_not_match_message">Face Didn\'t Match\nHighly Enough</string>
+    <string name="FaceTec_result_idscan_retry_id_not_fully_visible_message">ID Document\nNot Fully Visible</string>
+    <string name="FaceTec_result_idscan_retry_ocr_results_not_good_enough_message">ID Text Not Legible</string>
+    <string name="FaceTec_result_idscan_success_back_side_message">Back of ID Captured</string>
+    <string name="FaceTec_result_idscan_success_front_side_back_next_message">Your 3D Face\nMatched Your ID</string>
+    <string name="FaceTec_result_idscan_success_front_side_message">Your 3D Face\nMatched Your ID</string>
+    <string name="FaceTec_result_idscan_success_user_confirmation_message">ID Verification\nComplete</string>
+    <string name="FaceTec_result_idscan_unsuccess_message">ID Photo\nDid Not Match\nUser\'s Face</string>
+    <string name="FaceTec_result_idscan_upload_message">Uploading\nEncrypted\nID Scan</string>
+    <string name="FaceTec_result_success_message">Success</string>
+    <string name="FaceTec_retry_header">Let\'s Try That Again</string>
+    <string name="FaceTec_retry_ideal_image_label">Ideal Pose</string>
+    <string name="FaceTec_retry_instruction_message_1">Neutral Expression, No Smiling</string>
+    <string name="FaceTec_retry_instruction_message_2">No Glare or Extreme Lighting</string>
+    <string name="FaceTec_retry_instruction_message_3">Too Blurry, Clean Your Camera</string>
+    <string name="FaceTec_retry_subheader_message">We Need a Clearer Video Selfie</string>
+    <string name="FaceTec_retry_your_image_label">Your Selfie</string>
+    <string name="facetec_sdk_icon_attention_fill" translatable="false">\ue901</string>
+    <string name="facetec_sdk_icon_camera_fill" translatable="false">\ue900</string>
+    <string name="facetec_sdk_icon_caution" translatable="false">\ue908</string>
+    <string name="facetec_sdk_icon_check" translatable="false">\ue66c</string>
+    <string name="facetec_sdk_icon_close" translatable="false">\ue680</string>
+    <string name="facetec_sdk_icon_close_circle" translatable="false">\ue681</string>
+    <string name="facetec_sdk_icon_close_circle_fill" translatable="false">\ue902</string>
+    <string name="facetec_sdk_icon_fingerprint" translatable="false">\ue6cb</string>
+    <string name="facetec_sdk_icon_icon_unlock" translatable="false">\ue6ce</string>
+    <string name="facetec_sdk_icon_info" translatable="false">\ue647</string>
+    <string name="facetec_sdk_icon_keypad" translatable="false">\ue645</string>
+    <string name="facetec_sdk_icon_left" translatable="false">\ue686</string>
+    <string name="facetec_sdk_icon_light" translatable="false">\ue90c</string>
+    <string name="facetec_sdk_icon_light_fill" translatable="false">\ue90d</string>
+    <string name="facetec_sdk_icon_lock" translatable="false">\ue6cc</string>
+    <string name="facetec_sdk_icon_mid_enroll_glasses" translatable="false">\ue914</string>
+    <string name="facetec_sdk_icon_moon" translatable="false">\ue90e</string>
+    <string name="facetec_sdk_icon_moon_fill" translatable="false">\ue90f</string>
+    <string name="facetec_sdk_icon_one_circle" translatable="false">\ue903</string>
+    <string name="facetec_sdk_icon_phone_check_fill" translatable="false">\ue909</string>
+    <string name="facetec_sdk_icon_phone_zoom" translatable="false">\ue917</string>
+    <string name="facetec_sdk_icon_redo" translatable="false">ue910</string>
+    <string name="facetec_sdk_icon_selfie" translatable="false">\ue666</string>
+    <string name="facetec_sdk_icon_settings" translatable="false">\ue6d9</string>
+    <string name="facetec_sdk_icon_three_circle" translatable="false">\ue905</string>
+    <string name="facetec_sdk_icon_thumbs_up_fill" translatable="false">\ue907</string>
+    <string name="facetec_sdk_icon_two_circle" translatable="false">\ue904</string>
+    <string name="facetec_sdk_icon_undetermined" translatable="false">\ue91a</string>
+    <string name="facetec_sdk_icon_user_alert" translatable="false">\ue928</string>
+    <string name="facetec_sdk_icon_user_fail_fill" translatable="false">\ue906</string>
+    <string name="facetec_sdk_icon_user_retry" translatable="false">\ue911</string>
+    <string name="facetec_sdk_icon_wifi_icon" translatable="false">\ue925</string>
+    <string name="facetec_sdk_icon_zoom_logo_dev" translatable="false">\ue923</string>
+    <string name="facetec_sdk_icon_zoom_logo_prod" translatable="false">\ue921</string>
+</resources>
