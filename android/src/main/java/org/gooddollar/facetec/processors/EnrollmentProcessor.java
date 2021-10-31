@@ -128,7 +128,6 @@ public class EnrollmentProcessor implements FaceTecFaceScanProcessor {
 
           if (bytesWritten == totalBytes) {
             // switch status message to processing once upload completed
-            resultCallback.uploadMessageOverride(Customization.resultFacescanProcessingMessage);
           }
         }
       }
@@ -155,7 +154,6 @@ public class EnrollmentProcessor implements FaceTecFaceScanProcessor {
 
       EnrollmentProcessor.this.lastMessage = successMessage;
       FaceTecCustomization.overrideResultScreenSuccessMessage = successMessage;
-
       resultCallback.succeed();
 
     } catch(Exception e) {
