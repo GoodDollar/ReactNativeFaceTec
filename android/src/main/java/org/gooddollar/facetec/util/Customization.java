@@ -4,7 +4,6 @@ import android.graphics.Color;
 import android.graphics.Typeface;
 import androidx.annotation.Nullable;
 
-import com.facetec.sdk.R;
 import com.facetec.sdk.FaceTecCustomization;
 import com.facetec.sdk.FaceTecOverlayCustomization;
 import com.facetec.sdk.FaceTecCancelButtonCustomization;
@@ -18,17 +17,17 @@ import com.facetec.sdk.FaceTecVocalGuidanceCustomization;
 import java.util.Map;
 import java.util.HashMap;
 
+import org.gooddollar.facetec.R;
 import org.gooddollar.facetec.R.drawable;
 
 public class Customization {
   private Customization() {}
 
-  final public static String resultSuccessMessage = "You’re a beautiful\n& unique unicorn!";
-  final public static String resultFacescanUploadMessage = "Uploading Your face snapshot to verify";
-  final public static String resultFacescanProcessingMessage = "Verifying you're\none of a kind";
 
   final public static FaceTecCustomization UICustomization = new FaceTecCustomization();
   final public static Map<Integer, String> UITextStrings = new HashMap<>();
+
+  final public static String resultSuccessMessage = UITextStrings.get(R.string.FaceTec_result_success_message);
 
   final private static int black = Color.BLACK;
   final private static int white = Color.WHITE;
@@ -40,7 +39,7 @@ public class Customization {
   final private static int textColor = 0x1E1E1E;
   final private static int buttonColor = 0xff06E8B2;
 
-  final private static int primary = buttonColor;
+  final private static int primary = /*0xff00afff*/ buttonColor;
   final private static int gray50Percent = 0xffcbcbcb;
 
   final private static int defaultCornerRadius = 5;
@@ -63,7 +62,8 @@ public class Customization {
     FaceTecResultScreenCustomization resultScreen = UICustomization.getResultScreenCustomization();
 
     // removing branding image from overlay
-    overlay.showBrandingImage = false;
+    overlay.showBrandingImage = true;
+    overlay.brandingImage = R.drawable.bootsplash_logo;
     overlay.backgroundColor = white;
 
     // setting custom location & image of cancel button
@@ -73,15 +73,15 @@ public class Customization {
     // configuring feedback bar typography & border radius
     feedback.backgroundColors = primary;
     feedback.cornerRadius = defaultCornerRadius;
-    feedback.textColor = white;
+    feedback.textColor = black;
     feedback.textFont = boldFont;
     feedback.elevation = 5;
 
     // setting oval border color & width
     oval.strokeWidth = 6;
     oval.strokeColor = primary;
-    oval.progressColor1 = green;
-    oval.progressColor2 = green;
+    oval.progressColor1 = buttonColor;
+    oval.progressColor2 = buttonColor;
 
     // frame (zoom's popup) customizations
     // setting frame border, radius & elevation
@@ -98,18 +98,18 @@ public class Customization {
     guidance.foregroundColor = darkGray;
 
     // customizing buttons
-    guidance.buttonFont = defaultFont;
+    guidance.buttonFont = boldFont;
     guidance.buttonBorderWidth = 0;
     guidance.buttonCornerRadius = buttonCornerRadius;
-    guidance.buttonTextNormalColor = white;
-    guidance.buttonTextHighlightColor = white;
-    guidance.buttonTextDisabledColor = white;
+    guidance.buttonTextNormalColor = black;
+    guidance.buttonTextHighlightColor = black;
+    guidance.buttonTextDisabledColor = black;
     guidance.buttonBackgroundNormalColor = primary;
     guidance.buttonBackgroundHighlightColor = primary;
     guidance.buttonBackgroundDisabledColor = primary;
 
     // customizing header / subtext
-    guidance.headerFont = mediumFont;
+    guidance.headerFont = boldFont;
 
     // subtext
     guidance.subtextFont = defaultFont;
@@ -124,15 +124,16 @@ public class Customization {
     guidance.retryScreenImageCornerRadius = defaultCornerRadius;
 
     // customizing result screen - progress bar & success animation
-    resultScreen.foregroundColor = darkGray;
+    resultScreen.foregroundColor = black;
     resultScreen.messageFont = defaultFont;
     resultScreen.showUploadProgressBar = true;
     resultScreen.uploadProgressFillColor = primary;
     resultScreen.uploadProgressTrackColor = lightGray;
-    resultScreen.resultAnimationBackgroundColor = white;
-    resultScreen.resultAnimationForegroundColor = primary;
-    resultScreen.customActivityIndicatorImage = drawable.facetec_activity_indicator;
+    resultScreen.resultAnimationBackgroundColor = primary;
+    resultScreen.resultAnimationForegroundColor = white;
     resultScreen.customActivityIndicatorRotationInterval = 3000;
+    resultScreen.activityIndicatorColor = primary;
+
 
     // disable voice help
     vocalGuidance.mode = FaceTecVocalGuidanceCustomization.VocalGuidanceMode.NO_VOCAL_GUIDANCE;
