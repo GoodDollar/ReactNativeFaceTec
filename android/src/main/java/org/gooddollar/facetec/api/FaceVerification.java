@@ -48,6 +48,18 @@ public final class FaceVerification {
     }
   }
 
+  interface CallbackBase {
+    void onFailure(APIException exception);
+  }
+
+  public interface APICallback extends CallbackBase {
+    void onSuccess(JSONObject response);
+  }
+
+  public interface SessionTokenCallback extends CallbackBase {
+    void onSessionTokenReceived(String sessionToken);
+  }
+
   public static void register(String serverURL, String jwtAccessToken) {
     _serverURL = serverURL;
     _jwtAccessToken = jwtAccessToken;
@@ -55,5 +67,131 @@ public final class FaceVerification {
 
   public static RequestBody jsonStringify(JSONObject body) {
     return RequestBody.create(MediaType.parse("application/json; charset=utf-8"), body.toString());
+  }
+
+  public static void getSessionToken(final SessionTokenCallback callback) {
+    Request tokenRequest = createRequest("/session-token", "get", new JSONObject());
+
+    sendRequest(tokenRequest, new APICallback() {
+      @Override
+      public void onSuccess(JSONObject response) {
+        try {
+          JSONObject data = response.getJSONObject("data");
+          if (data.has(sessionTokenProperty) == false) {
+            throw new APIException("FaceTec API response is empty", response);
+          }
+
+          callback.onSessionTokenReceived(data.getString(sessionTokenProperty));
+        } catch (APIException exception) {
+          callback.onFailure(exception);
+        } catch (Exception exception) {
+          callback.onFailure(new APIException(exception, response));
+        }
+      }
+
+      @Override
+      public void onFailure(APIException exception) {
+        callback.onFailure(exception);
+      }
+    });
+  }
+
+  public static void enroll(String enrollmentIdentifier, JSONObject payload, final APICallback callback) {
+    enroll(enrollmentIdentifier, jsonStringify(payload), null, callback);
+  }
+
+  public static void enroll(String enrollmentIdentifier, RequestBody customRequest, final APICallback callback) {
+    enroll(enrollmentIdentifier, customRequest, null, callback);
+  }
+
+  public static void enroll(String enrollmentIdentifier, JSONObject payload, @Nullable Integer timeout, final APICallback callback) {
+    enroll(enrollmentIdentifier, jsonStringify(payload), timeout, callback);
+  }
+
+  public static void enroll(String enrollmentIdentifier, RequestBody customRequest, @Nullable Integer timeout, final APICallback callback) {
+    Request enrollmentRequest = createRequest("/photo-match" , "post", customRequest);
+
+    sendRequest(enrollmentRequest, timeout, callback);
+  }
+
+  private static Request createRequest(String url, @Nullable String method, @Nullable RequestBody body) {
+
+    Request.Builder request = new Request.Builder()
+      .url(_serverURL + url)
+      .addHeader("tsp-access-token", _jwtAccessToken);
+
+    switch (method) {
+      case "post":
+        request.post(body);
+        break;
+      case "put":
+        request.put(body);
+        break;
+    }
+
+    return request.build();
+  }
+
+  private static Request createRequest(String url, String method, JSONObject body) {
+    RequestBody requestBody = jsonStringify(body);
+
+    return createRequest(url, method, requestBody);
+  }
+
+  private static void sendRequest(Request request, final APICallback requestCallback) {
+
+    sendRequest(request, null, requestCallback);
+  }
+
+  private static void sendRequest(Request request, @Nullable Integer timeout, final APICallback requestCallback) {
+    OkHttpClient httpClient = http;
+
+    if (timeout != null) {
+      httpClient = NetworkingHelpers.setTimeouts(http.newBuilder(), timeout, TimeUnit.MILLISECONDS).build();
+    }
+
+    httpClient.newCall(request).enqueue(new Callback() {
+      @Override
+      public void onResponse(Call call, Response response) throws IOException {
+        try {
+          String responseString = response.body().string();
+          response.body().close();
+
+          JSONObject responseJSON = new JSONObject(responseString);
+
+          JSONObject metaData = responseJSON.getJSONObject("meta");
+
+          boolean hasSucceed = metaData.has(succeedProperty);
+          if (!hasSucceed) {
+            throw new APIException(unexpectedMessage, responseJSON);
+          }
+          String errorMessage = null;
+          int didSucceed = metaData.getInt(succeedProperty);
+          if (didSucceed == 200) {
+            requestCallback.onSuccess(responseJSON);
+            return;
+          }
+
+          if (responseJSON.has(errorMessageProperty) == true) {
+            errorMessage = responseJSON.getString(errorMessageProperty);
+          }
+
+          if (errorMessage == null) {
+            errorMessage = unexpectedMessage;
+          }
+
+          throw new APIException(errorMessage, responseJSON);
+        } catch (APIException exception) {
+          requestCallback.onFailure(exception);
+        } catch (Exception exception) {
+          requestCallback.onFailure(new APIException(exception, null));
+        }
+      }
+
+      @Override
+      public void onFailure(Call call, IOException e) {
+        requestCallback.onFailure(new APIException(e, null));
+      }
+    });
   }
 }
