@@ -6,10 +6,6 @@
 //  Copyright © 2020 Facebook. All rights reserved.
 //
 
-import Foundation
-import UIKit
-import FaceTecSDK
-
 final class Customization {
     public static let resultSuccessMessage = "You’re a beautiful\n& unique unicorn!"
     public static let resultFacescanUploadMessage = "Uploading Your face\nsnapshot to verify";

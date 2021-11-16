@@ -6,9 +6,6 @@
 //  Copyright © 2020 Facebook. All rights reserved.
 //
 
-import Foundation
-import UIKit
-
 extension UIColor {
     convenience init(_ hexString: String) {
         var int = UInt64()

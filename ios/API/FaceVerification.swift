@@ -6,8 +6,6 @@
 //  Copyright © 2020 Facebook. All rights reserved.
 //
 
-import Foundation
-
 class FaceVerification {
     // singletone instance
     static let shared = FaceVerification()
@@ -190,7 +188,7 @@ class FaceVerification {
             return nil
         }
 
-        if !(json[succeedProperty] is Bool) {
+      if !(json?[succeedProperty] is Bool) {
             return nil
         }
 

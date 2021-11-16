@@ -6,8 +6,6 @@
 //  Copyright © 2020 Facebook. All rights reserved.
 //
 
-import UIKit
-
 extension UIFont {
     static func robotoFont(_ size: CGFloat) -> Self {
         return robotoFont(.regular, size)

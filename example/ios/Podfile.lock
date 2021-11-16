@@ -365,7 +365,7 @@ SPEC CHECKSUMS:
   React-jsiexecutor: 93bd528844ad21dc07aab1c67cb10abae6df6949
   React-jsinspector: 58aef7155bc9a9683f5b60b35eccea8722a4f53a
   react-native-config: c98128a72bc2c3a1ca72caec0b021f0fa944aa29
-  react-native-facetec: 52b689c3ddc44c83407c03e38087891c7905cebb
+  react-native-facetec: 2b8ffd766a39662a7f803717bec7632931680258
   React-RCTActionSheet: 89a0ca9f4a06c1f93c26067af074ccdce0f40336
   React-RCTAnimation: 1bde3ecc0c104c55df246eda516e0deb03c4e49b
   React-RCTBlob: a97d378b527740cc667e03ebfa183a75231ab0f0
@@ -378,6 +378,6 @@ SPEC CHECKSUMS:
   ReactCommon: 73d79c7039f473b76db6ff7c6b159c478acbbb3b
   Yoga: 4bd86afe9883422a7c4028c00e34790f560923d6
 
-PODFILE CHECKSUM: 68dc732fcf33a342148a67cab9f313638be7a515
+PODFILE CHECKSUM: 3da1a861e6ee03cd13c1685e41a48adcfceb2da4
 
 COCOAPODS: 1.11.2
