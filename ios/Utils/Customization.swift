@@ -98,9 +98,6 @@ final class Customization {
         // subtext
         guidance.subtextFont = defaultFont
         
-        // enabling additional instructions on retry screen
-        guidance.enableRetryScreenBulletedInstructions = true
-        
         // configuring guidance images on retry screen
         guidance.retryScreenOvalStrokeColor = primary
         guidance.retryScreenImageBorderColor = primary
@@ -110,7 +107,6 @@ final class Customization {
         // customizing result screen - progress bar & success animation
         resultScreen.foregroundColor = darkGray
         resultScreen.messageFont = defaultFont.withSize(16)
-        resultScreen.messageTextSpacing = 0.08
         resultScreen.showUploadProgressBar = true
         resultScreen.uploadProgressFillColor = primary
         resultScreen.uploadProgressTrackColor = lightGray

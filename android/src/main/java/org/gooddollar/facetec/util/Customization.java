@@ -112,9 +112,6 @@ public class Customization {
     // subtext
     guidance.subtextFont = defaultFont;
 
-    // enabling additional instructions on retry screen
-    guidance.enableRetryScreenBulletedInstructions = true;
-
     // configuring guidance images on retry screen
     guidance.retryScreenOvalStrokeColor = primary;
     guidance.retryScreenImageBorderColor = primary;
