@@ -14,8 +14,7 @@ class EnrollmentProcessor: NSObject, URLSessionTaskDelegate, SessionDelegate {
 
     var processingDelegate: ProcessingDelegate
     var presentSessionVCFrom: UIViewController
-  
-    let sessionDelegate = SessionProcessingDelegate.init()
+    var sessionDelegate: SessionProcessingDelegate?
 
     private var alwaysRetry: Bool {
         get {
@@ -26,8 +25,9 @@ class EnrollmentProcessor: NSObject, URLSessionTaskDelegate, SessionDelegate {
     init(fromVC: UIViewController, delegate: ProcessingDelegate) {
         self.processingDelegate = delegate
         self.presentSessionVCFrom = fromVC
-
+      
         super.init()
+        self.sessionDelegate = SessionProcessingDelegate(session: self)
     }
 
     func enroll(_ enrollmentIdentifier: String, _ maxRetries: Int? = nil, _ timeout: Int? = nil) {
@@ -48,7 +48,7 @@ class EnrollmentProcessor: NSObject, URLSessionTaskDelegate, SessionDelegate {
                 }
 
                 DispatchQueue.main.async {
-                    let sessionVC = FaceTec.sdk.createSessionVC(faceScanProcessorDelegate: self.sessionDelegate, sessionToken: sessionToken)
+                    let sessionVC = FaceTec.sdk.createSessionVC(faceScanProcessorDelegate: self.sessionDelegate!, sessionToken: sessionToken)
 
                     self.presentSessionVCFrom.present(sessionVC, animated: true, completion: {
                         EventEmitter.shared.dispatch(.UI_READY)

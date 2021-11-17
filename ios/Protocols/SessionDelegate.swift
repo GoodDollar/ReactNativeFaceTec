@@ -8,7 +8,7 @@
 
 import Foundation
 
-protocol SessionDelegate {
+@objc protocol SessionDelegate {
   func onFaceTecSessionResult(sessionResult: FaceTecSessionResult, faceScanResultCallback: FaceTecFaceScanResultCallback)
 
   func onFaceTecSessionDone()
