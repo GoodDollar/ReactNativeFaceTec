@@ -1,5 +1,7 @@
 import AVFoundation
 
+// implementing SessionDelegate which is the same than FaceTecFaceScanProcessorDelegate
+// but causes no issues during build
 class EnrollmentProcessor: NSObject, URLSessionTaskDelegate, SessionDelegate {
     var maxRetries: Int?
     var enrollmentIdentifier: String!
@@ -27,6 +29,8 @@ class EnrollmentProcessor: NSObject, URLSessionTaskDelegate, SessionDelegate {
         self.presentSessionVCFrom = fromVC
       
         super.init()
+        // instantiating a session delegate ObjectiveC class
+        // wrapping the enrollment processor
         self.sessionDelegate = SessionProcessingDelegate(session: self)
     }
 
@@ -48,6 +52,7 @@ class EnrollmentProcessor: NSObject, URLSessionTaskDelegate, SessionDelegate {
                 }
 
                 DispatchQueue.main.async {
+                    // the sessionDelegate now passes to createSessionVC instead of EnrollmentProcessor
                     let sessionVC = FaceTec.sdk.createSessionVC(faceScanProcessorDelegate: self.sessionDelegate!, sessionToken: sessionToken)
 
                     self.presentSessionVCFrom.present(sessionVC, animated: true, completion: {

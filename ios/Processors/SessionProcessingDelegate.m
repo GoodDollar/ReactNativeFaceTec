@@ -9,7 +9,7 @@
 #import "SessionProcessingDelegate.h"
 
 @implementation SessionProcessingDelegate
-  - (instancetype) initWithSession:(id <SessionDelegate> _Nonnull)session {
+  - (instancetype) initWithSession:(id<SessionDelegate> _Nonnull)session {
     self = [super init];
     
     if (self) {
@@ -19,12 +19,14 @@
     return self;
   }
 
+  // the wrapper class is doing nothing then implementing FaceTecFaceScanProcessorDelegate
+  // and proxyiong its calls to the SessionDelegate which is the EnrollmentProcessor
   - (void) onFaceTecSDKCompletelyDone {
-    NSLog(@"Session done");
+    [_session onFaceTecSessionDone];
   }
 
   - (void) processSessionWhileFaceTecSDKWaits:(id<FaceTecSessionResult> _Nonnull)sessionResult faceScanResultCallback:(id<FaceTecFaceScanResultCallback> _Nonnull)faceScanResultCallback {
-    NSLog(@"Received face photo");
+    [_session onFaceTecSessionResult:sessionResult faceScanResultCallback:faceScanResultCallback];
   }
 
 @end

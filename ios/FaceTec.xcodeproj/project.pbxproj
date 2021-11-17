@@ -8,7 +8,6 @@
 
 /* Begin PBXBuildFile section */
 		6865BCCD274414FC00EF39FE /* SessionProcessingDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 6865BCCC274414FC00EF39FE /* SessionProcessingDelegate.m */; };
-		6865BCD027441CC200EF39FE /* SessionDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6865BCCF27441CC100EF39FE /* SessionDelegate.swift */; };
 		6877D1C9259BB39D00B54D84 /* UIFont+Roboto.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6877D1C8259BB39D00B54D84 /* UIFont+Roboto.swift */; };
 		6877D1CC259BC04900B54D84 /* FaceTecShadow+CSS.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6877D1CB259BC04900B54D84 /* FaceTecShadow+CSS.swift */; };
 		6877D1CF259BC1B900B54D84 /* CAGradientLayer+SolidFill.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6877D1CE259BC1B900B54D84 /* CAGradientLayer+SolidFill.swift */; };
@@ -46,9 +45,9 @@
 /* Begin PBXFileReference section */
 		134814201AA4EA6300B7C361 /* libFaceTec.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libFaceTec.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		681756B1258BAF7500177E7F /* FaceTec-Bridging-Header.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "FaceTec-Bridging-Header.h"; sourceTree = "<group>"; };
+		6848160F27452350006E55CB /* SessionDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SessionDelegate.h; sourceTree = "<group>"; };
 		6865BCCC274414FC00EF39FE /* SessionProcessingDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SessionProcessingDelegate.m; sourceTree = "<group>"; };
 		6865BCCE2744153C00EF39FE /* SessionProcessingDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SessionProcessingDelegate.h; sourceTree = "<group>"; };
-		6865BCCF27441CC100EF39FE /* SessionDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionDelegate.swift; sourceTree = "<group>"; };
 		6877D1C8259BB39D00B54D84 /* UIFont+Roboto.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIFont+Roboto.swift"; sourceTree = "<group>"; };
 		6877D1CB259BC04900B54D84 /* FaceTecShadow+CSS.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "FaceTecShadow+CSS.swift"; sourceTree = "<group>"; };
 		6877D1CE259BC1B900B54D84 /* CAGradientLayer+SolidFill.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CAGradientLayer+SolidFill.swift"; sourceTree = "<group>"; };
@@ -136,7 +135,7 @@
 			children = (
 				6878F541258BAF0F00E010B2 /* ProcesingDelegate.swift */,
 				68C160752590B77400843347 /* PromiseDelegate.swift */,
-				6865BCCF27441CC100EF39FE /* SessionDelegate.swift */,
+				6848160F27452350006E55CB /* SessionDelegate.h */,
 			);
 			path = Protocols;
 			sourceTree = "<group>";
@@ -345,7 +344,6 @@
 				68B9B7292594E482007E6027 /* FaceVerification.swift in Sources */,
 				68B9B6F42594DA2A007E6027 /* String+SnakeCase.swift in Sources */,
 				68AB478C259689DA006B2E4C /* FaceVerificationError.swift in Sources */,
-				6865BCD027441CC200EF39FE /* SessionDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -383,6 +381,7 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
+				DEFINES_MODULE = YES;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
@@ -411,6 +410,7 @@
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				PRECOMPS_INCLUDE_HEADERS_FROM_BUILT_PRODUCTS_DIR = YES;
+				PRODUCT_MODULE_NAME = FaceTec;
 				SDKROOT = iphoneos;
 				SWIFT_COMPILATION_MODE = wholemodule;
 				SWIFT_PRECOMPILE_BRIDGING_HEADER = NO;
@@ -449,6 +449,7 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = YES;
+				DEFINES_MODULE = YES;
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
@@ -469,6 +470,7 @@
 				);
 				MTL_ENABLE_DEBUG_INFO = NO;
 				PRECOMPS_INCLUDE_HEADERS_FROM_BUILT_PRODUCTS_DIR = YES;
+				PRODUCT_MODULE_NAME = FaceTec;
 				SDKROOT = iphoneos;
 				SWIFT_COMPILATION_MODE = wholemodule;
 				SWIFT_PRECOMPILE_BRIDGING_HEADER = NO;
