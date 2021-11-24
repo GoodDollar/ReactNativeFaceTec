@@ -49,7 +49,7 @@ final class Customization {
         
         // setting custom location & image of cancel button
         cancelButton.location = .topRight
-        cancelButton.customImage = UIImage(named: "Cancel", in: defaultBundle, compatibleWith: nil)!
+//         cancelButton.customImage = UIImage(named: "Cancel", in: defaultBundle, compatibleWith: nil)!
         
         // configuring feedback bar typography & border radius
         feedback.backgroundColor = CAGradientLayer.solidFill(color: black)
