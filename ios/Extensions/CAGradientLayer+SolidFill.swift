@@ -6,8 +6,6 @@
 //  Copyright © 2020 Facebook. All rights reserved.
 //
 
-import UIKit
-
 extension CAGradientLayer {
     static func solidFill(color: UIColor, alpha: CGFloat = 1) -> Self {
         let layer = Self.init()

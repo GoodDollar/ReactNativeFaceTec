@@ -6,9 +6,6 @@
 //  Copyright © 2020 Facebook. All rights reserved.
 //
 
-import Foundation
-import FaceTecSDK
-
 class PromiseProcessingDelegate: NSObject, ProcessingDelegate {
     private var promise: PromiseDelegate
     

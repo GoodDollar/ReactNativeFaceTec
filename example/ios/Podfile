@@ -1,12 +1,13 @@
 require_relative '../node_modules/react-native/scripts/react_native_pods'
 require_relative '../node_modules/@react-native-community/cli-platform-ios/native_modules'
 
-platform :ios, '10.0'
+platform :ios, '12.0'
 
 target 'example' do
   config = use_native_modules!
-
   use_react_native!(:path => config["reactNativePath"])
+
+  pod 'secp256k1.c', '0.1.2', :modular_headers => true
 
   target 'exampleTests' do
     inherit! :complete

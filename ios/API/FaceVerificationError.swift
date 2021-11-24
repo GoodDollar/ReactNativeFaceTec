@@ -6,8 +6,6 @@
 //  Copyright © 2020 Facebook. All rights reserved.
 //
 
-import Foundation
-
 enum FaceVerificationError: Error {
     case unexpectedResponse
     case emptyResponse

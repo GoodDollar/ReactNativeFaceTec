@@ -6,8 +6,8 @@
 //
 
 import UIKit
-import FaceTecSDK
 import LocalAuthentication
+import FaceTecSDK
 
 @objc(FaceTecModule)
 open class FaceTecModule: RCTEventEmitter {

@@ -6,9 +6,6 @@
 //  Copyright © 2020 Facebook. All rights reserved.
 //
 
-import Foundation
-import FaceTecSDK
-
 class Promise: PromiseDelegate {
     private var resolver: RCTPromiseResolveBlock
     private var rejecter: RCTPromiseRejectBlock

@@ -1,9 +1,8 @@
-import UIKit
-import Foundation
-import FaceTecSDK
 import AVFoundation
 
-class EnrollmentProcessor: NSObject, FaceTecFaceScanProcessorDelegate, URLSessionDelegate, URLSessionTaskDelegate {
+// implementing SessionDelegate which is the same than FaceTecFaceScanProcessorDelegate
+// but causes no issues during build
+class EnrollmentProcessor: NSObject, URLSessionTaskDelegate, SessionDelegate {
     var maxRetries: Int?
     var enrollmentIdentifier: String!
     private let defaultMaxRetries = -1
@@ -15,8 +14,9 @@ class EnrollmentProcessor: NSObject, FaceTecFaceScanProcessorDelegate, URLSessio
     var retryAttempt = 0
     var timeout: TimeInterval? = nil
 
-    var delegate: ProcessingDelegate
+    var processingDelegate: ProcessingDelegate
     var presentSessionVCFrom: UIViewController
+    var sessionDelegate: SessionProcessingDelegate?
 
     private var alwaysRetry: Bool {
         get {
@@ -25,10 +25,13 @@ class EnrollmentProcessor: NSObject, FaceTecFaceScanProcessorDelegate, URLSessio
     }
 
     init(fromVC: UIViewController, delegate: ProcessingDelegate) {
-        self.delegate = delegate
+        self.processingDelegate = delegate
         self.presentSessionVCFrom = fromVC
-
+      
         super.init()
+        // instantiating a session delegate ObjectiveC class
+        // wrapping the enrollment processor
+        self.sessionDelegate = SessionProcessingDelegate(session: self)
     }
 
     func enroll(_ enrollmentIdentifier: String, _ maxRetries: Int? = nil, _ timeout: Int? = nil) {
@@ -49,7 +52,8 @@ class EnrollmentProcessor: NSObject, FaceTecFaceScanProcessorDelegate, URLSessio
                 }
 
                 DispatchQueue.main.async {
-                    let sessionVC = FaceTec.sdk.createSessionVC(faceScanProcessorDelegate: self, sessionToken: sessionToken)
+                    // the sessionDelegate now passes to createSessionVC instead of EnrollmentProcessor
+                    let sessionVC = FaceTec.sdk.createSessionVC(faceScanProcessorDelegate: self.sessionDelegate!, sessionToken: sessionToken)
 
                     self.presentSessionVCFrom.present(sessionVC, animated: true, completion: {
                         EventEmitter.shared.dispatch(.UI_READY)
@@ -59,7 +63,7 @@ class EnrollmentProcessor: NSObject, FaceTecFaceScanProcessorDelegate, URLSessio
         }
     }
 
-    func processSessionWhileFaceTecSDKWaits(sessionResult: FaceTecSessionResult, faceScanResultCallback: FaceTecFaceScanResultCallback) {
+    func onFaceTecSessionResult(sessionResult: FaceTecSessionResult, faceScanResultCallback: FaceTecFaceScanResultCallback) {
         lastResult = sessionResult
         resultCallback = faceScanResultCallback
 
@@ -77,8 +81,8 @@ class EnrollmentProcessor: NSObject, FaceTecFaceScanProcessorDelegate, URLSessio
         sendEnrollmentRequest()
     }
 
-    func onFaceTecSDKCompletelyDone() {
-        delegate.onProcessingComplete(isSuccess: isSuccess, sessionResult: lastResult, sessionMessage: lastMessage)
+    func onFaceTecSessionDone() {
+        processingDelegate.onProcessingComplete(isSuccess: isSuccess, sessionResult: lastResult, sessionMessage: lastMessage)
     }
 
     func urlSession(_ session: URLSession, task: URLSessionTask, didSendBodyData bytesSent: Int64, totalBytesSent: Int64, totalBytesExpectedToSend: Int64) {
@@ -99,7 +103,7 @@ class EnrollmentProcessor: NSObject, FaceTecFaceScanProcessorDelegate, URLSessio
     private func startSession(sessionTokenCallback: @escaping (String) -> Void) {
         FaceVerification.shared.getSessionToken() { sessionToken, error in
             if error != nil {
-                self.delegate.onSessionTokenError()
+                self.processingDelegate.onSessionTokenError()
                 return
             }
 
@@ -116,14 +120,14 @@ class EnrollmentProcessor: NSObject, FaceTecFaceScanProcessorDelegate, URLSessio
                 if (granted) {
                     requestCallback()
                 } else {
-                    self.delegate.onCameraAccessError()
+                    self.processingDelegate.onCameraAccessError()
                 }
             }
         case .denied,
              .restricted:
-            delegate.onCameraAccessError()
+            processingDelegate.onCameraAccessError()
         @unknown default:
-            delegate.onCameraAccessError()
+            processingDelegate.onCameraAccessError()
         }
     }
 

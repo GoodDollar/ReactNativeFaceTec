@@ -5,8 +5,6 @@
 //  Created by Alex Serdukov on 12/21/20.
 //  Copyright © 2020 Facebook. All rights reserved.
 //
-import FaceTecSDK
-
 protocol PromiseDelegate {
     func resolve(_ result: Any?) -> Void
     func reject(_ with: FaceTecSessionStatus) -> Void
