@@ -1,17 +1,17 @@
 {
   "images" : [
     {
-      "filename" : "FaceTec_cancel.svg",
+      "filename" : "Сancel.png",
       "idiom" : "universal",
       "scale" : "1x"
     },
     {
-      "filename" : "FaceTec_cancel_2.svg",
+      "filename" : "Сancel2x.png",
       "idiom" : "universal",
       "scale" : "2x"
     },
     {
-      "filename" : "FaceTec_cancel_3.svg",
+      "filename" : "Сancel3x.png",
       "idiom" : "universal",
       "scale" : "3x"
     }

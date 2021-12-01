@@ -1,17 +1,17 @@
 {
   "images" : [
     {
-      "filename" : "Earth.png",
+      "filename" : "ActivityIndicator.png",
       "idiom" : "universal",
       "scale" : "1x"
     },
     {
-      "filename" : "Earth2x.png",
+      "filename" : "ActivityIndicator2x.png",
       "idiom" : "universal",
       "scale" : "2x"
     },
     {
-      "filename" : "Earth3x.png",
+      "filename" : "ActivityIndicator3x.png",
       "idiom" : "universal",
       "scale" : "3x"
     }
