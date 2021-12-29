@@ -6,6 +6,7 @@
   "main": "index.js",
   "files": [
     "src",
+    "web",
     "index.js",
     "android",
     "ios",
