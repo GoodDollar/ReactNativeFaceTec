@@ -35,14 +35,17 @@
   "license": "MIT",
   "licenseFilename": "LICENSE",
   "readmeFilename": "README.md",
-  "peerDependencies": {
-    "react": "^16.14.0",
-    "react-native": "^0.61.5",
+  "dependencies": {
     "gently-copy": "^3.2.0"
   },
   "devDependencies": {
     "auto-changelog": "^2.2.1",
     "react": "^16.14.0",
     "react-native": "^0.61.5"
+  },
+  "peerDependencies": {
+    "react": "^16.14.0",
+    "react-native": "^0.61.5",
+    "gently-copy": "^3.2.0"
   }
 }
