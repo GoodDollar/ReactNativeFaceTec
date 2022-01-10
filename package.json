@@ -8,6 +8,7 @@
     "src",
     "web",
     "index.js",
+    "post-install.js",
     "android",
     "ios",
     "react-native-facetec.podspec",
