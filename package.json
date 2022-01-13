@@ -8,7 +8,6 @@
     "src",
     "web",
     "index.js",
-    "post-install.js",
     "android",
     "ios",
     "react-native-facetec.podspec",
@@ -16,7 +15,6 @@
     "LICENSE"
   ],
   "scripts": {
-    "postinstall": "node ./post-install.js",
     "test": "echo \"Error: no test specified\" && exit 1",
     "version": "auto-changelog -p && git add CHANGELOG.md"
   },
@@ -35,9 +33,6 @@
   "license": "MIT",
   "licenseFilename": "LICENSE",
   "readmeFilename": "README.md",
-  "dependencies": {
-    "gently-copy": "^3.2.0"
-  },
   "devDependencies": {
     "auto-changelog": "^2.2.1",
     "react": "^16.14.0",
@@ -45,7 +40,6 @@
   },
   "peerDependencies": {
     "react": "^16.14.0",
-    "react-native": "^0.61.5",
-    "gently-copy": "^3.2.0"
+    "react-native": "^0.61.5"
   }
 }
