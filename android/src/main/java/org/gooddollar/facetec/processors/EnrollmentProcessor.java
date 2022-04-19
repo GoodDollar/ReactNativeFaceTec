@@ -174,14 +174,26 @@ public class EnrollmentProcessor implements FaceTecFaceScanProcessor {
       @Override
       public void onSuccess(JSONObject response) {
         String successMessage = Customization.resultSuccessMessage;
+        JSONObject enrollmentResult = getEnrollmentResult(response);
+        String resultBlob = enrollmentResult.optString("resultBlob");
 
         resultCallback.uploadProgress(1);
-        EnrollmentProcessor.this.isSuccess = true;
 
+        if (resultBlob == null) {
+          FaceVerification.APIException exception = new FaceVerification.APIException(
+            FaceVerification.unexpectedMessage, response
+          );
+
+          EnrollmentProcessor.this.handleEnrollmentError(exception);
+          return;
+        }
+
+        EnrollmentProcessor.this.isSuccess = true;
         EnrollmentProcessor.this.lastMessage = successMessage;
         FaceTecCustomization.overrideResultScreenSuccessMessage = successMessage;
 
         resultCallback.succeed();
+        resultCallback.proceedToNextStep(resultBlob);
       }
 
       @Override
@@ -199,11 +211,7 @@ public class EnrollmentProcessor implements FaceTecFaceScanProcessor {
     lastMessage = exception.getMessage();
 
     if (response != null) {
-      JSONObject enrollmentResult = response.optJSONObject("enrollmentResult");
-
-      if (enrollmentResult == null) {
-        enrollmentResult = new JSONObject();
-      }
+      JSONObject enrollmentResult = getEnrollmentResult(response);
 
       // if isDuplicate is strictly true, that means we have dup face
       boolean isDuplicateIssue = enrollmentResult.optBoolean("isDuplicate", false);
@@ -212,10 +220,12 @@ public class EnrollmentProcessor implements FaceTecFaceScanProcessor {
       // in JS code we're checking for false === isLive strictly. so if no isLive flag in the response,
       // we assume that liveness check was successfull. That's why we're setting true as fallback value
       boolean isLivenessIssue = enrollmentResult.optBoolean("isLive", true);
+      // getting result Blob to use in the retry case
+      String resultBlob = enrollmentResult.optString("resultBlob");
 
       // if there's no duplicate / 3d match issues but we have
       // liveness issue strictly - we'll check for possible session retry
-      if (!isDuplicateIssue && !is3DMatchIssue && isLivenessIssue) {
+      if (isLivenessIssue && (resultBlob != null) && !isDuplicateIssue && !is3DMatchIssue) {
         // if haven't reached retries threshold or max retries is disabled
         // (is null or < 0) we'll ask to retry capturing
         if ((maxRetries < 0) || (retryAttempt < maxRetries)) {
@@ -224,7 +234,7 @@ public class EnrollmentProcessor implements FaceTecFaceScanProcessor {
           // showing reason
           lastResultCallback.uploadMessageOverride(lastMessage);
           // notifying about retry
-          lastResultCallback.retry();
+          lastResultCallback.proceedToNextStep(resultBlob);
 
           // dispatching retry event
           WritableMap eventData = Arguments.createMap();
@@ -236,10 +246,21 @@ public class EnrollmentProcessor implements FaceTecFaceScanProcessor {
           eventData.putBoolean("enrolled", isEnrolled);
 
           EventEmitter.dispatch(EventEmitter.UXEvent.FV_RETRY, eventData);
+          return;
         }
       }
     }
 
     lastResultCallback.cancel();
+  }
+
+  private JSONObject getEnrollmentResult(JSONObject response) {
+    JSONObject enrollmentResult = response.optJSONObject("enrollmentResult");
+
+    if (enrollmentResult == null) {
+      return new JSONObject();
+    }
+
+    return enrollmentResult;
   }
 }

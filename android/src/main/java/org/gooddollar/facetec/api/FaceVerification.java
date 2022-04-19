@@ -18,12 +18,13 @@ import org.json.JSONObject;
 import org.gooddollar.facetec.api.NetworkingHelpers;
 
 public final class FaceVerification {
+  public static final String unexpectedMessage = "An unexpected issue during the face verification API call";
+
   private FaceVerification() {}
   private final static OkHttpClient http = NetworkingHelpers.getApiClient();
   private static String _jwtAccessToken;
   private static String _serverURL;
 
-  private static String unexpectedMessage = "An unexpected issue during the face verification API call";
   private static String succeedProperty = "success";
   private static String errorMessageProperty = "error";
   private static String sessionTokenProperty = "sessionToken";
@@ -31,7 +32,7 @@ public final class FaceVerification {
   public static class APIException extends IOException {
     JSONObject response = null;
 
-    APIException(String message, @Nullable JSONObject response) {
+    public APIException(String message, @Nullable JSONObject response) {
       super(message);
 
       this.response = response;
