@@ -1,11 +1,12 @@
 {
   "name": "@gooddollar/react-native-facetec",
   "title": "React Native module that integrates FaceTec face verification API",
-  "version": "1.0.13",
+  "version": "1.0.23",
   "description": "React Native module that integrates FaceTec face verification API",
   "main": "index.js",
   "files": [
     "src",
+    "web",
     "index.js",
     "android",
     "ios",
@@ -32,12 +33,12 @@
   "license": "MIT",
   "licenseFilename": "LICENSE",
   "readmeFilename": "README.md",
-  "peerDependencies": {
+  "devDependencies": {
+    "auto-changelog": "^2.2.1",
     "react": "^16.14.0",
     "react-native": "^0.61.5"
   },
-  "devDependencies": {
-    "auto-changelog": "^2.2.1",
+  "peerDependencies": {
     "react": "^16.14.0",
     "react-native": "^0.61.5"
   }

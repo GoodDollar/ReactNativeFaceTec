@@ -57,6 +57,8 @@ public class FaceTecModule extends ReactContextBaseJavaModule {
 
         EventEmitter.register(reactContext);
         FaceTecSDK.setCustomization(Customization.UICustomization);
+        FaceTecSDK.setLowLightCustomization(Customization.LowLightModeCustomization);
+        FaceTecSDK.setDynamicDimmingCustomization(Customization.DynamicModeCustomization);
     }
 
     @Override

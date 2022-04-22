@@ -19,6 +19,8 @@ open class FaceTecModule: RCTEventEmitter {
         super.init()
 
         FaceTec.sdk.setCustomization(Customization.UICustomization)
+        FaceTec.sdk.setLowLightCustomization(Customization.LowLightModeCustomization)
+        FaceTec.sdk.setDynamicDimmingCustomization(Customization.DynamicModeCustomization)
         EventEmitter.shared.register(withRCTEventEmitter: self)
     }
 
