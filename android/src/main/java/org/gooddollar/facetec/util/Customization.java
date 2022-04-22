@@ -24,7 +24,9 @@ public class Customization {
   private Customization() {}
 
 
-  final public static FaceTecCustomization UICustomization = new FaceTecCustomization();
+  final public static FaceTecCustomization UICustomization = basicCustomizationFactory();
+  final public static FaceTecCustomization LowLightModeCustomization = basicCustomizationFactory();
+  final public static FaceTecCustomization DynamicModeCustomization = basicCustomizationFactory();
   final public static Map<Integer, String> UITextStrings = new HashMap<>();
 
   final public static String resultSuccessMessage = UITextStrings.get(R.string.FaceTec_result_success_message);
@@ -51,15 +53,44 @@ public class Customization {
   final private static Typeface boldFont = Typeface.create("sans-serif", Typeface.BOLD);
 
   static {
+    // customize Dynamic dimming & low light mode UI
+    FaceTecGuidanceCustomization lowLightGuidance = LowLightModeCustomization.getGuidanceCustomization();
+    FaceTecGuidanceCustomization dynamicDimmingGuidance = DynamicModeCustomization.getGuidanceCustomization();
+    FaceTecCancelButtonCustomization dynamicDimmingButton = DynamicModeCustomization.getCancelButtonCustomization();
+
+    // Dynamic dimming customizations
+    dynamicDimmingButton.customImage = drawable.facetec_cancel_white;
+    dynamicDimmingGuidance.readyScreenHeaderTextColor = black;
+    dynamicDimmingGuidance.readyScreenSubtextTextColor = black;
+
+    // Low light customizations
+    lowLightGuidance.readyScreenHeaderTextColor = white;
+    lowLightGuidance.readyScreenSubtextTextColor = white;
+
+    // override locale strings
+    UITextStrings.put(R.string.FaceTec_result_success_message, resultSuccessMessage);
+    UITextStrings.put(R.string.FaceTec_result_facescan_upload_message, resultFacescanUploadMessage);
+
+    UITextStrings.put(R.string.FaceTec_retry_instruction_message_1, "Hold Your Camera at Eye Level.");
+    UITextStrings.put(R.string.FaceTec_retry_instruction_message_2, "Light Your Face Evenly.");
+    UITextStrings.put(R.string.FaceTec_retry_instruction_message_3, "Avoid Smiling & Back Light");
+
+    UITextStrings.put(R.string.FaceTec_instructions_message_ready_1, "Please Frame Your Face In The Small");
+    UITextStrings.put(R.string.FaceTec_instructions_message_ready_2, "Oval, Then The Big Oval");
+  }
+
+  final private static FaceTecCustomization basicCustomizationFactory() {
+    FaceTecCustomization customization = new FaceTecCustomization();
+
     // customize UI
-    FaceTecOverlayCustomization overlay = UICustomization.getOverlayCustomization();
-    FaceTecCancelButtonCustomization cancelButton = UICustomization.getCancelButtonCustomization();
-    FaceTecFeedbackCustomization feedback = UICustomization.getFeedbackCustomization();
-    FaceTecOvalCustomization oval = UICustomization.getOvalCustomization();
-    FaceTecFrameCustomization frame = UICustomization.getFrameCustomization();
-    FaceTecGuidanceCustomization guidance = UICustomization.getGuidanceCustomization();
-    FaceTecVocalGuidanceCustomization vocalGuidance = UICustomization.vocalGuidanceCustomization;
-    FaceTecResultScreenCustomization resultScreen = UICustomization.getResultScreenCustomization();
+    FaceTecOverlayCustomization overlay = customization.getOverlayCustomization();
+    FaceTecCancelButtonCustomization cancelButton = customization.getCancelButtonCustomization();
+    FaceTecFeedbackCustomization feedback = customization.getFeedbackCustomization();
+    FaceTecOvalCustomization oval = customization.getOvalCustomization();
+    FaceTecFrameCustomization frame = customization.getFrameCustomization();
+    FaceTecGuidanceCustomization guidance = customization.getGuidanceCustomization();
+    FaceTecVocalGuidanceCustomization vocalGuidance = customization.vocalGuidanceCustomization;
+    FaceTecResultScreenCustomization resultScreen = customization.getResultScreenCustomization();
 
     // removing branding image from overlay
     overlay.showBrandingImage = true;
@@ -135,15 +166,6 @@ public class Customization {
     // disable voice help
     vocalGuidance.mode = FaceTecVocalGuidanceCustomization.VocalGuidanceMode.NO_VOCAL_GUIDANCE;
 
-    // override locale strings
-    /*UITextStrings.put(R.string.FaceTec_result_success_message, resultSuccessMessage);
-    UITextStrings.put(R.string.FaceTec_result_facescan_upload_message, resultFacescanUploadMessage);
-
-    UITextStrings.put(R.string.FaceTec_retry_instruction_message_1, "Hold Your Camera at Eye Level.");
-    UITextStrings.put(R.string.FaceTec_retry_instruction_message_2, "Light Your Face Evenly.");
-    UITextStrings.put(R.string.FaceTec_retry_instruction_message_3, "Avoid Smiling & Back Light");
-
-    UITextStrings.put(R.string.FaceTec_instructions_message_ready_1, "Please Frame Your Face In The Small");
-    UITextStrings.put(R.string.FaceTec_instructions_message_ready_2, "Oval, Then The Big Oval");*/
+    return customization;
   }
 }

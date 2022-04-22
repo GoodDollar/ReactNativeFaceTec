@@ -148,10 +148,18 @@ class EnrollmentProcessor: NSObject, URLSessionTaskDelegate, SessionDelegate {
             withTimeout: timeout,
             withDelegate: self
         ) { response, error in
+            let enrollmentResult = response?["enrollmentResult"] as? [String: String]
+            let resultBlob = enrollmentResult?["resultBlob"]
+            var enrollmentError = error
+          
             self.resultCallback.onFaceScanUploadProgress(uploadedPercent: 1)
+          
+            if error == nil && resultBlob == nil {
+              enrollmentError = FaceVerificationError.unexpectedResponse
+            }
 
-            if error != nil {
-                self.handleEnrollmentError(error!, response)
+            if enrollmentError != nil {
+                self.handleEnrollmentError(enrollmentError!, response)
                 return
             }
 
@@ -159,7 +167,7 @@ class EnrollmentProcessor: NSObject, URLSessionTaskDelegate, SessionDelegate {
             self.lastMessage = Customization.resultSuccessMessage
 
             FaceTecCustomization.setOverrideResultScreenSuccessMessage(self.lastMessage)
-            self.resultCallback.onFaceScanResultSucceed()
+            self.resultCallback.onFaceScanGoToNextStep(scanResultBlob: resultBlob!)
         }
     }
 
@@ -170,17 +178,19 @@ class EnrollmentProcessor: NSObject, URLSessionTaskDelegate, SessionDelegate {
         lastMessage = faceTecError.message
 
         if response != nil {
-            let enrollmentResult = response?["enrollmentResult"] as? [String: Bool]
+            let flags = response?["enrollmentResult"] as? [String: Bool]
+            let enrollmentResult = response?["enrollmentResult"] as? [String: String]
 
             // if isDuplicate is strictly true, that means we have dup face
-            let isDuplicateIssue = true == enrollmentResult?["isDuplicate"]
-            let is3DMatchIssue = true == enrollmentResult?["isNotMatch"]
-            let isLivenessIssue = false == enrollmentResult?["isLive"]
-            let isEnrolled = true == enrollmentResult?["isEnrolled"]
+            let isDuplicateIssue = true == flags?["isDuplicate"]
+            let is3DMatchIssue = true == flags?["isNotMatch"]
+            let isLivenessIssue = false == flags?["isLive"]
+            let isEnrolled = true == flags?["isEnrolled"]
+            let resultBlob = enrollmentResult?["resultBlob"]
 
             // if there's no duplicate / 3d match issues but we have
             // liveness issue strictly - we'll check for possible session retry
-            if !isDuplicateIssue && !is3DMatchIssue && isLivenessIssue {
+            if resultBlob != nil && isLivenessIssue && !isDuplicateIssue && !is3DMatchIssue {
                 // if haven't reached retries threshold or max retries is disabled
                 // (is null or < 0) we'll ask to retry capturing
                 if alwaysRetry || retryAttempt < maxRetries! {
@@ -191,7 +201,7 @@ class EnrollmentProcessor: NSObject, URLSessionTaskDelegate, SessionDelegate {
                     // showing reason
                     resultCallback.onFaceScanUploadMessageOverride(uploadMessageOverride: retryMessage)
                     // notifying about retry
-                    resultCallback.onFaceScanResultRetry()
+                    resultCallback.onFaceScanGoToNextStep(scanResultBlob: resultBlob!)
 
                     // dispatching retry event
                     EventEmitter.shared.dispatch(.FV_RETRY, [
