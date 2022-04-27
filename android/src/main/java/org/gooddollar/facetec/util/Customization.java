@@ -23,6 +23,8 @@ import org.gooddollar.facetec.R.drawable;
 public class Customization {
   private Customization() {}
 
+  final public static String resultFacescanUploadMessage = "Uploading Your face snapshot to verify";
+  final public static String resultFacescanProcessingMessage = "Verifying you're\none of a kind";
 
   final public static FaceTecCustomization UICustomization = basicCustomizationFactory();
   final public static FaceTecCustomization LowLightModeCustomization = basicCustomizationFactory();
