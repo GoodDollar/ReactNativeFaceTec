@@ -90,4 +90,9 @@ export class FaceTecSDK {
 
     return eventEmitter.addListener(event, eventHandler)
   }
+
+  async setFonts(fonts) {
+    const { module } = this
+    return  module.setFonts(fonts)
+  }
 }
