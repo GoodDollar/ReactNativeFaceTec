@@ -2,31 +2,30 @@ package org.gooddollar.facetec;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.Typeface;
 import android.util.Log;
 
-import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ActivityEventListener;
 import com.facebook.react.bridge.BaseActivityEventListener;
+import com.facebook.react.bridge.Promise;
+import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
-import com.facebook.react.bridge.Promise;
-
-import com.facebook.react.modules.core.DeviceEventManagerModule;
-
-import java.util.Map;
-import java.util.HashMap;
+import com.facebook.react.bridge.ReadableMap;
+import com.facetec.sdk.FaceTecCustomization;
+import com.facetec.sdk.FaceTecSDK;
+import com.facetec.sdk.FaceTecSDKStatus;
+import com.facetec.sdk.FaceTecSessionStatus;
 
 import org.gooddollar.facetec.api.FaceVerification;
 import org.gooddollar.facetec.processors.EnrollmentProcessor;
 import org.gooddollar.facetec.processors.ProcessingSubscriber;
-
-import org.gooddollar.facetec.util.EventEmitter;
 import org.gooddollar.facetec.util.Customization;
+import org.gooddollar.facetec.util.EventEmitter;
 import org.gooddollar.facetec.util.RCTPromise;
 
-import com.facetec.sdk.FaceTecSDK;
-import com.facetec.sdk.FaceTecSessionStatus;
-import com.facetec.sdk.FaceTecSDKStatus;
+import java.util.HashMap;
+import java.util.Map;
 
 public class FaceTecModule extends ReactContextBaseJavaModule {
     private final ReactApplicationContext reactContext;
@@ -54,11 +53,36 @@ public class FaceTecModule extends ReactContextBaseJavaModule {
     @Override
     public void initialize() {
         super.initialize();
-
         EventEmitter.register(reactContext);
         FaceTecSDK.setCustomization(Customization.UICustomization);
         FaceTecSDK.setLowLightCustomization(Customization.LowLightModeCustomization);
         FaceTecSDK.setDynamicDimmingCustomization(Customization.DynamicModeCustomization);
+    }
+
+    FaceTecCustomization updateFonts(FaceTecCustomization faceTecCustomization, ReadableMap fonts) {
+        try {
+            Activity activity = getCurrentActivity();
+            String textFont = fonts.getString("textFont");
+            String buttonFont = fonts.getString("buttonFont");
+            String headerFont = fonts.getString("headerFont");
+            String subtextFont = fonts.getString("subtextFont");
+            String messageFont = fonts.getString("messageFont");
+            if (activity != null) {
+                faceTecCustomization.getFeedbackCustomization().textFont = getTypeFace(textFont);
+                faceTecCustomization.getGuidanceCustomization().buttonFont = getTypeFace(buttonFont);
+                faceTecCustomization.getGuidanceCustomization().headerFont = getTypeFace(headerFont);
+                faceTecCustomization.getGuidanceCustomization().subtextFont = getTypeFace(subtextFont);
+                faceTecCustomization.getResultScreenCustomization().messageFont = getTypeFace(messageFont);
+            }
+        } catch (Exception e) {
+            Log.e("updateFont", e.getMessage(), e);
+        }
+
+        return faceTecCustomization;
+    }
+
+    Typeface getTypeFace(String assetPath) {
+        return Typeface.createFromAsset(getCurrentActivity().getAssets(), assetPath);
     }
 
     @Override
@@ -74,44 +98,44 @@ public class FaceTecModule extends ReactContextBaseJavaModule {
 
         // SDK statuses
         final Object[][] sdkStatuses = {
-            // common statuses (status names are aligned with the web sdk)
-            {"NeverInitialized",  FaceTecSDKStatus.NEVER_INITIALIZED},
-            {"Initialized",  FaceTecSDKStatus.INITIALIZED},
-            {"NetworkIssues", FaceTecSDKStatus.NETWORK_ISSUES},
-            {"InvalidDeviceKeyIdentifier",  FaceTecSDKStatus.INVALID_DEVICE_KEY_IDENTIFIER},
-            {"VersionDeprecated",  FaceTecSDKStatus.VERSION_DEPRECATED},
-            {"DeviceNotSupported",  FaceTecSDKStatus.DEVICE_NOT_SUPPORTED},
-            {"DeviceInLandscapeMode",  FaceTecSDKStatus.DEVICE_IN_LANDSCAPE_MODE},
-            {"DeviceInReversePortraitMode", FaceTecSDKStatus.DEVICE_IN_REVERSE_PORTRAIT_MODE},
-            {"DeviceLockedOut",  FaceTecSDKStatus.DEVICE_LOCKED_OUT},
-            {"KeyExpiredOrInvalid",  FaceTecSDKStatus.KEY_EXPIRED_OR_INVALID},
-            // native-specific statuses
-            {"GracePeriodExceeded", FaceTecSDKStatus.GRACE_PERIOD_EXCEEDED},
-            {"EncryptionKeyInvalid", FaceTecSDKStatus.ENCRYPTION_KEY_INVALID},
+                // common statuses (status names are aligned with the web sdk)
+                {"NeverInitialized", FaceTecSDKStatus.NEVER_INITIALIZED},
+                {"Initialized", FaceTecSDKStatus.INITIALIZED},
+                {"NetworkIssues", FaceTecSDKStatus.NETWORK_ISSUES},
+                {"InvalidDeviceKeyIdentifier", FaceTecSDKStatus.INVALID_DEVICE_KEY_IDENTIFIER},
+                {"VersionDeprecated", FaceTecSDKStatus.VERSION_DEPRECATED},
+                {"DeviceNotSupported", FaceTecSDKStatus.DEVICE_NOT_SUPPORTED},
+                {"DeviceInLandscapeMode", FaceTecSDKStatus.DEVICE_IN_LANDSCAPE_MODE},
+                {"DeviceInReversePortraitMode", FaceTecSDKStatus.DEVICE_IN_REVERSE_PORTRAIT_MODE},
+                {"DeviceLockedOut", FaceTecSDKStatus.DEVICE_LOCKED_OUT},
+                {"KeyExpiredOrInvalid", FaceTecSDKStatus.KEY_EXPIRED_OR_INVALID},
+                // native-specific statuses
+                {"GracePeriodExceeded", FaceTecSDKStatus.GRACE_PERIOD_EXCEEDED},
+                {"EncryptionKeyInvalid", FaceTecSDKStatus.ENCRYPTION_KEY_INVALID},
         };
 
         // Session statuses
         final Object[][] sessionStatuses = {
-            // common statuses (status names are aligned with the web sdk)
-            {"UserCancelled",  FaceTecSessionStatus.USER_CANCELLED},
-            {"SessionCompletedSuccessfully",  FaceTecSessionStatus.SESSION_COMPLETED_SUCCESSFULLY},
-            {"Timeout",  FaceTecSessionStatus.TIMEOUT},
-            {"UnknownInternalError",  FaceTecSessionStatus.UNKNOWN_INTERNAL_ERROR},
-            {"ContextSwitch",  FaceTecSessionStatus.CONTEXT_SWITCH},
-            {"LockedOut",  FaceTecSessionStatus.LOCKED_OUT},
-            {"LandscapeModeNotAllowed",  FaceTecSessionStatus.LANDSCAPE_MODE_NOT_ALLOWED},
-            {"MissingGuidanceImages",  FaceTecSessionStatus.MISSING_GUIDANCE_IMAGES},
-            {"UserCancelledViaClickableReadyScreenSubtext",  FaceTecSessionStatus.USER_CANCELLED_VIA_CLICKABLE_READY_SCREEN_SUBTEXT},
-            {"NonProductionModeDeviceKeyIdentifierInvalid",  FaceTecSessionStatus.NON_PRODUCTION_MODE_KEY_INVALID},
-            {"CameraNotEnabled",  FaceTecSessionStatus.CAMERA_INITIALIZATION_ISSUE},
-            // native-specific statuses
-            {"CameraPermissionDenied",  FaceTecSessionStatus.CAMERA_PERMISSION_DENIED},
-            {"NonProductionModeNetworkRequired",  FaceTecSessionStatus.NON_PRODUCTION_MODE_NETWORK_REQUIRED},
-            {"GracePeriodExceeded",  FaceTecSessionStatus.GRACE_PERIOD_EXCEEDED},
-            {"UserCancelledViaHardwareButton",  FaceTecSessionStatus.USER_CANCELLED_VIA_HARDWARE_BUTTON},
-            {"SessionUnsuccessful",  FaceTecSessionStatus.SESSION_UNSUCCESSFUL},
-            {"EncryptionKeyInvalid",  FaceTecSessionStatus.ENCRYPTION_KEY_INVALID},
-            {"ReversePortraitNotAllowed",  FaceTecSessionStatus.REVERSE_PORTRAIT_NOT_ALLOWED},
+                // common statuses (status names are aligned with the web sdk)
+                {"UserCancelled", FaceTecSessionStatus.USER_CANCELLED},
+                {"SessionCompletedSuccessfully", FaceTecSessionStatus.SESSION_COMPLETED_SUCCESSFULLY},
+                {"Timeout", FaceTecSessionStatus.TIMEOUT},
+                {"UnknownInternalError", FaceTecSessionStatus.UNKNOWN_INTERNAL_ERROR},
+                {"ContextSwitch", FaceTecSessionStatus.CONTEXT_SWITCH},
+                {"LockedOut", FaceTecSessionStatus.LOCKED_OUT},
+                {"LandscapeModeNotAllowed", FaceTecSessionStatus.LANDSCAPE_MODE_NOT_ALLOWED},
+                {"MissingGuidanceImages", FaceTecSessionStatus.MISSING_GUIDANCE_IMAGES},
+                {"UserCancelledViaClickableReadyScreenSubtext", FaceTecSessionStatus.USER_CANCELLED_VIA_CLICKABLE_READY_SCREEN_SUBTEXT},
+                {"NonProductionModeDeviceKeyIdentifierInvalid", FaceTecSessionStatus.NON_PRODUCTION_MODE_KEY_INVALID},
+                {"CameraNotEnabled", FaceTecSessionStatus.CAMERA_INITIALIZATION_ISSUE},
+                // native-specific statuses
+                {"CameraPermissionDenied", FaceTecSessionStatus.CAMERA_PERMISSION_DENIED},
+                {"NonProductionModeNetworkRequired", FaceTecSessionStatus.NON_PRODUCTION_MODE_NETWORK_REQUIRED},
+                {"GracePeriodExceeded", FaceTecSessionStatus.GRACE_PERIOD_EXCEEDED},
+                {"UserCancelledViaHardwareButton", FaceTecSessionStatus.USER_CANCELLED_VIA_HARDWARE_BUTTON},
+                {"SessionUnsuccessful", FaceTecSessionStatus.SESSION_UNSUCCESSFUL},
+                {"EncryptionKeyInvalid", FaceTecSessionStatus.ENCRYPTION_KEY_INVALID},
+                {"ReversePortraitNotAllowed", FaceTecSessionStatus.REVERSE_PORTRAIT_NOT_ALLOWED},
         };
 
         // put statuses to the maps
@@ -137,9 +161,22 @@ public class FaceTecModule extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod
+    public void setFonts(ReadableMap fonts, Promise promise) {
+        try {
+            FaceTecSDK.setCustomization(updateFonts(Customization.UICustomization, fonts));
+            FaceTecSDK.setLowLightCustomization(updateFonts(Customization.LowLightModeCustomization, fonts));
+            FaceTecSDK.setDynamicDimmingCustomization(updateFonts(Customization.DynamicModeCustomization, fonts));
+            promise.resolve(null);
+        } catch (Exception e) {
+            promise.resolve(e.getMessage());
+        }
+
+    }
+
+    @ReactMethod
     public void initializeSDK(String serverURL, String jwtAccessToken,
-        String licenseKey, String encryptionKey, String licenseText,
-        final Promise promise
+                              String licenseKey, String encryptionKey, String licenseText,
+                              final Promise promise
     ) {
         final Activity activity = getCurrentActivity();
         FaceTecSDKStatus status = FaceTecSDK.getStatus(activity);
@@ -171,7 +208,7 @@ public class FaceTecModule extends ReactContextBaseJavaModule {
 
     @ReactMethod
     public void faceVerification(final String enrollmentIdentifier,
-        final int maxRetries, final int timeout, final String sessionToken, Promise promise
+                                 final int maxRetries, final int timeout, final String sessionToken, Promise promise
     ) {
         Activity activity = getCurrentActivity();
         final ProcessingSubscriber subscriber = new ProcessingSubscriber(promise);
@@ -188,7 +225,7 @@ public class FaceTecModule extends ReactContextBaseJavaModule {
     }
 
     private FaceTecSDK.InitializeCallback onInitializationAttempt(
-        final Activity activity, final Promise promise
+            final Activity activity, final Promise promise
     ) {
         // unique callback for both prod|dev init
         return new FaceTecSDK.InitializeCallback() {
@@ -208,7 +245,7 @@ public class FaceTecModule extends ReactContextBaseJavaModule {
                 // if status still hasn't been initialized it means user is using an emulator
                 if (sdkStatus == FaceTecSDKStatus.NEVER_INITIALIZED) {
                     customMessage = "Initialize wasn't attempted as Android Emulator has been detected."
-                        + "FaceTec SDK could be ran on the real devices only";
+                            + "FaceTec SDK could be ran on the real devices only";
                 }
 
                 RCTPromise.rejectWith(promise, sdkStatus, customMessage);
