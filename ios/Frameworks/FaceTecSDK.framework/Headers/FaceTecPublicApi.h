@@ -137,6 +137,21 @@ typedef NS_ENUM(NSInteger, FaceTecCameraPermissionStatus) {
  */
 @optional
 - (UIView * _Nullable)onCreateNFCScanningAnimationView NS_SWIFT_NAME(onCreateNFCScanningAnimationView());
+
+/**
+ Configure a custom UIView to display on the NFC Scan Screen for the status animation before the user starts to scan their NFC card chip.
+ This is similar to onCreateNFCStartingAnimationView, which is used for Passport books instead of Passport/NFC cards
+ */
+@optional
+- (UIView * _Nullable)onCreateNFCCardStartingAnimationView NS_SWIFT_NAME(onCreateNFCCardStartingAnimationView());
+
+/**
+ Configure a custom UIView to display on the NFC Scan Screen for the status animation while the user scan's their NFC card chip
+ This is similar to onCreateNFCScanningAnimationView, which is used for Passport books instead of Passport/NFC cards
+ */
+@optional
+- (UIView * _Nullable)onCreateNFCCardScanningAnimationView NS_SWIFT_NAME(onCreateNFCCardScanningAnimationView());
+
 /**
  Configure a custom UIView to display on the NFC Scan Screen for the status animation after NFC Scan is skipped due to an error or user interaction.
  This method will be called if the NFC Scan is skipped due to an error or user interaction.
