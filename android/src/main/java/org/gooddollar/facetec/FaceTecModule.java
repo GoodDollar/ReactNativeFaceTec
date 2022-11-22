@@ -85,7 +85,6 @@ public class FaceTecModule extends ReactContextBaseJavaModule {
             {"DeviceLockedOut",  FaceTecSDKStatus.DEVICE_LOCKED_OUT},
             {"KeyExpiredOrInvalid",  FaceTecSDKStatus.KEY_EXPIRED_OR_INVALID},
             // native-specific statuses
-            {"GracePeriodExceeded", FaceTecSDKStatus.GRACE_PERIOD_EXCEEDED},
             {"EncryptionKeyInvalid", FaceTecSDKStatus.ENCRYPTION_KEY_INVALID},
         };
 
@@ -106,7 +105,6 @@ public class FaceTecModule extends ReactContextBaseJavaModule {
             // native-specific statuses
             {"CameraPermissionDenied",  FaceTecSessionStatus.CAMERA_PERMISSION_DENIED},
             {"NonProductionModeNetworkRequired",  FaceTecSessionStatus.NON_PRODUCTION_MODE_NETWORK_REQUIRED},
-            {"GracePeriodExceeded",  FaceTecSessionStatus.GRACE_PERIOD_EXCEEDED},
             {"UserCancelledViaHardwareButton",  FaceTecSessionStatus.USER_CANCELLED_VIA_HARDWARE_BUTTON},
             {"SessionUnsuccessful",  FaceTecSessionStatus.SESSION_UNSUCCESSFUL},
             {"EncryptionKeyInvalid",  FaceTecSessionStatus.ENCRYPTION_KEY_INVALID},
