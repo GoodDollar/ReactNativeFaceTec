@@ -172,7 +172,7 @@ public class EnrollmentProcessor implements FaceTecFaceScanProcessor {
       payload.put("sessionId", lastResult.getSessionId());
 
       // if no chainId then DO NOT send chainId in body
-      if (this.chainId !== null) {
+      if (this.chainId != null) {
         payload.put("chainId", this.chainId);
       }
     } catch(Exception e) {
