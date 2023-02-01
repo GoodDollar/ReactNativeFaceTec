@@ -168,7 +168,8 @@ public class FaceTecModule extends ReactContextBaseJavaModule {
 
     @ReactMethod
     public void faceVerification(final String enrollmentIdentifier,
-        final int maxRetries, final int timeout, Promise promise
+        final String chainId, final int maxRetries, 
+        final int timeout, Promise promise
     ) {
         Activity activity = getCurrentActivity();
         final ProcessingSubscriber subscriber = new ProcessingSubscriber(promise);
@@ -181,7 +182,7 @@ public class FaceTecModule extends ReactContextBaseJavaModule {
         }
 
         lastProcessor = processor;
-        processor.enroll(enrollmentIdentifier, maxRetries, timeout);
+        processor.enroll(enrollmentIdentifier, chainId, maxRetries, timeout);
     }
 
     private FaceTecSDK.InitializeCallback onInitializationAttempt(

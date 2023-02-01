@@ -38,6 +38,7 @@ public class EnrollmentProcessor implements FaceTecFaceScanProcessor {
   private int maxRetries = -1;
   private int retryAttempt = 0;
   private String enrollmentIdentifier = null;
+  private String chainId = null;
   private boolean isSuccess = false;
 
   // TODO: research about unload for BOTH ios/android
@@ -52,15 +53,19 @@ public class EnrollmentProcessor implements FaceTecFaceScanProcessor {
     return subscriber;
   }
 
-  public void enroll(String enrollmentIdentifier) {
-    enroll(enrollmentIdentifier, null, null);
+  public void enroll(final String enrollmentIdentifier) {
+    enroll(enrollmentIdentifier, null, null, null);
+  }
+  
+  public void enroll(final String enrollmentIdentifier, final String chainId) {
+    enroll(enrollmentIdentifier, chainId, null, null);
   }
 
-  public void enroll(String enrollmentIdentifier, final Integer maxRetries) {
-    enroll(enrollmentIdentifier, maxRetries, null);
+  public void enroll(final String enrollmentIdentifier, final String chainId, final Integer maxRetries) {
+    enroll(enrollmentIdentifier, chainId, maxRetries, null);
   }
 
-  public void enroll(final String enrollmentIdentifier, @Nullable final Integer maxRetries, @Nullable final Integer timeout) {
+  public void enroll(final String enrollmentIdentifier, @Nullable final String chainId, @Nullable final Integer maxRetries, @Nullable final Integer timeout) {
     final Context ctx = this.context;
     final ProcessingSubscriber subscriber = this.subscriber;
 
@@ -81,6 +86,7 @@ public class EnrollmentProcessor implements FaceTecFaceScanProcessor {
 
     // store enrollmentIdentifier, maxRetries and timeout in the corresponding instance vars
     this.enrollmentIdentifier = enrollmentIdentifier;
+    this.chainId = chainId;
 
     if ((maxRetries != null) && (maxRetries >= 0)) {
       this.maxRetries = maxRetries;
@@ -164,6 +170,11 @@ public class EnrollmentProcessor implements FaceTecFaceScanProcessor {
       payload.put("auditTrailImage", lastResult.getAuditTrailCompressedBase64()[0]);
       payload.put("lowQualityAuditTrailImage", lastResult.getLowQualityAuditTrailCompressedBase64()[0]);
       payload.put("sessionId", lastResult.getSessionId());
+
+      // if no chainId then DO NOT send chainId in body
+      if (this.chainId !== null) {
+        payload.put("chainId", this.chainId);
+      }
     } catch(Exception e) {
       lastMessage = "Exception raised while attempting to create JSON payload for upload.";
       resultCallback.cancel();
