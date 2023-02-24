@@ -40,10 +40,11 @@ export class FaceTecSDK {
     return module.initializeSDK(serverUrl, jsonWebToken, licenseKey, encryptionKey, licenseText)
   }
 
-  async enroll(enrollmentIdentifier, maxRetries = -1, timeout = -1) {
+  async enroll(enrollmentIdentifier, chainId = null, maxRetries = -1, timeout = -1) {
     const { module } = this
+    const chain = String(chainId || '')
 
-    return module.faceVerification(enrollmentIdentifier, maxRetries, timeout)
+    return module.faceVerification(enrollmentIdentifier, chain, maxRetries, timeout)
   }
 
   addListener(event, handler) {

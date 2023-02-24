@@ -171,6 +171,7 @@ public class FaceTecModule extends ReactContextBaseJavaModule {
         final String chainId, final int maxRetries, 
         final int timeout, Promise promise
     ) {
+        String chain = null;
         Activity activity = getCurrentActivity();
         final ProcessingSubscriber subscriber = new ProcessingSubscriber(promise);
         final EnrollmentProcessor processor = new EnrollmentProcessor(activity, subscriber);
@@ -181,8 +182,12 @@ public class FaceTecModule extends ReactContextBaseJavaModule {
             lastSubscriber.onSessionContextSwitch();
         }
 
+        if (chainId != "") {
+            chain = chainId;
+        }
+
         lastProcessor = processor;
-        processor.enroll(enrollmentIdentifier, chainId, maxRetries, timeout);
+        processor.enroll(enrollmentIdentifier, chain, maxRetries, timeout);
     }
 
     private FaceTecSDK.InitializeCallback onInitializationAttempt(
