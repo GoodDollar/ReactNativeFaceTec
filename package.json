@@ -1,7 +1,7 @@
 {
   "name": "@gooddollar/react-native-facetec",
   "title": "React Native module that integrates FaceTec face verification API",
-  "version": "1.0.33",
+  "version": "1.0.34",
   "description": "React Native module that integrates FaceTec face verification API",
   "main": "index.js",
   "files": [
