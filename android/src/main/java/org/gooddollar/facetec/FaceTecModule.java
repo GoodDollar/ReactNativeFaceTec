@@ -167,7 +167,9 @@ public class FaceTecModule extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod
-    public void faceVerification(final String enrollmentIdentifier,
+    public void faceVerification(
+        final String enrollmentIdentifier,
+        final String v1Identifier,
         final String chainId, final int maxRetries, 
         final int timeout, Promise promise
     ) {
@@ -187,7 +189,7 @@ public class FaceTecModule extends ReactContextBaseJavaModule {
         }
 
         lastProcessor = processor;
-        processor.enroll(enrollmentIdentifier, chain, maxRetries, timeout);
+        processor.enroll(enrollmentIdentifier, v1Identifier, chain, maxRetries, timeout);
     }
 
     private FaceTecSDK.InitializeCallback onInitializationAttempt(
