@@ -38,7 +38,7 @@ public class EnrollmentProcessor implements FaceTecFaceScanProcessor {
   private int maxRetries = -1;
   private int retryAttempt = 0;
   private String enrollmentIdentifier = null;
-  private String enrollmentIdentifier = null;
+  private String v1Identifier = null;
   private String chainId = null;
   private boolean isSuccess = false;
 
