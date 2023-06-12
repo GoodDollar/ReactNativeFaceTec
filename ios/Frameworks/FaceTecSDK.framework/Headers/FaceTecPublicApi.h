@@ -205,8 +205,12 @@ typedef NS_ENUM(NSInteger, FaceTecCameraPermissionStatus) {
  */
 __attribute__((visibility("default")))
 @interface FaceTecCustomization : NSObject
-/** Customize the timers used during the Session and Photo ID Match Screens. */
-@property (nonatomic, strong) FaceTecSessionTimerCustomization * _Nonnull sessionTimerCustomization;
+/**
+ * @deprecated
+ * This class is deprecated and no longer in use. This class will be removed in an upcoming version of the iOS SDK.
+ */
+@property (nonatomic, strong) FaceTecSessionTimerCustomization * _Nonnull sessionTimerCustomization DEPRECATED_MSG_ATTRIBUTE("This class is deprecated and no longer in use. This class will be removed in an upcoming version of the iOS SDK.");
+
 /** Customize the User OCR Confirmation Screen. */
 @property (nonatomic, strong) FaceTecOCRConfirmationCustomization * _Nonnull ocrConfirmationCustomization;
 /** Customize the Photo ID Match Screens. */
@@ -346,23 +350,18 @@ __attribute__((visibility("default")))
 @end
 
 /**
- * Customize the timers used during the Session and Photo ID Match Screens.
+ * @deprecated
  */
-__attribute__((visibility("default")))
+__attribute__((visibility("default"), deprecated))
 @interface FaceTecSessionTimerCustomization : NSObject
 /**
- * The amount of seconds until the Liveness Check portion of the Session will be cancelled if there is no user interaction.
- * If a user presses a button or performs a Liveness Check, the timer that tracks this timeout is reset.
- * This value has to be between 40 and 60 (seconds). If it’s lower than 40 or higher than 60, it will be defaulted to 40 or 60 respectively.
- * The default value is 60 seconds.
+ * @deprecated
  */
-@property (nonatomic) int livenessCheckNoInteractionTimeout;
+@property (nonatomic) int livenessCheckNoInteractionTimeout DEPRECATED_MSG_ATTRIBUTE("This property is deprecated and no longer in use.");
 /**
- * The amount of seconds until the ID Scan portion of the Session will be cancelled if there is no user interaction.
- * If a user presses a button or performs a scan, the timer that tracks this timeout is reset.
- * The default is 120s with a minimum value of 60s and a maximum of 180s.
+ * @deprecated
  */
-@property (nonatomic) int idScanNoInteractionTimeout;
+@property (nonatomic) int idScanNoInteractionTimeout DEPRECATED_MSG_ATTRIBUTE("This property is deprecated and no longer in use.");
 - (nonnull instancetype) init;
 @end
 
