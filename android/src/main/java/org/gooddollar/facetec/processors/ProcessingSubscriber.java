@@ -1,5 +1,6 @@
 package org.gooddollar.facetec.processors;
 
+import java.lang.Throwable;
 import androidx.annotation.Nullable;
 
 import com.facebook.react.bridge.Promise;
@@ -22,17 +23,17 @@ public class ProcessingSubscriber {
     }
 
     if (sessionResult == null) {
-      onSessionTokenError();
+      throwUnexpectedError("Session could not be completed due to an unexpected issue during the network request.");
       return;
     }
 
     RCTPromise.rejectWith(promise, sessionResult.getStatus(), sessionMessage);
   }
 
-  public void onSessionTokenError() {
-    String message = "Session could not be started due to an unexpected issue during the network request.";
+  public void onSessionTokenError(@Nullable Throwable exception) {
+    String message = "Session could not be started due to an unexpected issue during the network request";
 
-    RCTPromise.rejectWith(promise, FaceTecSessionStatus.UNKNOWN_INTERNAL_ERROR, message);
+    throwUnexpectedError(message + (exception == null ? "." : exception.getMessage()));
   }
 
   public void onSessionContextSwitch() {
@@ -41,5 +42,9 @@ public class ProcessingSubscriber {
 
   public void onCameraAccessError() {
     RCTPromise.rejectWith(promise, FaceTecSessionStatus.CAMERA_PERMISSION_DENIED);
+  }
+
+  private void throwUnexpectedError(String message) {
+    RCTPromise.rejectWith(promise, FaceTecSessionStatus.UNKNOWN_INTERNAL_ERROR, message);
   }
 }
