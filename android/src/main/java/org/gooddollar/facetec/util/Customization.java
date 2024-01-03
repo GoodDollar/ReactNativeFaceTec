@@ -24,8 +24,6 @@ public class Customization {
   private Customization() {}
 
   final public static String resultSuccessMessage = "You’re a beautiful\n& unique unicorn!";
-  final public static String resultFacescanUploadMessage = "Uploading Your face snapshot to verify";
-  final public static String resultFacescanProcessingMessage = "Verifying you're\none of a kind";
 
   final public static FaceTecCustomization UICustomization = basicCustomizationFactory();
   final public static FaceTecCustomization LowLightModeCustomization = basicCustomizationFactory();
@@ -65,17 +63,6 @@ public class Customization {
     // Low light customizations
     lowLightGuidance.readyScreenHeaderTextColor = white;
     lowLightGuidance.readyScreenSubtextTextColor = white;
-
-    // override locale strings
-    UITextStrings.put(R.string.FaceTec_result_success_message, resultSuccessMessage);
-    UITextStrings.put(R.string.FaceTec_result_facescan_upload_message, resultFacescanUploadMessage);
-
-    UITextStrings.put(R.string.FaceTec_retry_instruction_message_1, "Hold Your Camera at Eye Level.");
-    UITextStrings.put(R.string.FaceTec_retry_instruction_message_2, "Light Your Face Evenly.");
-    UITextStrings.put(R.string.FaceTec_retry_instruction_message_3, "Avoid Smiling & Back Light");
-
-    UITextStrings.put(R.string.FaceTec_instructions_message_ready_1, "Please Frame Your Face In The Small");
-    UITextStrings.put(R.string.FaceTec_instructions_message_ready_2, "Oval, Then The Big Oval");
   }
 
   final private static FaceTecCustomization basicCustomizationFactory() {

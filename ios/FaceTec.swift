@@ -105,7 +105,7 @@ open class FaceTecModule: RCTEventEmitter {
         getSDKStatus() { sdkStatus in
             switch sdkStatus {
             case .initialized, .deviceInLandscapeMode, .deviceInReversePortraitMode:
-                FaceTec.sdk.setDynamicStrings(Customization.UITextStrings)
+                FaceVerification.shared.register(serverURL, jwtAccessToken)
                 promise.resolve(true)
             case .neverInitialized, .networkIssues:
                 FaceVerification.shared.register(serverURL, jwtAccessToken)
@@ -151,7 +151,6 @@ open class FaceTecModule: RCTEventEmitter {
         _ initializationSuccessful: Bool
     ) -> Void {
         if initializationSuccessful {
-            FaceTec.sdk.setDynamicStrings(Customization.UITextStrings)
             promise.resolve(initializationSuccessful)
             return
         }

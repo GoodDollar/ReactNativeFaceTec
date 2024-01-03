@@ -1,5 +1,8 @@
 package org.gooddollar.facetec.api;
 
+
+import android.util.Log;
+
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 import androidx.annotation.Nullable;
@@ -24,10 +27,7 @@ public final class FaceVerification {
   private final static OkHttpClient http = NetworkingHelpers.getApiClient();
   private static String _jwtAccessToken;
   private static String _serverURL;
-
-  private static String succeedProperty = "success";
-  private static String errorMessageProperty = "error";
-  private static String sessionTokenProperty = "sessionToken";
+  private static String sessionTokenProperty = "session_token";
 
   public static class APIException extends IOException {
     JSONObject response = null;
@@ -71,7 +71,7 @@ public final class FaceVerification {
   }
 
   public static void getSessionToken(final SessionTokenCallback callback) {
-    Request tokenRequest = createRequest("/verify/face/session", "post", new JSONObject());
+    Request tokenRequest = createRequest("/session_token", "get", new JSONObject());
 
     sendRequest(tokenRequest, new APICallback() {
       @Override
@@ -91,6 +91,7 @@ public final class FaceVerification {
 
       @Override
       public void onFailure(APIException exception) {
+        Log.w("getSessionToken", exception);
         callback.onFailure(exception);
       }
     });
@@ -109,7 +110,7 @@ public final class FaceVerification {
   }
 
   public static void enroll(String enrollmentIdentifier, RequestBody customRequest, @Nullable Integer timeout, final APICallback callback) {
-    Request enrollmentRequest = createRequest("/verify/face/" + enrollmentIdentifier, "put", customRequest);
+    Request enrollmentRequest = createRequest("", "post", customRequest);
 
     sendRequest(enrollmentRequest, timeout, callback);
   }
@@ -158,27 +159,7 @@ public final class FaceVerification {
 
           JSONObject responseJSON = new JSONObject(responseString);
 
-          if (responseJSON.has(succeedProperty) == false) {
-            throw new APIException(unexpectedMessage, responseJSON);
-          }
-
-          String errorMessage = null;
-          boolean didSucceed = responseJSON.getBoolean(succeedProperty);
-
-          if (didSucceed == true) {
-            requestCallback.onSuccess(responseJSON);
-            return;
-          }
-
-          if (responseJSON.has(errorMessageProperty) == true) {
-            errorMessage = responseJSON.getString(errorMessageProperty);
-          }
-
-          if (errorMessage == null) {
-            errorMessage = unexpectedMessage;
-          }
-
-          throw new APIException(errorMessage, responseJSON);
+          requestCallback.onSuccess(responseJSON);
         } catch (APIException exception) {
           requestCallback.onFailure(exception);
         } catch (Exception exception) {

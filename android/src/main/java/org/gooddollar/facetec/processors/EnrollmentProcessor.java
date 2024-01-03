@@ -1,29 +1,28 @@
 package org.gooddollar.facetec.processors;
 
-import androidx.annotation.Nullable;
 import android.content.Context;
-import org.json.JSONObject;
+import android.util.Log;
 
-import com.facebook.react.bridge.WritableMap;
+import androidx.annotation.Nullable;
+
 import com.facebook.react.bridge.Arguments;
-
-import com.facetec.sdk.FaceTecSDK;
+import com.facebook.react.bridge.WritableMap;
+import com.facetec.sdk.FaceTecCustomization;
 import com.facetec.sdk.FaceTecFaceScanProcessor;
 import com.facetec.sdk.FaceTecFaceScanResultCallback;
 import com.facetec.sdk.FaceTecSessionActivity;
-import com.facetec.sdk.FaceTecSessionStatus;
 import com.facetec.sdk.FaceTecSessionResult;
-import com.facetec.sdk.FaceTecCustomization;
+import com.facetec.sdk.FaceTecSessionStatus;
 
 import org.gooddollar.facetec.api.FaceVerification;
 import org.gooddollar.facetec.api.NetworkingHelpers;
 import org.gooddollar.facetec.api.ProgressRequestBody;
-import okhttp3.RequestBody;
-
-import org.gooddollar.facetec.processors.ProcessingSubscriber;
-import org.gooddollar.facetec.util.EventEmitter;
 import org.gooddollar.facetec.util.Customization;
+import org.gooddollar.facetec.util.EventEmitter;
 import org.gooddollar.facetec.util.Permissions;
+import org.json.JSONObject;
+
+import okhttp3.RequestBody;
 
 public class EnrollmentProcessor implements FaceTecFaceScanProcessor {
   private Context context;
@@ -81,7 +80,8 @@ public class EnrollmentProcessor implements FaceTecFaceScanProcessor {
 
         @Override
         public void onFailure(FaceVerification.APIException exception) {
-          subscriber.onSessionTokenError(exception);
+          Log.w("enroll", exception);
+          subscriber.onSessionTokenError();
         }
       };
 
@@ -141,6 +141,7 @@ public class EnrollmentProcessor implements FaceTecFaceScanProcessor {
   private RequestBody createEnrollmentRequest(JSONObject payload) {
     final FaceTecFaceScanResultCallback resultCallback = lastResultCallback;
 
+
     return new ProgressRequestBody(FaceVerification.jsonStringify(payload),
       new ProgressRequestBody.Listener() {
         @Override
@@ -150,11 +151,6 @@ public class EnrollmentProcessor implements FaceTecFaceScanProcessor {
 
           // updating the UX, upload progress from 10 to 80%
           resultCallback.uploadProgress(0.1f + 0.7f * uploaded);
-
-          if (bytesWritten == totalBytes) {
-            // switch status message to processing once upload completed
-            resultCallback.uploadMessageOverride(Customization.resultFacescanProcessingMessage);
-          }
         }
       }
     );
@@ -168,16 +164,8 @@ public class EnrollmentProcessor implements FaceTecFaceScanProcessor {
     resultCallback.uploadProgress(0);
 
     try {
-      payload.put("faceScan", lastResult.getFaceScanBase64());
-      payload.put("auditTrailImage", lastResult.getAuditTrailCompressedBase64()[0]);
-      payload.put("lowQualityAuditTrailImage", lastResult.getLowQualityAuditTrailCompressedBase64()[0]);
-      payload.put("sessionId", lastResult.getSessionId());
-      payload.put("fvSigner", this.v1Identifier);
-
-      // if no chainId then DO NOT send chainId in body
-      if (this.chainId != null) {
-        payload.put("chainId", this.chainId);
-      }
+      payload.put("facescan", lastResult.getFaceScanBase64());
+      payload.put("audit_trail_image", lastResult.getAuditTrailCompressedBase64()[0]);
     } catch(Exception e) {
       lastMessage = "Exception raised while attempting to create JSON payload for upload.";
       resultCallback.cancel();
@@ -189,11 +177,11 @@ public class EnrollmentProcessor implements FaceTecFaceScanProcessor {
       public void onSuccess(JSONObject response) {
         String successMessage = Customization.resultSuccessMessage;
         JSONObject enrollmentResult = getEnrollmentResult(response);
-        String resultBlob = enrollmentResult.optString("resultBlob");
+        String resultBlob = enrollmentResult.optString("scan_results_blob");
 
         resultCallback.uploadProgress(1);
 
-        if (resultBlob == null) {
+        if (resultBlob.isEmpty()) {
           FaceVerification.APIException exception = new FaceVerification.APIException(
             FaceVerification.unexpectedMessage, response
           );
@@ -204,7 +192,6 @@ public class EnrollmentProcessor implements FaceTecFaceScanProcessor {
 
         EnrollmentProcessor.this.isSuccess = true;
         EnrollmentProcessor.this.lastMessage = successMessage;
-        FaceTecCustomization.overrideResultScreenSuccessMessage = successMessage;
 
         resultCallback.succeed();
         resultCallback.proceedToNextStep(resultBlob);
@@ -269,12 +256,10 @@ public class EnrollmentProcessor implements FaceTecFaceScanProcessor {
   }
 
   private JSONObject getEnrollmentResult(JSONObject response) {
-    JSONObject enrollmentResult = response.optJSONObject("enrollmentResult");
-
-    if (enrollmentResult == null) {
+    if (response == null) {
       return new JSONObject();
     }
 
-    return enrollmentResult;
+    return response;
   }
 }

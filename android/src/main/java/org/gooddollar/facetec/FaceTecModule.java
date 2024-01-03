@@ -2,6 +2,7 @@ package org.gooddollar.facetec;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.util.Log;
 
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ActivityEventListener;
@@ -145,6 +146,7 @@ public class FaceTecModule extends ReactContextBaseJavaModule {
             case INITIALIZED:
             case DEVICE_IN_LANDSCAPE_MODE:
             case DEVICE_IN_REVERSE_PORTRAIT_MODE:
+                FaceVerification.register(serverURL, jwtAccessToken);
                 // status is already initialized - resolve promise with true
                 FaceTecSDK.setDynamicStrings(Customization.UITextStrings);
                 promise.resolve(true);
@@ -199,6 +201,7 @@ public class FaceTecModule extends ReactContextBaseJavaModule {
         return new FaceTecSDK.InitializeCallback() {
             @Override
             public void onCompletion(final boolean successful) {
+                Log.w("onInitializationAttempt", String.valueOf(successful));
                 // the value of successful determines if the sdk has been initialized or not
                 if (successful) {
                     // status is already initialized - resolve promise with true

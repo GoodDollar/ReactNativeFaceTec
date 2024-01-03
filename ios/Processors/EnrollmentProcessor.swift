@@ -92,12 +92,6 @@ class EnrollmentProcessor: NSObject, URLSessionTaskDelegate, SessionDelegate {
         // updating the UX, upload progress from 10 to 80%
         resultCallback.onFaceScanUploadProgress(uploadedPercent: 0.1 + 0.7 * uploaded)
 
-        if (totalBytesSent == totalBytesExpectedToSend) {
-            let processingMessage = NSMutableAttributedString.init(string: Customization.resultFacescanProcessingMessage)
-
-            // switch status message to processing once upload completed
-            resultCallback.onFaceScanUploadMessageOverride(uploadMessageOverride: processingMessage)
-        }
     }
 
     private func startSession(sessionTokenCallback: @escaping (String) -> Void) {
@@ -136,10 +130,8 @@ class EnrollmentProcessor: NSObject, URLSessionTaskDelegate, SessionDelegate {
         resultCallback.onFaceScanUploadProgress(uploadedPercent: 0)
 
         let payload: [String : Any] = [
-            "faceScan": lastResult.faceScanBase64!,
-            "auditTrailImage": lastResult.auditTrailCompressedBase64!.first!,
-            "lowQualityAuditTrailImage": lastResult.lowQualityAuditTrailCompressedBase64!.first!,
-            "sessionId": lastResult.sessionId
+            "facescan": lastResult.faceScanBase64!,
+            "audit_trail_image": lastResult.auditTrailCompressedBase64!.first!,
         ]
 
         FaceVerification.shared.enroll(
@@ -148,10 +140,8 @@ class EnrollmentProcessor: NSObject, URLSessionTaskDelegate, SessionDelegate {
             withTimeout: timeout,
             withDelegate: self
         ) { response, error in
-            let enrollmentResult = response?["enrollmentResult"] as? [String: String]
-            let resultBlob = enrollmentResult?["resultBlob"]
+            let resultBlob = response?["scan_results_blob"]
             var enrollmentError = error
-          
             self.resultCallback.onFaceScanUploadProgress(uploadedPercent: 1)
           
             if error == nil && resultBlob == nil {
@@ -166,57 +156,11 @@ class EnrollmentProcessor: NSObject, URLSessionTaskDelegate, SessionDelegate {
             self.isSuccess = true
             self.lastMessage = Customization.resultSuccessMessage
 
-            FaceTecCustomization.setOverrideResultScreenSuccessMessage(self.lastMessage)
-            self.resultCallback.onFaceScanGoToNextStep(scanResultBlob: resultBlob!)
+            self.resultCallback.onFaceScanGoToNextStep(scanResultBlob: resultBlob! as! String)
         }
     }
 
     private func handleEnrollmentError(_ error: Error, _ response: [String: AnyObject]?) -> Void {
-        let faceTecError = (error as? FaceVerificationError) ?? .unexpectedResponse
-
-        // by default we'll use exception's message as lastMessage
-        lastMessage = faceTecError.message
-
-        if response != nil {
-            let flags = response?["enrollmentResult"] as? [String: Bool]
-            let enrollmentResult = response?["enrollmentResult"] as? [String: String]
-
-            // if isDuplicate is strictly true, that means we have dup face
-            let isDuplicateIssue = true == flags?["isDuplicate"]
-            let is3DMatchIssue = true == flags?["isNotMatch"]
-            let isLivenessIssue = false == flags?["isLive"]
-            let isEnrolled = true == flags?["isEnrolled"]
-            let resultBlob = enrollmentResult?["resultBlob"]
-
-            // if there's no duplicate / 3d match issues but we have
-            // liveness issue strictly - we'll check for possible session retry
-            if resultBlob != nil && isLivenessIssue && !isDuplicateIssue && !is3DMatchIssue {
-                // if haven't reached retries threshold or max retries is disabled
-                // (is null or < 0) we'll ask to retry capturing
-                if alwaysRetry || retryAttempt < maxRetries! {
-                    let retryMessage = NSMutableAttributedString.init(string: lastMessage)
-
-                    // increasing retry attempts counter
-                    retryAttempt += 1
-                    // showing reason
-                    resultCallback.onFaceScanUploadMessageOverride(uploadMessageOverride: retryMessage)
-                    // notifying about retry
-                    resultCallback.onFaceScanGoToNextStep(scanResultBlob: resultBlob!)
-
-                    // dispatching retry event
-                    EventEmitter.shared.dispatch(.FV_RETRY, [
-                        "reason": lastMessage!,
-                        "match3d": !is3DMatchIssue,
-                        "liveness": !isLivenessIssue,
-                        "duplicate": isDuplicateIssue,
-                        "enrolled": isEnrolled
-                    ])
-
-                    return
-                }
-            }
-        }
-
         resultCallback.onFaceScanResultCancel()
     }
 }

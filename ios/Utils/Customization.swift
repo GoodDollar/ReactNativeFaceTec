@@ -8,8 +8,6 @@
 
 final class Customization {
     public static let resultSuccessMessage = "You’re a beautiful\n& unique unicorn!"
-    public static let resultFacescanUploadMessage = "Uploading Your face\nsnapshot to verify";
-    public static let resultFacescanProcessingMessage = "Verifying you're\none of a kind";
 
     private static let isLargeDevice = UIScreen.main.bounds.width >= 395
 
@@ -56,23 +54,6 @@ final class Customization {
       return ui
     }()
 
-    static let UITextStrings: [String: String] = {
-        let i18n: [String: String] = [
-            "resultSuccessMessage": resultSuccessMessage,
-            "resultFacescanUploadMessage": resultFacescanUploadMessage,
-
-            "retryInstructionMessage1": "Hold Your Camera at Eye Level.",
-            "retryInstructionMessage2": "Light Your Face Evenly.",
-            "retryInstructionMessage3": "Avoid Smiling & Back Light",
-
-            "instructionsMessageReady": "Please Frame Your Face In The Small Oval, Then The Big Oval"
-        ]
-
-        return i18n.reduce(into: [String: String]()) { result, keyValue in
-            result["FaceTec_\(keyValue.key.snakeCased())"] = keyValue.value
-        }
-    }()
-  
     private static func createBasicCustomization() -> FaceTecCustomization {
       let ui = FaceTecCustomization()
 

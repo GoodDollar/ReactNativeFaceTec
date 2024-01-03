@@ -14,9 +14,9 @@ class FaceVerification {
     private var jwtAccessToken: String?
     private var lastRequest: URLSessionTask?
 
-    private let succeedProperty = "success"
+    private let succeedProperty = "session_token"
     private let errorMessageProperty = "error"
-    private let sessionTokenProperty = "sessionToken"
+    private let sessionTokenProperty = "session_token"
 
     private init() {}
 
@@ -26,7 +26,7 @@ class FaceVerification {
     }
 
     func getSessionToken(sessionTokenCallback: @escaping (String?, Error?) -> Void) -> Void {
-        request("/verify/face/session", "POST", [:]) { response, error in
+        request("/session_token", "GET", [:]) { response, error in
             if error != nil {
                 sessionTokenCallback(nil, error)
                 return
@@ -74,9 +74,9 @@ class FaceVerification {
         withDelegate: URLSessionDelegate? = nil,
         callback enrollmentResultCallback: @escaping ([String: AnyObject]?, Error?) -> Void
     ) -> Void {
-        let enrollmentUri = "/verify/face/" + enrollmentIdentifier.urlEncoded()
+        let enrollmentUri = ""
 
-        request(enrollmentUri, "PUT", payload, withTimeout, withDelegate) { response, error in
+        request(enrollmentUri, "POST", payload, withTimeout, withDelegate) { response, error in
             enrollmentResultCallback(response, error)
         }
     }
@@ -149,14 +149,6 @@ class FaceVerification {
                 return
             }
 
-            if (json[self.succeedProperty] as! Bool == false) {
-                let errorMessage = json[self.errorMessageProperty] as? String
-                let error: FaceVerificationError = errorMessage == nil ? .unexpectedResponse : .failedResponse(errorMessage!)
-
-                resultCallback(json, error)
-                return
-            }
-
             resultCallback(json, nil)
         }
 
@@ -171,7 +163,9 @@ class FaceVerification {
         request.addValue("application/json", forHTTPHeaderField: "Content-Type")
         request.addValue("Bearer " + jwtAccessToken!, forHTTPHeaderField: "Authorization")
 
-        request.httpBody = try! JSONSerialization.data(withJSONObject: parameters, options: JSONSerialization.WritingOptions(rawValue: 0))
+        if method.uppercased().contains("POST") {
+          request.httpBody = try! JSONSerialization.data(withJSONObject: parameters, options: JSONSerialization.WritingOptions(rawValue: 0))
+        }
 
         return request as URLRequest
     }
@@ -185,10 +179,6 @@ class FaceVerification {
             with: data,
             options: JSONSerialization.ReadingOptions.allowFragments
         ) as? [String: AnyObject] else {
-            return nil
-        }
-
-      if !(json?[succeedProperty] is Bool) {
             return nil
         }
 
