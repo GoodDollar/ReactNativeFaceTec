@@ -1,3 +1,3 @@
-import FaceTec from './sdk/FaceTecSDK'
+import * as FaceTec from './sdk/FaceTecSDK'
 
 export default FaceTec
