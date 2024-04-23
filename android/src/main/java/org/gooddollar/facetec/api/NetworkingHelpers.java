@@ -22,6 +22,12 @@ import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSocket;
 import javax.net.ssl.SSLSocketFactory;
 
+/**
+ * Ships with the FaceTect Android app demo
+ * 
+ * Get FV session id and enroll calls were moved to the FaceVerification.java
+ * Everything else left unchanged
+ */
 public class NetworkingHelpers {
     private static OkHttpClient _apiClient = null;
     private static OkHttpClient createApiClient() {

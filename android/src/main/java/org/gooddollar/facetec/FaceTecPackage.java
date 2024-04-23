@@ -13,7 +13,7 @@ import com.facebook.react.bridge.JavaScriptModule;
 public class FaceTecPackage implements ReactPackage {
     @Override
     public List<NativeModule> createNativeModules(ReactApplicationContext reactContext) {
-        return Arrays.<NativeModule>asList(new FaceTecModule(reactContext));
+        return Arrays.<NativeModule>asList(new FaceTecModule(reactContext)); // exports single native module (FaceTecModule)
     }
 
     @Override

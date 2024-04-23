@@ -25,6 +25,7 @@ import org.gooddollar.facetec.util.EventEmitter;
 import org.gooddollar.facetec.util.Customization;
 import org.gooddollar.facetec.util.Permissions;
 
+// Implements face verification flow. Based on the class from the FaceTec demo app
 public class EnrollmentProcessor implements FaceTecFaceScanProcessor {
   private Context context;
   private ProcessingSubscriber subscriber;
@@ -42,8 +43,7 @@ public class EnrollmentProcessor implements FaceTecFaceScanProcessor {
   private String chainId = null;
   private boolean isSuccess = false;
 
-  // TODO: research about unload for BOTH ios/android
-
+  // instantiated with content context (activity) and subscriber  
   public EnrollmentProcessor(Context context, ProcessingSubscriber subscriber) {
     this.context = context;
     this.subscriber = subscriber;
@@ -54,6 +54,7 @@ public class EnrollmentProcessor implements FaceTecFaceScanProcessor {
     return subscriber;
   }
 
+  // different enroll() overloads covering params defaults
   public void enroll(final String enrollmentIdentifier, final String v1Identifier) {
     enroll(enrollmentIdentifier, v1Identifier, null, null, null);
   }
@@ -66,21 +67,24 @@ public class EnrollmentProcessor implements FaceTecFaceScanProcessor {
     enroll(enrollmentIdentifier, v1Identifier, chainId, maxRetries, null);
   }
 
+  // starts FV session
   public void enroll(final String enrollmentIdentifier, final String v1Identifier, @Nullable final String chainId, @Nullable final Integer maxRetries, @Nullable final Integer timeout) {
     final Context ctx = this.context;
     final ProcessingSubscriber subscriber = this.subscriber;
 
+    // get session token callback
     final FaceVerification.SessionTokenCallback onSessionTokenRetrieved =
       new FaceVerification.SessionTokenCallback() {
         @Override
         public void onSessionTokenReceived(String sessionToken) {
-          // when got token successfully - start session
+          // when got token successfully - show FV UI
           FaceTecSessionActivity.createAndLaunchSession(ctx, EnrollmentProcessor.this, sessionToken);
           EventEmitter.dispatch(EventEmitter.UXEvent.UI_READY);
         }
 
         @Override
         public void onFailure(FaceVerification.APIException exception) {
+          // otherwise reject with specific error
           subscriber.onSessionTokenError(exception);
         }
       };
@@ -102,17 +106,20 @@ public class EnrollmentProcessor implements FaceTecFaceScanProcessor {
     this.permissions.requestCameraPermissions(new Permissions.PermissionsCallback() {
       @Override
       public void onSuccess() {
-        // on premissions granted - issue token
+        // on premissions granted - get session token, pas callbacks
         FaceVerification.getSessionToken(onSessionTokenRetrieved);
       }
 
       @Override
       public void onFailure() {
+        // otherwise reject with specific error
         subscriber.onCameraAccessError();
       }
     });
   }
 
+  // capturing done/failed callback
+  // logic the same as on the web
   public void processSessionWhileFaceTecSDKWaits(
     final FaceTecSessionResult sessionResult,
     final FaceTecFaceScanResultCallback faceScanResultCallback
@@ -134,15 +141,21 @@ public class EnrollmentProcessor implements FaceTecFaceScanProcessor {
     sendEnrollmentRequest();
   }
 
+  // done callback
+  // logic the same as on the web
   public void onFaceTecSDKCompletelyDone() {
+    // recalls processing subscriber with success slate and last result/message
     subscriber.onProcessingComplete(isSuccess, lastResult, lastMessage);
   }
 
+  // enrollment request factory helper
   private RequestBody createEnrollmentRequest(JSONObject payload) {
     final FaceTecFaceScanResultCallback resultCallback = lastResultCallback;
 
+    // create request with send progress listener
     return new ProgressRequestBody(FaceVerification.jsonStringify(payload),
       new ProgressRequestBody.Listener() {
+        // send from total listener, the logic same as on web
         @Override
         public void onUploadProgressChanged(long bytesWritten, long totalBytes) {
           // get progress while performing the upload
@@ -160,6 +173,7 @@ public class EnrollmentProcessor implements FaceTecFaceScanProcessor {
     );
   }
 
+  // send request helper, processing logic same as on web
   private void sendEnrollmentRequest() {
     final FaceTecFaceScanResultCallback resultCallback = lastResultCallback;
     JSONObject payload = new JSONObject();
@@ -168,6 +182,8 @@ public class EnrollmentProcessor implements FaceTecFaceScanProcessor {
     resultCallback.uploadProgress(0);
 
     try {
+      // same request as on web
+      // { faceScan, auditTrailImage, lowQualityAuditTrailImage, sessionId, fvSigner }
       payload.put("faceScan", lastResult.getFaceScanBase64());
       payload.put("auditTrailImage", lastResult.getAuditTrailCompressedBase64()[0]);
       payload.put("lowQualityAuditTrailImage", lastResult.getLowQualityAuditTrailCompressedBase64()[0]);
@@ -186,13 +202,14 @@ public class EnrollmentProcessor implements FaceTecFaceScanProcessor {
     RequestBody request = createEnrollmentRequest(payload);
     FaceVerification.enroll(enrollmentIdentifier, request, timeout, new FaceVerification.APICallback() {
       @Override
-      public void onSuccess(JSONObject response) {
+      public void onSuccess(JSONObject response) { // same logic as on web
         String successMessage = Customization.resultSuccessMessage;
         JSONObject enrollmentResult = getEnrollmentResult(response);
-        String resultBlob = enrollmentResult.optString("resultBlob");
+        String resultBlob = enrollmentResult.optString("resultBlob"); // response.data.resultBlob
 
         resultCallback.uploadProgress(1);
 
+        // no result blob - throw unknown error
         if (resultBlob == null) {
           FaceVerification.APIException exception = new FaceVerification.APIException(
             FaceVerification.unexpectedMessage, response
@@ -202,22 +219,27 @@ public class EnrollmentProcessor implements FaceTecFaceScanProcessor {
           return;
         }
 
-        EnrollmentProcessor.this.isSuccess = true;
+        // GoodServer returs only success blob
+        // any specific error as dup or low quality 
+        // throws exception and is processed at onFailure
+        EnrollmentProcessor.this.isSuccess = true; // set success sate & message
         EnrollmentProcessor.this.lastMessage = successMessage;
-        FaceTecCustomization.overrideResultScreenSuccessMessage = successMessage;
+        FaceTecCustomization.overrideResultScreenSuccessMessage = successMessage; // show unicorn greeting at UI
 
+        // finish flow with OK
         resultCallback.succeed();
         resultCallback.proceedToNextStep(resultBlob);
       }
 
       @Override
       public void onFailure(FaceVerification.APIException exception) {
-        resultCallback.uploadProgress(1);
-        EnrollmentProcessor.this.handleEnrollmentError(exception);
+        resultCallback.uploadProgress(1); // on any error set procressbar complete
+        EnrollmentProcessor.this.handleEnrollmentError(exception); // and handle error
       }
     });
   }
 
+  // handles enrollment error. logic the same as on web
   private void handleEnrollmentError(FaceVerification.APIException exception) {
     JSONObject response = exception.getResponse();
 
@@ -268,6 +290,7 @@ public class EnrollmentProcessor implements FaceTecFaceScanProcessor {
     lastResultCallback.cancel();
   }
 
+  //  reads response.data.enrollmentResult from GoodServer enroll response
   private JSONObject getEnrollmentResult(JSONObject response) {
     JSONObject enrollmentResult = response.optJSONObject("enrollmentResult");
 

@@ -31,14 +31,18 @@ public class FaceTecModule extends ReactContextBaseJavaModule {
     private final ReactApplicationContext reactContext;
     private EnrollmentProcessor lastProcessor = null;
 
+    // Android activity "done" listener
     private final ActivityEventListener activityListener = new BaseActivityEventListener() {
         @Override
         public void onActivityResult(Activity activity, int requestCode, int resultCode, Intent intent) {
+            // if have no FV session active - no nothing
             if (lastProcessor == null) {
                 return;
             }
 
+            // if some FV processor is running - call "done" method
             lastProcessor.onFaceTecSDKCompletelyDone();
+            // and clear FV session
             lastProcessor = null;
         }
     };
@@ -47,14 +51,20 @@ public class FaceTecModule extends ReactContextBaseJavaModule {
         super(reactContext);
 
         this.reactContext = reactContext;
+        // start listening for activity result (done) event
         reactContext.addActivityEventListener(activityListener);
     }
 
+    // NativeModule (not SDK!) initializer
     @Override
     public void initialize() {
         super.initialize();
 
+        // Setting react context reference to the event emiiter helper 
+        // (so it will be available to send events throught the react bridge)
         EventEmitter.register(reactContext);
+
+        // customize UI/UX
         FaceTecSDK.setCustomization(Customization.UICustomization);
         FaceTecSDK.setLowLightCustomization(Customization.LowLightModeCustomization);
         FaceTecSDK.setDynamicDimmingCustomization(Customization.DynamicModeCustomization);
@@ -133,24 +143,28 @@ public class FaceTecModule extends ReactContextBaseJavaModule {
         return constants;
     }
 
+    // maps to async initialize(serverUrl, jsonWebToken, licenseKey, encryptionKey = null, licenseText = null) in JS
     @ReactMethod
     public void initializeSDK(String serverURL, String jwtAccessToken,
         String licenseKey, String encryptionKey, String licenseText,
-        final Promise promise
+        final Promise promise // reference to the JS promise will be returned from native to JS
     ) {
         final Activity activity = getCurrentActivity();
-        FaceTecSDKStatus status = FaceTecSDK.getStatus(activity);
+        FaceTecSDKStatus status = FaceTecSDK.getStatus(activity); // get current status
 
         switch (status) {
             case INITIALIZED:
             case DEVICE_IN_LANDSCAPE_MODE:
             case DEVICE_IN_REVERSE_PORTRAIT_MODE:
-                // status is already initialized - resolve promise with true
+                // status is already initialized - customize labels and resolve promise with true
                 FaceTecSDK.setDynamicStrings(Customization.UITextStrings);
                 promise.resolve(true);
                 break;
             case NEVER_INITIALIZED:
-            case NETWORK_ISSUES:
+            case NETWORK_ISSUES: 
+                // if was not initialized
+                
+                // configure API client with GoodServer URL and JWT
                 FaceVerification.register(serverURL, jwtAccessToken);
 
                 // based on licenseText value, init in prod|dev mode
@@ -162,6 +176,7 @@ public class FaceTecModule extends ReactContextBaseJavaModule {
                 FaceTecSDK.initializeInDevelopmentMode(activity, licenseKey, encryptionKey, onInitializationAttempt(activity, promise));
                 break;
             default:
+                // reject promise on any other (error) status
                 RCTPromise.rejectWith(promise, status);
         }
     }
@@ -175,9 +190,11 @@ public class FaceTecModule extends ReactContextBaseJavaModule {
     ) {
         String chain = null;
         Activity activity = getCurrentActivity();
+        // instantiate subscriber & processir
         final ProcessingSubscriber subscriber = new ProcessingSubscriber(promise);
         final EnrollmentProcessor processor = new EnrollmentProcessor(activity, subscriber);
 
+        // if FV session in progress - cancel existing, throw context switch error
         if (lastProcessor != null) {
             ProcessingSubscriber lastSubscriber = lastProcessor.getSubscriber();
 
@@ -188,10 +205,13 @@ public class FaceTecModule extends ReactContextBaseJavaModule {
             chain = chainId;
         }
 
+        // set FV session in progress
         lastProcessor = processor;
+        // start session
         processor.enroll(enrollmentIdentifier, v1Identifier, chain, maxRetries, timeout);
     }
 
+    // initialization attempt callback factory
     private FaceTecSDK.InitializeCallback onInitializationAttempt(
         final Activity activity, final Promise promise
     ) {
@@ -216,6 +236,8 @@ public class FaceTecModule extends ReactContextBaseJavaModule {
                         + "FaceTec SDK could be ran on the real devices only";
                 }
 
+                // rejecting promise with curresponding status code and message
+                // using RCTPromise utility wrapper over JS Promise ref
                 RCTPromise.rejectWith(promise, sdkStatus, customMessage);
             }
         };

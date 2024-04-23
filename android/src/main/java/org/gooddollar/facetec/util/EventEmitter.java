@@ -13,6 +13,9 @@ public final class EventEmitter {
   private EventEmitter() {}
   private static DeviceEventManagerModule.RCTDeviceEventEmitter rctEventEmitter;
 
+  // event type enum
+  // defined as enum class 
+  // as have string (non - int) values
   public static enum UXEvent {
     UI_READY("onUIReady"),
     CAPTURE_DONE("onCaptureDone"),
@@ -28,6 +31,8 @@ public final class EventEmitter {
       return eventName;
     }
 
+    // helper method used to export enum to JS constants
+    // without specifying all items manually
     public static Map<String, String> toMap() {
       Map<String, String> enumMap = new HashMap<>();
 
@@ -39,16 +44,21 @@ public final class EventEmitter {
     }
   }
 
+  // connects EventEmitter to the react context
   public static void register(ReactApplicationContext reactContext) {
+    // fetches event emitter from context and stores to the class var
+    // this reference will be used to send events from native to JS
     rctEventEmitter = reactContext.getJSModule(
       DeviceEventManagerModule.RCTDeviceEventEmitter.class
     );
   }
 
+  // overload to send event without data
   public static void dispatch(UXEvent event) {
     dispatch(event, null);
   }
 
+  // send event with data. just re-calls native => js event emitter
   public static void dispatch(UXEvent event, @Nullable WritableMap body) {
     rctEventEmitter.emit(event.eventName(), body);
   }

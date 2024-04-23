@@ -8,6 +8,8 @@ import com.facebook.react.bridge.Callback;
 import com.facebook.react.modules.core.PermissionListener;
 import com.facebook.react.modules.core.PermissionAwareActivity;
 
+// Utility to request camera permissions
+// uses common approach, nothing FV-specific here
 public class Permissions implements PermissionListener {
   private Context context;
 
@@ -33,6 +35,7 @@ public class Permissions implements PermissionListener {
     this.context = context;
   }
 
+  // receives callback class instance should have onSuccess() and onFailure() methods defined
   public void requestCameraPermissions(final PermissionsCallback callback) {
     try {
       final String permission = "android.permission.CAMERA";

@@ -13,6 +13,7 @@ import okio.Okio;
 
 /*
  * Implementation of RequestBody that allows upload progress to be retrieved
+ * Ships with the FaceTect Android app demo, nothing been changed/customized
  */
 public class ProgressRequestBody extends RequestBody {
     private final RequestBody requestBody;
