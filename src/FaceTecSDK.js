@@ -2,17 +2,18 @@ import { NativeEventEmitter } from 'react-native'
 
 import { FaceTecUxEvent } from './FaceTecPublicApi'
 
-// sdk class
+// sdk class wrapper
 export class FaceTecSDK {
   _subscriptions = {}
 
+  // receives ref to the native code interface as the single argument
   constructor(module) {
     const wrapMethods = ['initialize', 'enroll']
 
     this.module = module
     this.eventEmitter = new NativeEventEmitter(module)
 
-    // wrap methods
+    // wrap methods to correctly throw JS errors
     wrapMethods.forEach(method => this[method] = async (...args) => {
       try {
         return await FaceTecSDK.prototype[method].apply(this, args)
@@ -30,6 +31,15 @@ export class FaceTecSDK {
     })
   }
 
+  // Initializes SDK
+  //   - serverUrl - an GoodServer uri from the environment GoodDApp is running
+  //   - jsonWebToken - user token to auth GoodServer calls
+  //   - licenseKey - device key identifier from GoodDapp env/config
+  //   - encryptionKey - facemaps encryption key from GoodDapp env/config
+  //   - licenseText - production key. receives at the GoodDApp side before initialize SDK
+  //   by calling /verify/face/license/native andpoint at GoodServer which proxies call
+  //   to the FaceTec CustomServer instance
+  //
   // eslint-disable-line require-await
   async initialize(serverUrl, jsonWebToken, licenseKey, encryptionKey = null, licenseText = null) {
     const { module } = this
@@ -41,6 +51,11 @@ export class FaceTecSDK {
     return module.initializeSDK(baseUrl, jsonWebToken, licenseKey, encryptionKey, licenseText)
   }
 
+  // Runs face verification flow
+  //   - enrollmentIdentifier, v1Identifier - face ids generated for user account (wallet address)
+  //   - chainId - fuse or celo id
+  //   - maxRetries - retry attempts if enrollment failed before show 'switch to another device'
+  //   - timeout - enrollment HTTP request to GoodServer timeout (as millis)
   async enroll(enrollmentIdentifier, v1Identifier, chainId = null, maxRetries = -1, timeout = -1) {
     const { module } = this
     const chain = String(chainId || '')
@@ -48,6 +63,8 @@ export class FaceTecSDK {
     return module.faceVerification(enrollmentIdentifier, v1Identifier, chain, maxRetries, timeout)
   }
 
+  // Subscribes to event (for analytics)
+  //   - event = "onUIReady" | "onCaptureDone" | "onRetry"
   addListener(event, handler) {
     const { _subscriptions } = this
     let subscriptionsMap = _subscriptions[event]
@@ -62,6 +79,7 @@ export class FaceTecSDK {
     return () => this.removeListener(event, handler)
   }
 
+  // Unsubscribes from event
   removeListener(event, handler) {
     const { _subscriptions } = this
     const subscriptionsMap = _subscriptions[event]
@@ -74,6 +92,7 @@ export class FaceTecSDK {
     subscriptionsMap.delete(handler)
   }
 
+  // @private
   // some events could contain error objects inside event data
   // as React bridge doesn't returns JS errors (see above)
   // we have to convert event data for those specific events
