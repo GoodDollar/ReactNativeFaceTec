@@ -6,6 +6,7 @@
 //  Copyright © 2020 Facebook. All rights reserved.
 //
 
+// Promise wrapper like RTCPromise.java in Android
 class Promise: PromiseDelegate {
     private var resolver: RCTPromiseResolveBlock
     private var rejecter: RCTPromiseRejectBlock

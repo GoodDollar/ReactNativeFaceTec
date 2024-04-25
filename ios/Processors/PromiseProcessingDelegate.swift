@@ -6,6 +6,8 @@
 //  Copyright © 2020 Facebook. All rights reserved.
 //
 
+// The same as ProcessingSubscriber.java
+
 class PromiseProcessingDelegate: NSObject, ProcessingDelegate {
     private var promise: PromiseDelegate
     

@@ -6,6 +6,8 @@
 //  Copyright © 2020 Facebook. All rights reserved.
 //
 
+// Extensions to generage shadow from css' box-shadow-like params
+// Used in customization
 extension FaceTecShadow {
     static func css(boxShadow: [Int], _ color: UIColor, _ alpha: Float = 1) -> Self {
         let radius = boxShadow[2]

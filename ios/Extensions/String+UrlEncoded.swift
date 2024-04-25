@@ -6,6 +6,7 @@
 //  Copyright © 2020 Facebook. All rights reserved.
 //
 
+// encodeURIComponent implementation in Swift
 extension String {
     func urlEncoded() -> String {
         return self.addingPercentEncoding(withAllowedCharacters: NSMutableCharacterSet.urlQueryAllowed)!

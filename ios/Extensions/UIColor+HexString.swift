@@ -6,6 +6,8 @@
 //  Copyright © 2020 Facebook. All rights reserved.
 //
 
+// html color to UIColor coverter
+// used in customization
 extension UIColor {
     convenience init(_ hexString: String) {
         var int = UInt64()

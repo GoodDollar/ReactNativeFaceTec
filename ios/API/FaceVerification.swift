@@ -6,6 +6,10 @@
 //  Copyright © 2020 Facebook. All rights reserved.
 //
 
+// API client class
+// provide the same public methods as api/FaceVerification.java
+// also initializes during initializeSDK with JWT and server url
+// sends same requests, proceeds responses the same way
 class FaceVerification {
     // singletone instance
     static let shared = FaceVerification()
@@ -19,19 +23,21 @@ class FaceVerification {
     private let sessionTokenProperty = "sessionToken"
 
     private init() {}
-
+    
     func register(_ serverURL: String, _ jwtAccessToken: String) -> Void {
         self.serverURL = serverURL
         self.jwtAccessToken = jwtAccessToken
     }
 
     func getSessionToken(sessionTokenCallback: @escaping (String?, Error?) -> Void) -> Void {
-        request("/verify/face/session", "POST", [:]) { response, error in
+        request("/verify/face/session", "POST", [:]) { response, error in // [:] is the same as {} in JS - an empty object literal
             if error != nil {
                 sessionTokenCallback(nil, error)
                 return
             }
 
+            // guard mean safely evaluate right-side assignment expression
+            // if it's undefined - execute else block
             guard let sessionToken = response?[self.sessionTokenProperty] as? String else {
                 sessionTokenCallback(nil, FaceVerificationError.emptyResponse)
                 return
@@ -117,6 +123,8 @@ class FaceVerification {
         request(url, method, parameters, nil, withDelegate, resultCallback)
     }
 
+    // to handle upload progress we need some class implementing URLSessionDelegate
+    // (in our case EnrollmentProcessor doest it) and pass it here
     private func request(
         _ url: String,
         _ method: String,
@@ -133,9 +141,12 @@ class FaceVerification {
             config.timeoutIntervalForResource = withTimeout!
         }
 
+        // if some delegate (to handle upload progress) was passed, we open URLSession with delegate
         let session = withDelegate == nil ? URLSession(configuration: config)
             : URLSession(configuration: config, delegate: withDelegate, delegateQueue: OperationQueue.main)
 
+        // during this dataTask, the urlSession() method of the object passed as delegate will be invoked
+        // each time upload progress changes
         lastRequest = session.dataTask(with: request as URLRequest) { data, response, httpError in
             self.lastRequest = nil
 

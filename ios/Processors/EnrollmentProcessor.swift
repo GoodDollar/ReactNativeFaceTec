@@ -1,7 +1,9 @@
 import AVFoundation
 
-// implementing SessionDelegate which is the same than FaceTecFaceScanProcessorDelegate
-// but causes no issues during build
+// The same as EnrollmentProcessor.java
+// Instead of the demo app and SDK requirements it implements SessionDelegate not FaceTecFaceScanProcessorDelegate
+// To proxy callbacks to FaceTec we create instance of SessionProcessingDelegate
+// This twisted was is needed to avoid crash during build
 class EnrollmentProcessor: NSObject, URLSessionTaskDelegate, SessionDelegate {
     var maxRetries: Int?
     var enrollmentIdentifier: String!
@@ -85,6 +87,7 @@ class EnrollmentProcessor: NSObject, URLSessionTaskDelegate, SessionDelegate {
         processingDelegate.onProcessingComplete(isSuccess: isSuccess, sessionResult: lastResult, sessionMessage: lastMessage)
     }
 
+    // upload progress handler, requested by URLSessionTaskDelegate
     func urlSession(_ session: URLSession, task: URLSessionTask, didSendBodyData bytesSent: Int64, totalBytesSent: Int64, totalBytesExpectedToSend: Int64) {
         // get progress while performing the upload
         let uploaded: Float = Float(totalBytesSent) / Float(totalBytesExpectedToSend)

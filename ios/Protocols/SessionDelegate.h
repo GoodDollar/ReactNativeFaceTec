@@ -6,7 +6,7 @@
 //  Copyright © 2021 Facebook. All rights reserved.
 //
 
-// this is actually a copy of FaceTecFaceScanProcessorDelegate
+// This is actually a copy of FaceTecFaceScanProcessorDelegate
 // it could be defined also on Swift but there's an additional
 // research is needed to understand why onFaceTecSessionResult
 // doesn't exposed to the auto generated -Swift.h header

@@ -6,6 +6,7 @@
 //  Copyright © 2020 Facebook. All rights reserved.
 //
 
+// lodash-like snakeCase
 extension String {
     func snakeCased() -> String {
         let acronymPattern = "([A-Z]+)([A-Z][a-z]|[0-9])"

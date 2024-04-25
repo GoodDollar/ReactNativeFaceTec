@@ -11,6 +11,7 @@ final class Customization {
     public static let resultFacescanUploadMessage = "Uploading Your face\nsnapshot to verify";
     public static let resultFacescanProcessingMessage = "Verifying you're\none of a kind";
 
+    // constant 395 been taken from the dapp
     private static let isLargeDevice = UIScreen.main.bounds.width >= 395
 
     private static let black = UIColor.black
@@ -25,15 +26,18 @@ final class Customization {
     private static let defaultCornerRadius: Int32 = 5
     private static let defaultFont = UIFont.robotoFont(12)
 
+    // returns reference to the ios bundle (module), to get customization images from ./Resources
     private static let defaultBundle: Bundle = {
         let podBundle = Bundle(for: Customization.self)
         let bundleUrl = podBundle.url(forResource: "FaceTec", withExtension: "bundle")!
 
         return Bundle(url: bundleUrl)!
     }()
-  
+
+    // default, "light" and "dark" UI    
     static let UICustomization = createBasicCustomization()
 
+    // "light" customization used when not enought light
     static let LowLightModeCustomization: FaceTecCustomization = {
         let ui = createBasicCustomization()
         let guidance = ui.guidanceCustomization
@@ -44,6 +48,7 @@ final class Customization {
         return ui
     }()
     
+    // "dark" customization used when too much lights.
     static let DynamicModeCustomization: FaceTecCustomization = {
       let ui = createBasicCustomization()
       let guidance = ui.guidanceCustomization
@@ -57,6 +62,7 @@ final class Customization {
     }()
 
     static let UITextStrings: [String: String] = {
+        // constants copy-pasted from Java or JS source to update them easeliy
         let i18n: [String: String] = [
             "resultSuccessMessage": resultSuccessMessage,
             "resultFacescanUploadMessage": resultFacescanUploadMessage,
@@ -68,6 +74,8 @@ final class Customization {
             "instructionsMessageReady": "Please Frame Your Face In The Small Oval, Then The Big Oval"
         ]
 
+        // but in iOS labels have different (FaceTec_ prefix + snake_cased_label) format
+        // so we map keys to it
         return i18n.reduce(into: [String: String]()) { result, keyValue in
             result["FaceTec_\(keyValue.key.snakeCased())"] = keyValue.value
         }

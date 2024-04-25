@@ -5,16 +5,22 @@
 //  Copyright © 2020 Facebook. All rights reserved.
 //
 
+// In total, native implementations are very similar
+// The main flow and SDK interfaces are 100% identical
+// So here i will comment only iOS specific things
+
 import UIKit
 import LocalAuthentication
 import FaceTecSDK
 
 @objc(FaceTecModule)
 open class FaceTecModule: RCTEventEmitter {
+    // feature flag required for FaceTec
     override static public func requiresMainQueueSetup() -> Bool {
         return true
     }
 
+    // module (not SDK) initializer, same as `void initialize()` in FaceTecModule.java
     override public init() {
         super.init()
 
@@ -29,6 +35,9 @@ open class FaceTecModule: RCTEventEmitter {
         return UXEvent.allCases.map({ $0.rawValue })
     }
 
+    // EventEmitter optimization. In iOS ReactBridge calls startObserving when 
+    // first event listener was added and stopObserving when last one was removed
+    // So we couldn't dispatch events if nothing listens
     @objc
     override open func startObserving() {
         EventEmitter.shared.restore()
@@ -94,6 +103,8 @@ open class FaceTecModule: RCTEventEmitter {
         ]
     }
 
+    // a) @objc annotation exports method to the ObjC runtime, then it also requires to be linked to the RTCBridge at FaceTecBridge.m
+    // b) Instead of the Promise class wrapping JS promises, in Swift/ObjC we receive resolve/reject callback functions
     @objc(initializeSDK:jwtAccessToken:licenseKey:encryptionKey:licenseText:resolver:rejecter:)
     open func initializeSDK(_ serverURL: String, jwtAccessToken: String,
         licenseKey: String, encryptionKey: String, licenseText: String? = nil,
@@ -102,6 +113,10 @@ open class FaceTecModule: RCTEventEmitter {
     {
         let promise = Promise(resolve, reject)
 
+        // Insead of passing "callback" class instance having onSuccess/onFailed methods
+        // (or any other methods defined at the interface which "async" Java method accepts)
+        // in Swift the @escaping callback are used. There are something like anonymous callback functions
+        // something like 'do' blocks in Ruby or lambdas at C++11 and above
         getSDKStatus() { sdkStatus in
             switch sdkStatus {
             case .initialized, .deviceInLandscapeMode, .deviceInReversePortraitMode:
@@ -130,6 +145,7 @@ open class FaceTecModule: RCTEventEmitter {
         }
     }
 
+    // iOS implementation is too old and does not support v2/v1 identifiers
     @objc(faceVerification:maxRetries:timeout:resolver:rejecter:)
     open func faceVerification(
         _ enrollmentIdentifier: String, maxRetries: Int, timeout: Int,
@@ -137,7 +153,9 @@ open class FaceTecModule: RCTEventEmitter {
         rejecter reject: @escaping RCTPromiseRejectBlock) -> Void
     {
         let promise = Promise(resolve, reject)
-        let delegate = PromiseProcessingDelegate(promise)
+        let delegate = PromiseProcessingDelegate(promise) // in Swift/iOS any kind of sucscribers or any object 
+        // implementing some interface required by another object are generally callaed "delegates"
+        // so this name was used here instead of 'processing subscriber'
 
         getPresentedViewController() { presentedVC in
             let processor = EnrollmentProcessor(fromVC: presentedVC, delegate: delegate)
@@ -176,6 +194,11 @@ open class FaceTecModule: RCTEventEmitter {
         }
     }
 
+    // same as getCurrentActivity() in Android
+    // to represent 'screens' Android apps are using Activity class
+    // iOS apps - view controllers inherited from UIViewController
+    // both ios + android SDKs initialize UI over the current 'screen'
+    // so, iOS SDK method requires view contoller, Android one - activity
     private func getPresentedViewController(completion: @escaping (UIViewController) -> Void) -> Void {
         DispatchQueue.main.async {
             completion(RCTPresentedViewController()!)

@@ -6,6 +6,8 @@
 //  Copyright © 2020 Facebook. All rights reserved.
 //
 
+// Roboto font loader
+// used in customization
 extension UIFont {
     static func robotoFont(_ size: CGFloat) -> Self {
         return robotoFont(.regular, size)

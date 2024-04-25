@@ -5,6 +5,12 @@
 //  Created by Alex Serdukov on 12/21/20.
 //  Copyright © 2020 Facebook. All rights reserved.
 //
+
+// extensions over basic Promise wrapper util
+// to reject with failed sdk or session status
+// in Swift we use protocol (e.g. interface) extensions
+// this works as method overloads in Java (see RCTPromise.java)
+
 protocol PromiseDelegate {
     func resolve(_ result: Any?) -> Void
     func reject(_ with: FaceTecSessionStatus) -> Void

@@ -6,6 +6,7 @@
 //  Copyright © 2020 Facebook. All rights reserved.
 //
 
+// Exports Swift implementation of the NativeModule to ObjC runtime to be accessible for the RCTBridge
 #import <React/RCTBridgeModule.h>
 
 @interface RCT_EXTERN_MODULE(FaceTecModule, NSObject)

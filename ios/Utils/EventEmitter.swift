@@ -6,6 +6,8 @@
 //  Copyright © 2020 Facebook. All rights reserved.
 //
 
+// EventEmitter class and events enum (see EventEmitter.java)
+
 enum UXEvent: String, CaseIterable {
     case UI_READY = "onUIReady"
     case CAPTURE_DONE = "onCaptureDone"
@@ -25,6 +27,7 @@ class EventEmitter {
         Self.rctEventEmitter = withRCTEventEmitter
     }
 
+    // EventEmitter optimization, see start/stopListening() comments
     func suspend() {
         suspended = true
     }

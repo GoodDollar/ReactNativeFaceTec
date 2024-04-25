@@ -10,7 +10,7 @@
 #import <FaceTecSDK/FaceTecSDK.h>
 #import "../Protocols/SessionDelegate.h"
 
-// due to the unknown reason compiler crashes when you're trying
+// Due to the unknown reason compiler crashes when you're trying
 // to implement FaceTecFaceScanProcessorDelegate from the Swift class
 // AND building a ReactNative project. On separate iOS app everything is fine
 // To workaround i had to define this ObjectiveC class and pass its instance

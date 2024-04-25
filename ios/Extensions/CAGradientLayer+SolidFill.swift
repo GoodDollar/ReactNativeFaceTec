@@ -6,6 +6,8 @@
 //  Copyright © 2020 Facebook. All rights reserved.
 //
 
+// Instead of definig utils in Swift we define extensions over core protocols/classes
+// This one used at customization
 extension CAGradientLayer {
     static func solidFill(color: UIColor, alpha: CGFloat = 1) -> Self {
         let layer = Self.init()
