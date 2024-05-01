@@ -70,7 +70,6 @@ extern NSString *const FaceTecStringKeyPresessionPositionFaceStraightInOval;
 extern NSString *const FaceTecStringKeyPresessionHoldSteady3;
 extern NSString *const FaceTecStringKeyPresessionHoldSteady2;
 extern NSString *const FaceTecStringKeyPresessionHoldSteady1;
-extern NSString *const FaceTecStringKeyPresessionEyesStraightAhead;
 extern NSString *const FaceTecStringKeyPresessionRemoveDarkGlasses;
 extern NSString *const FaceTecStringKeyPresessionNeutralExpression;
 extern NSString *const FaceTecStringKeyPresessionConditionsTooBright;
