@@ -84,3 +84,21 @@ for (unsubscribe of subscriptions) {
   unsubscribe()
 }
 ```
+
+### Update SDKs
+
+#### Android
+
+1. Goto https://dev.facetec.com/downloads 
+2. Download Android SDK
+3. Remove `./android/libs/*.aar`
+4. Copy `./facetec-sdk-9.X.YY.aar` from android sdk archive to `./android/libs`
+
+#### Web
+
+1. Goto https://dev.facetec.com/downloads 
+2. Download Browser SDK
+3. Remove `./web/sdk/FaceTecSDK.web.js` `./web/sdk/images/*.png` `./web/sdk/resources/*.*` (**keep** folders)
+4. Copy `./core-sdk/FaceTecSDK.js/FaceTecSDK.js` from browser sdk archive to `./web/sdk/FaceTecSDK.web.js` (`.web` suffix is **mandatory**)
+5. Copy ``./core-sdk/FaceTecSDK.js/resources/*.*` from browser sdk archive to `./web/sdk/resources/`
+6. Copy ``./core-sdk/FaceTec_images/*.png` from browser sdk archive to `./web/sdk/images/`
