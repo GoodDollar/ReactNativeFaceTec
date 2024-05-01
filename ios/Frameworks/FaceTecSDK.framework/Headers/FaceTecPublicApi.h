@@ -124,7 +124,7 @@ typedef NS_ENUM(NSInteger, FaceTecCameraPermissionStatus) {
 - (UIView * _Nullable)onCreateNewResultScreenActivityIndicatorView NS_SWIFT_NAME(onCreateNewResultScreenActivityIndicatorView());
 /**
  Configure a custom UIView to display on the Result Screen for success scenarios.
- This method will be called every time either FaceTecFaceScanResultCallback.succeed() or FaceTecIDScanResultCallback.succeed() is called while the Result Screen is displayed after completing the and/or ID Scan process.
+ This method will be called every time either FaceTecFaceScanResultCallback.onFaceScanResultProceedToNextStep() or FaceTecIDScanResultCallback.onIDScanResultProceedToNextStep() is called while the Result Screen is displayed after completing the and/or ID Scan process.
  Sizing of the UIView's contents should be calculated relative to the UIView's bounds. Animations should be setup to start in the UIView's didMoveToSuperview method.
  Note: The result animation is displayed for 2 seconds, so custom animation timing should be configured accordingly.
  If this returns a UIView instance, the UIView supplied will be used instead of the default success animation or any success image configured with FaceTecResultScreenCustomization.resultAnimationSuccessBackgroundImage.
@@ -306,6 +306,19 @@ __attribute__((visibility("default")))
 + (NSDictionary * _Nullable) idScanUploadMessageOverrides;
 
 @property (nonatomic) NSDictionary* _Nullable featureFlagsMap;
+
+- (void) setGuidanceCustomization:(FaceTecGuidanceCustomization * _Nullable)guidanceCustomization;
+- (void) setOvalCustomization:(FaceTecOvalCustomization * _Nullable)ovalCustomization;
+- (void) setFeedbackCustomization:(FaceTecFeedbackCustomization * _Nullable)feedbackCustomization;
+- (void) setFrameCustomization:(FaceTecFrameCustomization * _Nullable)zoomFrameCustomization;
+- (void) setCancelButtonCustomization:(FaceTecCancelButtonCustomization * _Nullable)cancelButtonCustomization;
+- (void) setVocalGuidanceCustomization:(FaceTecVocalGuidanceCustomization * _Nullable)vocalGuidanceCustomization;
+- (void) setResultScreenCustomization:(FaceTecResultScreenCustomization * _Nullable)resultScreenCustomization;
+- (void) setOverlayCustomization:(FaceTecOverlayCustomization * _Nullable)overlayCustomization;
+- (void) setIdScanCustomization:(FaceTecIDScanCustomization * _Nullable)iDScanCustomization;
+- (void) setOCRConfirmationCustomization:(FaceTecOCRConfirmationCustomization * _Nullable)ocrConfirmationCustomization;
+- (void) setSessionTimerCustomization:(FaceTecSessionTimerCustomization * _Nullable)sessionTimerCustomization;
+- (void) setInitialLoadingAnimationCustomization:(FaceTecInitialLoadingAnimationCustomization * _Nullable)initialLoadingAnimationCustomization;
 
 - (nonnull instancetype)init;
 - (nonnull instancetype)initWithFeatureFlagsMap:(NSDictionary* _Nullable)featureFlagsMap  NS_SWIFT_NAME(init(featureFlagsMap:));
@@ -1281,6 +1294,11 @@ __attribute__((visibility("default")))
  * Default is a CGRect at origin 0,0 with a size of 0 by 0.
  */
 @property (nonatomic) CGRect customLocation;
+/**
+ * Control whether to disable and hide the cancel button on the Camera Permissions Screen.
+ * Default is true (hidden).
+ */
+@property (nonatomic) BOOL hideForCameraPermissions;
 
 - (nonnull instancetype) init;
 @end
@@ -1441,6 +1459,13 @@ enum FaceTecIDScanNextStep: NSInteger;
 - (void)initializeInProductionMode:(NSString * _Nonnull)productionKeyText deviceKeyIdentifier:(NSString * _Nonnull)deviceKeyIdentifier faceScanEncryptionKey:(NSString * _Nonnull)faceScanEncryptionKey completion:(void (^ _Nullable)(BOOL))completion NS_SWIFT_NAME(initializeInProductionMode(productionKeyText:deviceKeyIdentifier:faceScanEncryptionKey:completion:));
 
 /**
+ Release resources related to FaceTec SDK.
+ Initialize <em>must</em>  be called again by the application before invoking any SDK operations.
+ This function may be called repeatedly without harm.
+ */
+- (void)deinitialize;
+
+/**
  Configures the look and feel of FaceTec SDK.
 
  @param customization An instance of FaceTecCustomization
@@ -1480,9 +1505,10 @@ enum FaceTecIDScanNextStep: NSInteger;
 - (BOOL)isLockedOut;
 
 /**
+ * @deprecated - This API method is deprecated and will be removed in an upcoming release of the iOS SDK. Use the non-deprecated deinitialize API method instead.
  Unload resources related to FaceTec SDK.
  */
-- (void)unload;
+- (void)unload DEPRECATED_MSG_ATTRIBUTE("This API method is deprecated and will be removed in an upcoming release of the iOS SDK. Use the non-deprecated deinitialize API method instead.");
 
 /**
  Convenience method to check for camera permissions.
@@ -1868,6 +1894,10 @@ typedef NS_ENUM(NSInteger, FaceTecIDScanStatus) {
      */
     FaceTecIDScanStatusSkipped,
     /**
+     ID Scan cancelled because the user was in a locked out state.
+     */
+    FaceTecIDScanStatusLockedOut,
+    /**
      The camera access is prevented because either the user has explicitly denied permission or the user's device is configured to not allow access by a device policy.
      For more information on restricted by policy case, please see the the Apple Developer documentation on AVAuthorizationStatus.restricted.
      */
@@ -1876,8 +1906,8 @@ typedef NS_ENUM(NSInteger, FaceTecIDScanStatus) {
 
 /**
  Describes the next step to go into during the Photo ID Match process.
- By default, when FaceTecFaceScanResultCallback.onFaceScanResultSucceed() is called, the User is taken to the ID Document Type Selection Screen.
- Passing different values of FaceTecIDScanNextStep as a parameter for FaceTecFaceScanResultCallback.succeed() allows you to control whether to take the User to the ID Document Type Selection Screen or to  skip the ID Scan process altogether.
+ By default, when FaceTecFaceScanResultCallback.onFaceScanResultProceedToNextStep() is called, the User is taken to the ID Document Type Selection Screen.
+ Passing different values of FaceTecIDScanNextStep as a parameter for FaceTecFaceScanResultCallback.onFaceScanResultProceedToNextStep() allows you to control whether to take the User to the ID Document Type Selection Screen or to  skip the ID Scan process altogether.
  You may want to skip the ID Scan process altogether if you have custom server-side logic that in some cases deems the Photo ID Match flow as not necessary.
 */
 typedef NS_ENUM(NSInteger, FaceTecIDScanNextStep) {
