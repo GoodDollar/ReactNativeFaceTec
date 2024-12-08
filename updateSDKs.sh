@@ -9,12 +9,13 @@ unzip -j -qq FaceTecSDK-browser-$VERSION*.zip "FaceTecSDK-browser-$VERSION/core-
 unzip -j -qq FaceTecSDK-browser-$VERSION*.zip "FaceTecSDK-browser-$VERSION/core-sdk/FaceTecSDK.js/resources/*" -d web/sdk/resources
 unzip -j -qq FaceTecSDK-browser-$VERSION*.zip "FaceTecSDK-browser-$VERSION/core-sdk/FaceTecSDK.js/FaceTecSDK.js" -d web/sdk
 mv web/sdk/FaceTecSDK.js web/sdk/FaceTecSDK.web.js
-
+rm FaceTecSDK-browser-$VERSION*.zip
 
 ## Android
 VERSION=`ls FaceTecSDK-android* | egrep -o "\d+\.\d+\.\d+"`
 rm android/libs/facetec*
 unzip -j -qq FaceTecSDK-android-$VERSION*.zip "FaceTecSDK-android-$VERSION/facetec-sdk-$VERSION.aar" -d android/libs
+rm FaceTecSDK-android-$VERSION*.zip
 
 ## iOS
 VERSION=`ls FaceTecSDK-ios* | egrep -o "\d+\.\d+\.\d+"`
@@ -27,4 +28,4 @@ mv ios/Frameworks/FaceTecSDK.framework/en.lproj ios/Frameworks/FaceTecSDK.framew
 rm -fr ios/Frameworks/FaceTecSDK.framework/*.lproj
 mv ios/Frameworks/FaceTecSDK.framework/en.tmp ios/Frameworks/FaceTecSDK.framework/en.lproj
 
-rm FaceTec*.zip
+rm FaceTecSDK-ios-$VERSION*.zip
