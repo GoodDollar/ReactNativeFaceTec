@@ -1,5 +1,7 @@
 # ReactNative FaceTec SDK Integration
 
+## Only works with facetec V9 SDKS
+
 ## Getting started
 
 `$ npm install @gooddollar/react-native-facetec --save`
@@ -8,7 +10,7 @@
 
 `$ react-native link @gooddollar/react-native-facetec`
 
-## Copy SDKs
+## Copy V9 SDKs
 1. Download SDKs from facetec website
 2. Copy SDKs to `node_modules/@gooddollar/react-native-facetec`
 3. Change working directory `cd node_modules/@gooddollar/react-native-facetec`
