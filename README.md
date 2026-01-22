@@ -8,6 +8,12 @@
 
 `$ react-native link @gooddollar/react-native-facetec`
 
+## Copy SDKs
+1. Download SDKs from facetec website
+2. Copy SDKs to `node_modules/@gooddollar/react-native-facetec`
+3. Change working directory `cd node_modules/@gooddollar/react-native-facetec`
+4. Run update script `./updateSDKs.sh`
+
 ## Usage
 
 ```javascript
